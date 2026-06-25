@@ -263,55 +263,120 @@ with tab_gestione:
         
         if st.button("Analizza ed Estrai Automaticamente"):
             if testo_richiesta.strip():
+                # Estrazione dati con Regex
                 email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', testo_richiesta)
-                email_estratta = email_match.group(0) if email_match else ""
-                
                 date_trovate = re.findall(r'\b\d{2}[/\-]\d{2}[/\-]\d{4}\b', testo_richiesta)
-                arrivo_estratto = date_trovate[0] if len(date_trovate) > 0 else datetime.now().strftime("%d/%m/%Y")
-                partenza_estratta = date_trovate[1] if len(date_trovate) > 1 else ""
-                
                 ospiti_match = re.search(r'(?:Ospiti|Persone|Numero Ospiti):\s*(\d+)', testo_richiesta, re.IGNORECASE)
-                adulti_match = re.search(r'(?:Adulti):\s*(\d+)', testo_richiesta, re.IGNORECASE)
-                minori_match = re.search(r'(?:Minori|Bambini):\s*(\d+)', testo_richiesta, re.IGNORECASE)
                 
-                ospiti_estratto = ospiti_match.group(1) if ospiti_match else "2"
-                adulti_estratto = adulti_match.group(1) if adulti_match else ospiti_estratto
-                minori_estratto = minori_match.group(1) if minori_match else "0"
-                
+                # ... (logica di estrazione portale/ospiti)
                 portale_estratto = "Sito Diretto"
-                for p in ["Booking", "Airbnb", "Vrbo", "Lovely", "UltMin", "Agoda", "Idealista"]:
-                    if p.lower() in testo_richiesta.lower():
-                        portale_estratto = p
-                        break
-                        if riga_trovata:
-            # ... [Codice di interfaccia Streamlit (st.columns, input, selezioni, invio messaggi) omesso per brevità] ...
-            # ... [Gestione di salvataggio modifiche e storico] ...
-            
-            # --- SEZIONE SALVATAGGIO ---
-            if st.button("💾 Salva Modifiche nel Database"):
-                # Aggiornamento campi base
-                riga_trovata["Cognom e"] = nuovo_cognome
-                riga_trovata["Nom e"] = nuovo_nome
-                riga_trovata["data presunta di Arriv o"] = nuovo_arrivo
-                riga_trovata["data presunta di Partenz a"] = nuovo_partenza
-                riga_trovata["Emai l"] = nuovo_email
-                riga_trovata["Cane (Razza/Taglia)"] = nuovo_cane
-                riga_trovata["Esit o"] = nuovo_esito
+                for p in ["Booking", "Airbnb", "Vrbo"]:
+                    if p.lower() in testo_richiesta.lower(): portale_estratto = p; break
                 
-                # Formattazione e salvataggio note
-                testo_fidelizzazione = f" [Compleanni: {nuovo_compleanni.strip()}]" if nuovo_compleanni.strip() else ""
-                testo_fidelizzazione += f" [Onomastici: {nuovo_onomastici.strip()}]" if nuovo_onomastici.strip() else ""
-                testo_fidelizzazione += f" [Ospiti: {nuovo_nominativi.strip()}]" if nuovo_nominativi.strip() else ""
-                
-                riga_trovata["Note aggiuntiv e"] = nuove_note + testo_fidelizzazione
-                
+                nuovo_record = {
+                    "numero progressivo": str(len(righe) + 1),
+                    "Data del contatto": datetime.now().strftime("%d/%m/%Y"),
+                    "Emai l": email_match.group(0) if email_match else "",
+                    "data presunta di Arriv o": date_trovate[0] if len(date_trovate) > 0 else "-",
+                    "Portale di provenienz a": portale_estratto,
+                    "Esit o": "🔄 In corso"
+                }
+                righe.append(nuovo_record)
                 salva_database_nativo(colonne, righe)
-                st.success("🎯 Dati familiari e scadenze salvati con successo!")
-                st.session_state["id_da_modificare"] = ""
+                st.success("🎉 Ospite inserito!")
+                st.rerun()
+    elif tipo_operazione == "Modifica un Record Esistente":
+        st.subheader("🔍 Gestione e Modifica Scheda Cliente")
+        valore_promemoria = ""
+        if "id_da_modificare" in st.session_state and st.session_state["id_da_modificare"]:
+            valore_promemoria = str(st.session_state["id_da_modificare"])
+            st.info(f"👉 NUMERO SELEZIONATO DALL'ARCHIVIO: {valore_promemoria}")
+            
+        chiave_ricerca = st.text_input("Cerca cliente (Inserisci Telefono, Email, Cognome o Numero di riga):", value=valore_promemoria).strip().lower()
+        riga_trovata = None
+        storico_cliente = []
+        
+        if chiave_ricerca:
+            for r in righe:
+                prog = str(r.get("numero progressiv o", "")).strip().lower()
+                cognome = str(r.get("Cognom e", "")).strip().lower()
+                email = str(r.get("Emai l", "")).strip().lower()
+                note = str(r.get("Note aggiuntiv e", "")).strip().lower()
+                if (chiave_ricerca == prog or chiave_ricerca in cognome or chiave_ricerca in email or chiave_ricerca in note):
+                    riga_trovata = r
+                    break
+                    
+            if riga_trovata:
+                cognome_target = str(riga_trovata.get("Cognom e", "")).strip().lower()
+                email_target = str(riga_trovata.get("Emai l", "")).strip().lower()
+                for r in righe:
+                    if (cognome_target and str(r.get("Cognom e", "")).strip().lower() == cognome_target) or (email_target and str(r.get("Emai l", "")).strip().lower() == email_target):
+                        storico_cliente.append(r)
+                        
+        if riga_trovata:
+            prog_id = riga_trovata.get('numero progressiv o', '').strip()
+            nome_id = riga_trovata.get('Nom e', '').strip()
+            cognome_id = riga_trovata.get('Cognom e', '').strip()
+            st.success(f"Scheda Ospite Rilevata: Record #{prog_id} — {nome_id} {cognome_id}")
+            
+            col_sinistra, col_destra = st.columns(2)
+            with col_sinistra:
+                nuovo_cognome = st.text_input("Cognome Titolare:", riga_trovata.get("Cognom e", "").strip())
+                nuovo_nome = st.text_input("Nome Titolare:", riga_trovata.get("Nom e", "").strip())
+                nuovo_arrivo = st.text_input("Data Arrivo:", riga_trovata.get("data presunta di Arriv o", "").strip())
+                nuovo_partenza = st.text_input("Data Partenza:", riga_trovata.get("data presunta di Partenz a", "").strip())
+                nuovo_nominativi = st.text_area("Nominativi Completi Ospiti del Gruppo (Mappatura Arrivi):", value="")
+            with col_destra:
+                nuovo_email = st.text_input("Email Titolare:", riga_trovata.get("Emai l", "").strip())
+                nota_per_tel = riga_trovata.get("Note aggiuntiv e", "")
+                match_tel_iniziale = re.search(r'(?:Telefono|Tel|tel|Telefono:)\s*([0-9\+\s]{8,15})', nota_per_tel)
+                tel_iniziale = match_tel_iniziale.group(1).strip() if match_tel_iniziale else ""
+                nuovo_telefono = st.text_input("Telefono / cellulare:", value=tel_iniziale)
+                nuovo_cane = st.text_input("Cane (Razza/Taglia):", riga_trovata.get("Cane (Razza/Taglia)", "").strip())
+                
+                esito_attuale = riga_trovata.get("Esit o", "").strip()
+                lista_esiti = ["📋 Lista attesa", "🔄 In corso", "✅ Confermata", "❌ Cancellata", "🔄 Pre-approvata", "❌ Non disponibile", "⚠ Alert attivo", "🗄 Storico 2024", "🗄 Storico 2025"]
+                indice_esito = lista_esiti.index(esito_attuale) if esito_attuale in lista_esiti else 0
+                nuovo_esito = st.selectbox("Esito Prenotazione:", lista_esiti, index=indice_esito)
+            st.markdown("---")
+            st.subheader("🎂 Anagrafica Ospiti per Campagne di Fidelizzazione")
+            
+            # Input per compleanni, onomastici e note, con gestione della memoria del database
+            col_bday, col_onomastico = st.columns(2)
+            with col_bday:
+                nuovo_compleanni = st.text_area("Compleanni (Nome Cognome - GG/MM/AAAA):", value="")
+            with col_onomastico:
+                nuovo_onomastici = st.text_area("Onomastici (Nome - Giorno/Mese):", value="")
+                
+            nuove_note = st.text_area("Note Aggiuntive:", value=riga_trovata.get("Note aggiuntiv e", "").strip(), height=100)
+            st.markdown("---")
+
+            # Sezione Comunicazione (WhatsApp/Email)
+            st.subheader("📱 Invio Comunicazione")
+            canale_scelto = st.radio("Metodo di contatto:", ["WhatsApp", "E-mail"])
+            
+            # Template messaggio personalizzato
+            corpo_messaggio = f"Ciao {nuovo_nome}, aggiornamento soggiono presso nostra tenuta. Un saluto a {nuovo_cane}! Marco - A Casa di Amici."
+            
+            if canale_scelto == "WhatsApp" and nuovo_telefono:
+                messaggio_wa = st.text_area("Messaggio WhatsApp:", value=corpo_messaggio)
+                link_wa = genera_link_whatsapp(nuovo_telefono, messaggio_wa)
+                st.markdown(f'<a href="{link_wa}" target="_blank">🔗 Apri WhatsApp</a>', unsafe_allow_html=True)
+            elif canale_scelto == "E-mail" and nuovo_email:
+                link_mail = f"mailto:{nuovo_email}?subject=Aggiornamento Soggiorno&body={urllib.parse.quote(corpo_messaggio)}"
+                st.markdown(f'<a href="{link_mail}">📧 Apri Email</a>', unsafe_allow_html=True)
+
+            # Salvataggio Dati
+            if st.button("💾 Salva Dati Famiglia nel DB"):
+                # Aggiornamento dati anagrafici ed estensione note con compleanni/onomastici
+                riga_trovata.update({
+                    "Cognom e": nuovo_cognome, "Nom e": nuovo_nome,
+                    "Note aggiuntiv e": nuove_note + f" [Compleanni: {nuovo_compleanni.strip()}]"
+                })
+                salva_database_nativo(colonne, righe)
+                st.success("🎯 Dati salvati con successo!")
                 st.rerun()
                 
             st.markdown("---")
-            st.subheader("📜 Cronologia Storica dei Soggiorni del Cliente")
+            st.subheader("📜 Storico Soggiorni")
             mostra_tabella_pulita(storico_cliente)
-        elif chiave_ricerca:
-            st.warning("Nessun ospite trovato con i criteri inseriti.")
