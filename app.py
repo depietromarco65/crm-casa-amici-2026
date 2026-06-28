@@ -15,7 +15,8 @@ st.set_page_config(
 @st.cache_data(ttl=60)
 def carica_database():
     try:
-        df_raw = pd.read_csv("database_ospiti.csv")
+        # skiprows=[1] salta la riga fittizia descrittiva allineando le colonne
+        df_raw = pd.read_csv("database_ospiti.csv", skiprows=[1])
         return df_raw
     except Exception as e:
         st.error(f"Errore nel caricamento del database CSV: {e}")
