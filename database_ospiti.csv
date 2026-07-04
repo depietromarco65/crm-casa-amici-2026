@@ -1,21 +1,11 @@
-N. Progressivo,Data Contatto,Ora Contatto,Giorni Lead Time,Cognome Capofamiglia,Nome Capofamiglia,Data 
-
-Presunta Arrivo,Data Presunta Partenza,Alloggio Assegnato,Numero Ospiti Totale,Nominativo Ospiti 
-
+N. Progressivo,Data Contatto,Ora Contatto,Giorni Lead Time,Cognome Capofamiglia,Nome Capofamiglia,Data Presunta Arrivo,Data Presunta Partenza,Alloggio Assegnato,Numero Ospiti Totale,Nominativo Ospiti 
 (Dettaglio + Compleanni + Onomastici),Adulti,Minori,Email,Portale di Provenienza,Razza Taglia e Nome 
-
 Cane,Tariffa Totale (€),Costo Biancheria (€),Tipo Tariffa (Standard/Non Rimb.),Stato Saldo,Mezzo di 
-
 Trasporto e Orario Arrivo,Stato Richiesta,Note Aggiuntive
 1,28/06/2026,nd,3,nd,Carmela,01/07/2026,08/07/2026,nd,1,Gruppo,1,0,nd,UltimissimoMinuto,nd,nd,28.00,Stand
-
 ard,nd,nd,Rifiutato,Struttura: A Casa di Amici Salento (Torre Pali). Assegnato voucher sconto 15% per il 
-
 futuro. Vacanza al mare.
-2,04/04/2026,08:52,126,De 
-
-Angelis,Claudio,08/08/2026,22/08/2026,nd,4,Famiglia,2,2,claudio.deangelis@gmail.com,UltMin,nd,nd,224.00,S
-
+2,04/04/2026,08:52,126,De Angelis,Claudio,08/08/2026,22/08/2026,nd,4,Famiglia,2,2,claudio.deangelis@gmail.com,UltMin,nd,nd,224.00,S
 tandard,Da saldare all'arrivo,nd,Lista attesa,Telefono: 3334567890. Richiede esplicitamente alloggio 
 
 indipendente con spazio esterno recintato. Vacanza.
