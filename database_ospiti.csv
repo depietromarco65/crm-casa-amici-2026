@@ -9,24 +9,12 @@ N. Progressivo,Data Contatto,Ora Contatto,Giorni Lead Time,Cognome Capofamiglia,
 8,05/01/2026,11:45,180,Rossi,Mario,07/07/2026,14/07/2026,nd,2,0,7,0,mario.rossi@email.it,UltimissimoMinuto,nd,nd,nd,nd,nd,nd,Lista d'attesa,Ospite registrato nello storico iniziale.
 9,05/01/2026,11:45,180,Rossi,Mario,07/07/2026,14/07/2026,nd,2,0,7,0,mario.rossi@email.it,UltimissimoMinuto,nd,nd,nd,nd,nd,nd,Lista d'attesa,Ospite registrato nello storico iniziale.
 10,07/04/2026,15:37,102,Gallo,Roberto,18/07/2026,25/07/2026,nd,2,Coppia,2,0,roberto.gallo@gmail.com,Sito Diretto,nd,nd,56.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Coppia giovane. Richiede vicinanza assoluta alle spiagge. Vacanza.
-11,08/04/2026,11:20,116,Gatti,Laura,02/08/2026,09/08/2026,nd,5,Famiglia,2,3,laura.gatti@hotmail.com,UltMi
-n,nd,nd,140.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta per prima settimana di agosto. 
-Necessita di lavatrice. Vacanza.
-12,08/04/2026,17:14,136,Moretti,Giorgio,22/08/2026,29/08/2026,nd,4,Famiglia,2,2,giorgio.moretti@libero.it
-,Lovely,nd,nd,112.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta per fine agosto. Preferisce 
-zona tranquilla e silenziosa. Vacanza.
-13,09/04/2026,10:45,87,Marini,Francesca,05/07/2026,12/07/2026,nd,2,Coppia,2,0,f.marini@gmail.com,Sito 
-Diretto,nd,nd,56.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta prima metà di luglio. Chiede 
-informazioni su noleggio bici. Vacanza.
-14,09/04/2026,14:18,122,Ricci,Stefano,09/08/2026,16/08/2026,nd,3,Famiglia,2,1,stefano.ricci@outlook.it,Ul
-tMin,nd,nd,84.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Settimana centrale di agosto. Richiede 
-veranda esterna vivibile. Vacanza.
-15,10/04/2026,08:33,107,Bruno,Paola,26/07/2026,02/08/2026,nd,4,Famiglia,2,2,paola.bruno@gmail.com,Lovely,
-nd,nd,112.00,Standard,Da saldare all'arrivo,nd,Rifiutato,Richiesta rifiutata per onestà commerciale a 
-causa di presenza scalini incompatibili con difficoltà a camminare. Ex Ivana.
-16,10/04/2026,16:21,65,Mazzeo,Pasquale,14/06/2026,21/06/2026,nd,2,Coppia,2,0,p.mazzeo@libero.it,Sito 
-Diretto,nd,nd,56.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta inizio stagione giugno. 
-Cerca soluzione low-cost. Vacanza.
+11,08/04/2026,11:20,116,Gatti,Laura,02/08/2026,09/08/2026,nd,5,Famiglia,2,3,laura.gatti@hotmail.com,UltMin,nd,nd,140.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta per prima settimana di agosto. Necessita di lavatrice. Vacanza.
+12,08/04/2026,17:14,136,Moretti,Giorgio,22/08/2026,29/08/2026,nd,4,Famiglia,2,2,giorgio.moretti@libero.it,Lovely,nd,nd,112.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta per fine agosto. Preferisce zona tranquilla e silenziosa. Vacanza.
+13,09/04/2026,10:45,87,Marini,Francesca,05/07/2026,12/07/2026,nd,2,Coppia,2,0,f.marini@gmail.com,Sito Diretto,nd,nd,56.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta prima metà di luglio. Chiede informazioni su noleggio bici. Vacanza.
+14,09/04/2026,14:18,122,Ricci,Stefano,09/08/2026,16/08/2026,nd,3,Famiglia,2,1,stefano.ricci@outlook.it,UltMin,nd,nd,84.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Settimana centrale di agosto. Richiede veranda esterna vivibile. Vacanza.
+15,10/04/2026,08:33,107,Bruno,Paola,26/07/2026,02/08/2026,nd,4,Famiglia,2,2,paola.bruno@gmail.com,Lovely,nd,nd,112.00,Standard,Da saldare all'arrivo,nd,Rifiutato,Richiesta rifiutata per onestà commerciale a causa di presenza scalini incompatibili con difficoltà a camminare. Ex Ivana.
+16,10/04/2026,16:21,65,Mazzeo,Pasquale,14/06/2026,21/06/2026,nd,2,Coppia,2,0,p.mazzeo@libero.it,Sito Diretto,nd,nd,56.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta inizio stagione giugno. Cerca soluzione low-cost. Vacanza.
 17,11/04/2026,11:05,141,Barbieri,Chiara,30/08/2026,06/09/2026,nd,4,Famiglia,2,2,chiara.barbieri@gmail.com
 ,UltMin,nd,nd,112.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta fine estate. Chiede se 
 accettati animali domestici. Vacanza.
@@ -36,10 +24,7 @@ appartamento con giardino. Vacanza.
 19,12/04/2026,09:12,112,Rinaldi,Silvia,02/08/2026,16/08/2026,nd,5,Famiglia,2,3,silvia.rinaldi@hotmail.it,
 Sito Diretto,nd,nd,280.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta quindicinale agosto. 
 Necessita di due bagni completi. Vacanza.
-20,12/04/2026,14:55,91,Amato,Vincenzo,12/07/2026,19/07/2026,nd,2,Coppia,2,0,vincenzo.amato@gmail.com,UltM
-in,nd,nd,56.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta luglio per coppia. Chiede info su 
-servizio spiaggia incluso. Vacanza.
-
+20,12/04/2026,14:55,91,Amato,Vincenzo,12/07/2026,19/07/2026,nd,2,Coppia,2,0,vincenzo.amato@gmail.com,UltMin,nd,nd,56.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta luglio per coppia. Chiede info su servizio spiaggia incluso. Vacanza.
 21,13/04/2026,10:28,132,De Rosa,Anna,23/08/2026,30/08/2026,nd,4,Famiglia con due bambini 
 piccoli,2,2,anna.derosa@libero.it,Lovely,nd,nd,112.00,Standard,Da saldare all'arrivo,nd,Lista 
 attesa,Richiesta fine agosto. Famiglia con due bambini piccoli. Vacanza.
