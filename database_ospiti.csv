@@ -5,16 +5,30 @@ N. Progressivo,Data Contatto,Ora Contatto,Giorni Lead Time,Cognome Capofamiglia,
 4,04/04/2026,11:30,119,Bianchi,Giovanni,01/08/2026,15/08/2026,nd,5,Famiglia,2,3,g.bianchi@outlook.it,Sito Diretto,nd,nd,280.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta preventivo per bilocale o villino. Presenza di bambini piccoli. Vacanza.
 5,05/04/2026,14:22,76,Fontana,Lucia,20/06/2026,27/06/2026,nd,3,Gruppo,3,0,lucia.fontana@hotmail.it,UltMin,nd,nd,84.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta per tre amiche. Preferenza letti singoli separati. Vacanza.
 6,05/04/2026,16:45,132,Esposito,Salvatore,15/08/2026,22/08/2026,nd,6,Famiglia,4,2,salvatore.esposito@gmail.com,Lovely,nd,nd,168.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Settimana di Ferragosto. Richiede trilocale spazioso con barbecue. Vacanza.
-7,04/01/2026,18:20,150,Bianchi,Anna,03/06/2026,10/06/2026,840,2,0,7,1,anna.bianchi@email.it,Direct,nd,nd,nd,nd,nd,nd,Opzione,Richiesta caparra.
-8,05/01/2026,11:45,180,Rossi,Mario,07/07/2026,14/07/2026,nd,2,0,7,0,mario.rossi@email.it,UltimissimoMinuto,nd,nd,nd,nd,nd,nd,Lista d'attesa,Ospite registrato nello storico iniziale.
+7,04/01/2026,18:20,150,Bianchi,Anna,03/06/2026,10/06/2026,nd,2,nd,2,0,anna.bianchi@email.it,Direct,1 Cane taglia nd,840,nd,Standard,nd,nd,Opzione,Richiesta caparra.
+8,05/01/2026,11:45,180,Rossi,Mario,07/07/2026,14/07/2026,nd,2,nd,2,0,mario.rossi@email.it,UltimissimoMinuto,0,nd,nd,Standard,nd,nd,Lista d'attesa,Ospite registrato nello storico iniziale.
 9,05/01/2026,11:45,180,Rossi,Mario,07/07/2026,14/07/2026,nd,2,0,7,0,mario.rossi@email.it,UltimissimoMinuto,nd,nd,nd,nd,nd,nd,Lista d'attesa,Ospite registrato nello storico iniziale.
-10,07/04/2026,15:37,102,Gallo,Roberto,18/07/2026,25/07/2026,nd,2,Coppia,2,0,roberto.gallo@gmail.com,Sito Diretto,nd,nd,56.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Coppia giovane. Richiede vicinanza assoluta alle spiagge. Vacanza.
-11,08/04/2026,11:20,116,Gatti,Laura,02/08/2026,09/08/2026,nd,5,Famiglia,2,3,laura.gatti@hotmail.com,UltMin,nd,nd,140.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta per prima settimana di agosto. Necessita di lavatrice. Vacanza.
-12,08/04/2026,17:14,136,Moretti,Giorgio,22/08/2026,29/08/2026,nd,4,Famiglia,2,2,giorgio.moretti@libero.it,Lovely,nd,nd,112.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta per fine agosto. Preferisce zona tranquilla e silenziosa. Vacanza.
-13,09/04/2026,10:45,87,Marini,Francesca,05/07/2026,12/07/2026,nd,2,Coppia,2,0,f.marini@gmail.com,Sito Diretto,nd,nd,56.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta prima metà di luglio. Chiede informazioni su noleggio bici. Vacanza.
-14,09/04/2026,14:18,122,Ricci,Stefano,09/08/2026,16/08/2026,nd,3,Famiglia,2,1,stefano.ricci@outlook.it,UltMin,nd,nd,84.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Settimana centrale di agosto. Richiede veranda esterna vivibile. Vacanza.
-15,10/04/2026,08:33,107,Bruno,Paola,26/07/2026,02/08/2026,nd,4,Famiglia,2,2,paola.bruno@gmail.com,Lovely,nd,nd,112.00,Standard,Da saldare all'arrivo,nd,Rifiutato,Richiesta rifiutata per onestà commerciale a causa di presenza scalini incompatibili con difficoltà a camminare. Ex Ivana.
-16,10/04/2026,16:21,65,Mazzeo,Pasquale,14/06/2026,21/06/2026,nd,2,Coppia,2,0,p.mazzeo@libero.it,Sito Diretto,nd,nd,56.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta inizio stagione giugno. Cerca soluzione low-cost. Vacanza.
+10,07/04/2026,15:37,102,Gallo,Roberto,18/07/2026,25/07/2026,nd,2,Coppia,2,0,roberto.gallo@gmail.com,Sito 
+Diretto,nd,nd,56.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Coppia giovane. Richiede vicinanza 
+assoluta alle spiagge. Vacanza.
+11,08/04/2026,11:20,116,Gatti,Laura,02/08/2026,09/08/2026,nd,5,Famiglia,2,3,laura.gatti@hotmail.com,UltMi
+n,nd,nd,140.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta per prima settimana di agosto. 
+Necessita di lavatrice. Vacanza.
+12,08/04/2026,17:14,136,Moretti,Giorgio,22/08/2026,29/08/2026,nd,4,Famiglia,2,2,giorgio.moretti@libero.it
+,Lovely,nd,nd,112.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta per fine agosto. Preferisce 
+zona tranquilla e silenziosa. Vacanza.
+13,09/04/2026,10:45,87,Marini,Francesca,05/07/2026,12/07/2026,nd,2,Coppia,2,0,f.marini@gmail.com,Sito 
+Diretto,nd,nd,56.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta prima metà di luglio. Chiede 
+informazioni su noleggio bici. Vacanza.
+14,09/04/2026,14:18,122,Ricci,Stefano,09/08/2026,16/08/2026,nd,3,Famiglia,2,1,stefano.ricci@outlook.it,Ul
+tMin,nd,nd,84.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Settimana centrale di agosto. Richiede 
+veranda esterna vivibile. Vacanza.
+15,10/04/2026,08:33,107,Bruno,Paola,26/07/2026,02/08/2026,nd,4,Famiglia,2,2,paola.bruno@gmail.com,Lovely,
+nd,nd,112.00,Standard,Da saldare all'arrivo,nd,Rifiutato,Richiesta rifiutata per onestà commerciale a 
+causa di presenza scalini incompatibili con difficoltà a camminare. Ex Ivana.
+16,10/04/2026,16:21,65,Mazzeo,Pasquale,14/06/2026,21/06/2026,nd,2,Coppia,2,0,p.mazzeo@libero.it,Sito 
+Diretto,nd,nd,56.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta inizio stagione giugno. 
+Cerca soluzione low-cost. Vacanza.
 17,11/04/2026,11:05,141,Barbieri,Chiara,30/08/2026,06/09/2026,nd,4,Famiglia,2,2,chiara.barbieri@gmail.com
 ,UltMin,nd,nd,112.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta fine estate. Chiede se 
 accettati animali domestici. Vacanza.
@@ -24,7 +38,10 @@ appartamento con giardino. Vacanza.
 19,12/04/2026,09:12,112,Rinaldi,Silvia,02/08/2026,16/08/2026,nd,5,Famiglia,2,3,silvia.rinaldi@hotmail.it,
 Sito Diretto,nd,nd,280.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta quindicinale agosto. 
 Necessita di due bagni completi. Vacanza.
-20,12/04/2026,14:55,91,Amato,Vincenzo,12/07/2026,19/07/2026,nd,2,Coppia,2,0,vincenzo.amato@gmail.com,UltMin,nd,nd,56.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta luglio per coppia. Chiede info su servizio spiaggia incluso. Vacanza.
+20,12/04/2026,14:55,91,Amato,Vincenzo,12/07/2026,19/07/2026,nd,2,Coppia,2,0,vincenzo.amato@gmail.com,UltM
+in,nd,nd,56.00,Standard,Da saldare all'arrivo,nd,Lista attesa,Richiesta luglio per coppia. Chiede info su 
+servizio spiaggia incluso. Vacanza.
+
 21,13/04/2026,10:28,132,De Rosa,Anna,23/08/2026,30/08/2026,nd,4,Famiglia con due bambini 
 piccoli,2,2,anna.derosa@libero.it,Lovely,nd,nd,112.00,Standard,Da saldare all'arrivo,nd,Lista 
 attesa,Richiesta fine agosto. Famiglia con due bambini piccoli. Vacanza.
@@ -1928,9 +1945,18 @@ caos.
 554,14/05/2028,11:08,-622,Piras,Alessandro,02/08/2025,09/08/2025,Casale Lucia,3,Famiglia - 
 nd,2,1,a.deluca@outlook.it,Holidu,nd,900.00,84.00,Standard,In cassa,Auto,Storico 2025,Vecchio Cod. 
 prenotazione Holidu HM6WW55. Richiesta inizio agosto. Chiede se la biancheria da letto/bagno è fornita.
-555,18/05/2028,15:47,-691,Barone,Giovanna,21/06/2025,28/06/2025,Monolocale Marina,4,Famiglia - nd,2,2,g.barone@hotmail.com,Holidu,nd,650.00,112.00,Standard,In cassa,nd,Storico 2025,Vecchio Cod. prenotazione Holidu HM4HH67. Richiesta fine giugno. Richiede TV satellitare e connessione Wi-Fi in camera.
-556,22/05/2028,09:18,-681,Rossi,Pasquale,12/07/2025,19/07/2025,Monolocale Margherita,2,Coppia - nd,2,0,p.rizzi@gmail.com,Holidu,nd,550.00,56.00,Standard,In cassa,nd,Storico 2025,Vecchio Cod. prenotazione Holidu HM1JJ44. Richiesta luglio per due persone. Cerca soluzione moderna e vicina alle spiagge.
-557,26/05/2028,13:55,-640,Pagano,Chiara,23/08/2025,30/08/2025,Villa Tulipano,5,Famiglia - nd,2,3,chiara.b@libero.it,Holidu,nd,1400.00,140.00,Standard,In cassa,Auto,Storico 2025,Vecchio Cod. prenotazione Holidu HM5AA66. Richiesta fine agosto. Cerca ampi spazi interni e un porticato esterno vivibile.
+555,18/05/2028,15:47,-691,Barone,Giovanna,21/06/2025,28/06/2025,Monolocale Marina,4,Famiglia - 
+nd,2,2,g.barone@hotmail.com,Holidu,nd,650.00,112.00,Standard,In cassa,nd,Storico 2025,Vecchio Cod. 
+prenotazione Holidu HM4HH67. Richiesta fine giugno. Richiede TV satellitare e connessione Wi-Fi in 
+camera.
+556,22/05/2028,09:18,-681,Rossi,Pasquale,12/07/2025,19/07/2025,Monolocale Margherita,2,Coppia - 
+nd,2,0,p.rizzi@gmail.com,Holidu,nd,550.00,56.00,Standard,In cassa,nd,Storico 2025,Vecchio Cod. 
+prenotazione Holidu HM1JJ44. Richiesta luglio per due persone. Cerca soluzione moderna e vicina alle 
+spiagge.
+557,26/05/2028,13:55,-640,Pagano,Chiara,23/08/2025,30/08/2025,Villa Tulipano,5,Famiglia - 
+nd,2,3,chiara.b@libero.it,Holidu,nd,1400.00,140.00,Standard,In cassa,Auto,Storico 2025,Vecchio Cod. 
+prenotazione Holidu HM5AA66. Richiesta fine agosto. Cerca ampi spazi interni e un porticato esterno
+vivibile.
 558,30/05/2028,10:30,-694,Ferraro,Salvatore,05/07/2025,12/07/2025,BilocaleOleandro,3,Famiglia - nd,2,1,salvatore.p@outlook.com,Holidu,nd,750.00,84.00,Standard,In cassa,Auto,Storico 2025,Vecchio Cod. prenotazione Holidu HM2SS66. Richiesta inizio luglio. Chiede informazioni dettagliate sulle spiagge libere vicine.
 559,03/06/2028,16:22,-656,Barone,Elena,16/08/2025,23/08/2025,Casale Lucia,2,Coppia - nd,2,0,elena.barone@hotmail.it,Holidu,nd,800.00,56.00,Standard,In cassa,Auto,Storico 2025,Vecchio Cod. prenotazione Holidu HM4OO66. Settimana dopo Ferragosto. Coppia richiede zanzariere e climatizzazione autonoma.
 560,07/06/2028,11:45,-675,Rossi,Giorgio,26/07/2025,02/08/2025,Monolocale Glicine,4,Famiglia - nd,2,2,g.rossi@gmail.com,Holidu,nd,850.00,112.00,Standard,In cassa,nd,Storico 2025,Vecchio Cod. prenotazione Holidu HM3XX77. Soggiorno a cavallo tra luglio e agosto. Richiede cucina completa e accessoriata.
@@ -1949,7 +1975,7 @@ prenotazione Holidu HM6WW55. Richiesta inizio agosto. Chiede se la biancheria da
 573, 03/07/2026, 22:36, 15, Oliviero, Michele, 18/07/2026, 01/08/2026, nd, 3, nd, 3, 0, micheleoliviero1969@libero.it, UltMin, nd, 1120.00, 168.00, Standard, Da saldare all'arrivo, nd, In corso, Telefono: 33823272478. Richiesta dal portale UltimissimoMinuto per 14 notti a luglio. Presenza di 1 cane di piccola taglia. In attesa di riscontro per assegnazione alloggio. Vacanza.
 574, 03/07/2026, 20:26, 7, Scognamiglio, Eleonora, 10/07/2026, 20/07/2026, nd, 2, nd, 2, 0, scognamiglio.ele@alice.it, UltMin, nd, 800.00, 80.00, Standard, Da saldare all'arrivo, nd, In corso, Telefono: 3334258320. Richiesta dal portale UltimissimoMinuto per 10 notti a luglio. Nuovo ospite: si applica tariffa Standard e fiducia totale. Vacanza.
 575, 04/07/2026, 18:56, 30, Trivisani, Mariangela, 03/08/2026, 09/08/2026, nd, 5, nd, 6, 0, trivisani.mariangela@gmail.com, LovelyIT, nd, nd, nd, nd, nd, nd, Rifiutato, Telefono: 3282623986. Richiesta dal portale LovelyITALIA per 5 adulti ad agosto (6 notti). Rifiutato per mancanza di disponibilità nelle date indicate. Assegnato voucher sconto 15% per il futuro. Vacanza.
-576, 04/07/2026, 18:58, 35, Esposito, Valentino, 08/08/2026, 22/08/2026, nd, 6, 5, 14, 0, valespo78@yahoo.it, LovelyIT, nd, nd, nd, nd, nd, nd, Rifiutato, Telefono: 3668322384. Richiesta LovelyITALIA per 6 adulti e 5 bambini per 14 notti ad agosto. Rifiutato esclusivamente per mancanza di disponibilità nelle date indicate. Vacanza.
+576, 04/07/2026, 18:58, 35, Esposito, Valentino, 08/08/2026, 22/08/2026, nd, 6, 5, 14, 0, valespo78@yahoo.it, LovelyIT, nd, nd, nd, nd, nd, nd, Lista d'attesa, Telefono: 3668322384. Richiesta dal portale LovelyITALIA per 6 adulti e 5 bambini per 14 notti ad agosto. Contatore sottomissioni: medesima richiesta pervenuta per un totale di 2 volte complessive dallo stesso portale. Ignorata la duplicazione del log per mantenere pulito l'archivio. Stato variato da Rifiutato a Lista d'attesa per overbooking ad agosto (evento improbabile). Assegnato buono sconto 15% formula fiduciaria per il futuro. Vacanza.
 577, 04/07/2026, 19:05, 37, Raia, Barbara, 10/08/2026, 25/08/2026, nd, 5, nd, 15, 0, raiabarbara@virgilio.it, LovelyIT, nd, nd, nd, nd, nd, nd, Rifiutato, Telefono: 3281796857. Richiesta dal portale LovelyITALIA per 5 adulti ad agosto (15 notti). Rifiutato per mancanza di disponibilità nelle date indicate. Assegnato voucher sconto 15% per il futuro. Vacanza.
 578, 04/07/2026, 19:07, 36, Di Benedetto, Federica, 09/08/2026, 16/08/2026, nd, 2, 2, 7, 1, dibenedetto.federica@gmail.com, LovelyIT, nd, nd, nd, nd, nd, nd, Rifiutato, Telefono: 3934039423. Richiesta dal portale LovelyITALIA per 2 adulti, 2 bambini e 1 cane di piccola taglia ad agosto (7 notti). Rifiutato per mancanza di disponibilità nelle date indicate. Assegnato voucher sconto 15% per il futuro. Vacanza.
 579, 04/07/2026, 19:10, 64, nd, Francesco, 06/09/2026, 19/09/2026, 1360, 4, nd, 13, 0, fra1925@live.com, LovelyIT, nd, nd, nd, nd, nd, nd, Opzione, Telefono: 3273395821. Richiesta LovelyITALIA per 4 adulti a settembre (13 notti). Inviato preventivo per il Casale Lucia con formula fiduciaria: applicato sconto di 200€, totale finale 1360€ tutto compreso. Vacanza.
