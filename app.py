@@ -181,7 +181,7 @@ with tab_inserimento:
                 except Exception as e:
                     st.error(f"Errore di scrittura: {e}")
 # ==============================================================================
-# ===== BLOCCO K: CONTENUTO TAB 3 - FILTRI DI RICERCA STRATEGICI =====
+# ===== BLOCCO K: CONTENUTO TAB 3 - FILTRI DI RICERCA ED ESTRAZIONE TELEFONO =====
 # ==============================================================================
 with tab_ricerca:
     st.subheader("🔍 Filtri di Ricerca Avanzati e Scansione Telefoni")
@@ -208,8 +208,27 @@ with tab_ricerca:
         if not df_filtrato.empty:
             st.success(f"🎯 Corrispondenze trovate: {len(df_filtrato)} record.")
             st.dataframe(df_filtrato, use_container_width=True)
+            
+            # Pannello di dettaglio per la riga selezionata dall'utente
+            index_scelto = st.selectbox("Seleziona l'ospite specifico per vedere i dettagli:", df_filtrato.index, key="sb_ricerca_avanzata")
+            riga_scelta = df.loc[index_scelto]
+            
+            # --- ESTRAZIONE ED EVIDENZIAZIONE DEL TELEFONO ---
+            testo_note_riga = str(riga_scelta.iloc[22])
+            tel_estratto_match = re.search(r'(?:Telefono|Tel\.?):?\s*([0-9\s\-]+)', testo_note_riga, re.IGNORECASE)
+            num_tel_visivo = tel_estratto_match.group(1).strip() if tel_estratto_match else "Rilevabile nelle note"
+            
+            # Visualizzazione in un riquadro protetto ad alta visibilità
+            st.warning(f"📞 Numero di Telefono Ospite: **{num_tel_visivo}**")
+            
+            # Anteprima e-mail standard pronta
+            ospite_nome = riga_scelta.iloc[5] if pd.notna(riga_scelta.iloc[5]) else "Ospite"
+            st.markdown("### ✉️ Modello E-mail Pronto da Copiare:")
+            corpo_email_veloce = f"Gentile {ospite_nome},\n\nLa ringraziamo per l'interesse verso \"A Casa di Amici\".\n\nAl momento per le date richieste siamo al completo, ma abbiamo inserito i suoi dati nella nostra Lista d'Attesa. Restiamo a disposizione.\n\nCordiali saluti,\nLo Staff"
+            st.code(corpo_email_veloce, language="text")
         else:
             st.warning("❌ Nessun record corrispondente.")
+
 # ==============================================================================
 # ===== BLOCCO L: CONTENUTO TAB 4 - LETTURA FEED ICAL OCTORATE =====
 # ==============================================================================
