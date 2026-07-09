@@ -131,18 +131,41 @@ with tab_inserimento:
             date_trovate = re.findall(r'(\d{1,2})\s*[\/\-]\s*(\d{1,2})\s*[\/\-]\s*(\d{4})', testo_pulito)
             data_contatto_str = datetime.now().strftime("%d/%m/%Y")
             estratto_arrivo, estratto_partenza, lead_time = "nd", "nd", 0
-# ==============================================================================
+
+            # ==============================================================================
 # ===== BLOCCO I: CONTENUTO TAB 2 - SCRITTURA RECORD E LOGISTICA (PARTE 4) =====
 # ==============================================================================
             if len(date_trovate) >= 2:
                 d_arr, d_part = date_trovate[-2], date_trovate[-1]
-                estratto_arrivo = f"{int(d_arr):02d}/{int(d_arr):02d}/{d_arr}"
-                estratto_partenza = f"{int(d_part):02d}/{int(d_part):02d}/{d_part}"
+                
+                # Funzione interna di formattazione sicura per evitare TypeError
+                def _formatta_data_stringa(data_grezza):
+                    d_str = str(data_grezza).strip()
+                    if "/" in d_str:
+                        parti = d_str.split("/")
+                        if len(parti) == 3:
+                            try:
+                                giorno = f"{int(parti[0]):02d}"
+                                mese = f"{int(parti[1]):02d}"
+                                anno = parti[2]
+                                return f"{giorno}/{mese}/{anno}"
+                            except ValueError:
+                                return d_str
+                    return d_str
+
+                estratto_arrivo = _formatta_data_stringa(d_arr)
+                estratto_partenza = _formatta_data_stringa(d_part)
+                
                 try:
                     dt_contatto = datetime.strptime(data_contatto_str, "%d/%m/%Y")
                     dt_arrivo = datetime.strptime(estratto_arrivo, "%d/%m/%Y")
                     lead_time = max(0, (dt_arrivo - dt_contatto).days)
-                except: lead_time = 0
+                except: 
+                    lead_time = 0
+            else:
+                estratto_arrivo = "nd"
+                estratto_partenza = "nd"
+                lead_time = 0
                     
             localita_match = re.search(r'(?:Localita\'?\s*richiesta\s*:?)\s*([A-Za-zÀ-ú\s]+(?:dintorni)?)', testo_pulito, re.IGNORECASE)
             estratto_localita = localita_match.group(1).strip() if localita_match else "nd"
@@ -151,45 +174,53 @@ with tab_inserimento:
             estratto_cane = cane_match.group(1).strip() if cane_match else "nd"
             
             ora_attuale = datetime.now().strftime("%H:%M")
-            note_pulite = f"Telefono: {estratto_tel}. Ricevuto tramite {estratto_portale}. Localita richiesta: {estratto_localita}."
-            if dettaglio_eta: note_pulite += f" Segmentazione marketing: {dettaglio_eta}."
-            note_pulite = note_pulite.replace(",", " -")
+            
+            # Allineamento variabili di contatto prima del controllo manuale
+            if 'estratto_email' not in locals():
+                estratto_email = "nd"
+            if 'estratto_tel' not in locals():
+                estratto_tel = "nd"
+                
+            num_tel_visivo = estratto_tel
+
 # ==============================================================================
 # ===== CONTROLLO E RECUPERO DATI MANCANTI (EMAIL E TELEFONO) =====
 # ==============================================================================
 
-# Forza i valori predefiniti se non rilevati dall'algoritmo
-if 'estratto_email' not in locals() or estratto_email == "nd":
-    estratto_email = "nd"
-if 'num_tel_visivo' not in locals() or num_tel_visivo == "nd":
-    num_tel_visivo = "nd"
+            # Interfaccia di recupero manuale se i dati estratti sono assenti o di default
+            if estratto_email == "nd" or num_tel_visivo == "Rilevabile nelle note" or num_tel_visivo == "nd" or num_tel_visivo == "":
+                st.warning("⚠️ **Attenzione:** Alcuni dati di contatto fondamentali non sono stati rilevati automaticamente.")
+                
+                col_input1, col_input2 = st.columns(2)
+                with col_input1:
+                    if estratto_email == "nd" or estratto_email == "":
+                        estratto_email = st.text_input("📧 Inserisci manualmente l'Email dell'ospite:", key="manual_email").strip()
+                    else:
+                        st.success(f"📧 Email rilevata: {estratto_email}")
+                        
+                with col_input2:
+                    if num_tel_visivo == "Rilevabile nelle note" or num_tel_visivo == "nd" or num_tel_visivo == "":
+                        num_tel_visivo = st.text_input("📞 Inserisci manualmente il Telefono dell'ospite:", key="manual_tel").strip()
+                    else:
+                        st.success(f"📞 Telefono rilevato: {num_tel_visivo}")
+                
+                # Sincronizza la variabile originale con il campo manuale per i blocchi successivi
+                estratto_tel = num_tel_visivo
 
-# Se i dati mancano, mostra i campi di inserimento manuale per correggere il record
-if estratto_email == "nd" or num_tel_visivo == "Rilevabile nelle note" or num_tel_visivo == "nd":
-    st.warning("⚠️ **Attenzione:** Alcuni dati di contatto fondamentali non sono stati rilevati automaticamente.")
-    
-    col_input1, col_input2 = st.columns(2)
-    with col_input1:
-        if estratto_email == "nd":
-            estratto_email = st.text_input("📧 Inserisci manualmente l'Email dell'ospite:", key="manual_email").strip()
-        else:
-            st.success(f"📧 Email rilevata: {estratto_email}")
-            
-    with col_input2:
-        if num_tel_visivo == "Rilevabile nelle note" or num_tel_visivo == "nd":
-            num_tel_visivo = st.text_input("📞 Inserisci manualmente il Telefono dell'ospite:", key="manual_tel").strip()
-        else:
-            st.success(f"📞 Telefono rilevato: {num_tel_visivo}")
+            # Rigenerazione stringa note aggiornata con i dati corretti finali
+            note_pulite = f"Telefono: {estratto_tel}. Ricevuto tramite {estratto_portale}. Localita richiesta: {estratto_localita}."
+            if 'dettaglio_eta' in locals() and dettaglio_eta: 
+                note_pulite += f" Segmentazione marketing: {dettaglio_eta}."
+            note_pulite = note_pulite.replace(",", " -")
 
-# Blocco di sicurezza: impedisce il salvataggio se l'utente non compila i campi d'emergenza
-if estratto_email == "" or estratto_email == "nd":
-    st.error("🛑 Impossibile procedere: L'indirizzo Email è obbligatorio per generare la comunicazione e salvare il record.")
-elif num_tel_visivo == "" and stato_csv == "Confermato":
-    st.error("🛑 Impossibile procedere: Per le prenotazioni confermate è necessario inserire un numero di telefono telefonico valido.")
-else:
-    # Qui prosegue il codice di salvataggio del record nel CSV e la stampa della mail...
-    pass
-
+            # Blocco di sicurezza: impedisce l'avanzamento se mancano i requisiti minimi
+            if estratto_email == "" or estratto_email == "nd":
+                st.error("🛑 Impossibile procedere: L'indirizzo Email è obbligatorio per generare la comunicazione e salvare il record.")
+            elif num_tel_visivo == "" or num_tel_visivo == "nd":
+                st.error("🛑 Impossibile procedere: Il numero di telefono è obbligatorio per la gestione delle schede contatto.")
+            else:
+                # Qui il codice scorre sul BLOCCO J per la selezione dello stato e il salvataggio fisico
+                pass
 
 
 # ==============================================================================
