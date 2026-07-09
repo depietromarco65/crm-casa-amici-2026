@@ -99,10 +99,10 @@ if st.button("⚡ Parsifica e Salva Istantaneamente Richiesta"):
         email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', testo_pulito)
         estratto_email = email_match.group(0).strip() if email_match else "nd"
         
-        # 2. Estrazione Telefono
+        # 2. Estrazione Telefono (Corretto l'errore di battitura sintattico)
         tel_match = re.search(r'(?:Telefono|Tel\.?|Cell\.?)\s*:?\s*([0-9\s\-]{8,15})', testo_pulito, re.IGNORECASE)
         estratto_tel = tel_match.group(1).strip() if tel_match else ""
-        if not延_tel:
+        if not estratto_tel:
             tel_match_libero = re.search(r'\b(3\d{2}[0-9\s\-]{6,8})\b', testo_pulito)
             estratto_tel = tel_match_libero.group(1).strip() if tel_match_libero else "nd"
             
@@ -117,9 +117,17 @@ if st.button("⚡ Parsifica e Salva Istantaneamente Richiesta"):
         estratto_adulti = int(adulti_match.group(1)) if adulti_match else 2
         
         # Analisi intelligente per contare i bambini nelle "Ulteriori informazioni"
-        minori_match = re.search(r'(\d+)\s*(?:bambini|minori|ragazzi|figli)', testo_pulito, re.IGNORECASE)
-        estratto_minori = int(minori_match.group(1)) if minori_match else 0
+        minori_match = re.search(r'(\d+\s*(?:bambini|minori|ragazzi|figli))', testo_pulito, re.IGNORECASE)
+        if minori_match:
+            try:
+                estratto_minori = int(re.search(r'\d+', minori_match.group(1)).group(0))
+            except:
+                estratto_minori = 0
+        else:
+            estratto_minori = 0
+            
         estratto_ospiti_tot = estratto_adulti + estratto_minori
+
 
         # --- BLOCCO 3 - PARTE 2: PROSEGUIMENTO ESTRATTORI E SALVATAGGIO ---
         # 5. Estrazione Portale di Provenienza (Riconosce lo schema automatico)
