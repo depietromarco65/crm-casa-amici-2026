@@ -1,9 +1,9 @@
 # ==============================================================================
 # ===== BLOCCO 1: CARICAMENTO DATI LOCALE, CONFIGURAZIONE E LIBRERIE =====
 # ==============================================================================
-import datetime
+from datetime import datetime  # <--- IMPORT MIRATO (Risolve AttributeError alla riga 70)
 import os
-import re  # <--- IMPORTAZIONE FONDAMENTALE PER LO SCANNER RICORRENZE (Risolve NameError)
+import re
 import pandas as pd
 import streamlit as st
 
@@ -22,7 +22,7 @@ else:
     st.info("Logo aziendale non rilevato localmente nella root del progetto.")
 
 # 3. Estrazione dell'anno corrente dal server per l'automazione del titolo stagionale
-anno_corrente = datetime.datetime.now().year
+anno_corrente = datetime.now().year
 st.title(f"🏨 CRM A Casa di Amici - Gestione Stagionale {anno_corrente}")
 
 # 4. Definizione del percorso locale per il database degli ospiti
@@ -46,8 +46,9 @@ except Exception as e:
     st.error(f"Errore critico di lettura nel file CSV locale: {e}")
 
 # ==============================================================================
-# ===== FINE BLOCCO 1 (L'applicazione ora ha tutte le librerie caricate) =====
+# ===== FINE BLOCCO 1 (L'applicazione ora gestisce nativamente i datetime) =====
 # ==============================================================================
+
 
 
 # ===== BLOCCO 2: CRUSCOTTO STATISTICO KPI =====
