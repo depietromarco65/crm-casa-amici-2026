@@ -1,24 +1,42 @@
-# ===== BLOCCO 1: CARICAMENTO DATI =====
-import streamlit as st
-import pandas as pd
-import re
-import urllib.parse
-import time
+# ==============================================================================
+# ===== BLOCCO 1: CARICAMENTO DATI, CONFIGURAZIONE E LOGO DINAMICO =====
+# ==============================================================================
 import datetime
+import pandas as pd
 import streamlit as st
 
-# Configurazione della pagina (se non già presente)
-st.set_page_config(page_title="CRM A Casa di Amici", layout="wide")
+# 1. Configurazione globale della pagina dell'applicazione Streamlit
+st.set_page_config(
+    page_title="CRM A Casa di Amici",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# Inserimento del logo aziendale da GitHub in formato Raw
-logo_url = "https://githubusercontent.comhttps://github.com/depietromarco65/crm-casa-amici-2026/blob/main/logo-scritta.gif"
+# 2. Renderizzazione del logo ufficiale aziendale direttamente dalla repository GitHub
+logo_url = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/logo-scritta.gif"
 st.image(logo_url, width=300)
 
-# Calcolo dinamico dell'anno in corso
+# 3. Estrazione dell'anno corrente dal server per l'automazione del titolo stagionale
 anno_corrente = datetime.datetime.now().year
-
-# Titolo del CRM con anno variabile automatico
 st.title(f"🏨 CRM A Casa di Amici - Gestione Stagionale {anno_corrente}")
+
+# 4. Definizione dell'endpoint di rete per il database degli ospiti (formato CSV grezzo)
+csv_url = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/database_ospiti.csv"
+
+# 5. Esecuzione del caricamento sicuro del file con prevenzione dei crash di tokenizzazione
+try:
+    # Lettura standard con codifica universale UTF-8 per la gestione dei caratteri accentati
+    df = pd.read_csv(csv_url, encoding="utf-8")
+except Exception as e:
+    # Fallback protettivo: inizializzazione di un DataFrame vuoto per azzerare i NameError successivi
+    df = pd.DataFrame()
+    st.error(f"Errore critico di lettura nel tracciato record del file CSV: {e}")
+    st.warning("Nota di controllo: verifica la presenza di virgole non schermate all'interno delle note di testo dell'ultimo log.")
+
+# ==============================================================================
+# ===== FINE BLOCCO 1 (I dati sono ora memorizzati nella variabile 'df') =====
+# ==============================================================================
+
 
 
 # ===== BLOCCO 2: CRUSCOTTO STATISTICO KPI =====
