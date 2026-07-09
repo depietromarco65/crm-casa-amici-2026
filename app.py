@@ -287,6 +287,33 @@ with tab_ricerca:
         else:
             st.warning("❌ Nessun record corrispondente.")
 
+# ==============================================================================
+# ===== ESTRAZIONE EMAIL INTELLIGENTE CON SCUDO AZIENDALE E PERSONALE ESTESO =====
+# ==============================================================================
+# 1. Trova tutte le email presenti nel testo incollato dall'utente
+tutte_le_email = re.findall(r'[\w\.-]+@[\w\.-]+\.\w+', testo_pulito)
+
+# 2. Elenco blindato delle email di gestione da ignorare tassativamente
+email_da_escludere = [
+    "vacanze@acasadiamici.info",
+    "info@acasadiamici.info",
+    "postmaster@acasadiamici.info",
+    "depietromarco65@gmail.com"
+]
+
+# 3. Filtra la lista eliminando tutti i tuoi indirizzi personali e di sistema
+email_filtrate = [
+    email for email in tutte_le_email 
+    if email.lower().strip() not in [e.lower().strip() for e in email_da_escludere]
+]
+
+if email_filtrate:
+    # Assegna la prima email valida che appartiene effettivamente all'ospite
+    estratto_email = email_filtrate[0].strip()
+else:
+    # Se non ci sono email dell'ospite, imposta a "nd" per attivare l'input manuale
+    estratto_email = "nd"
+
 
 # ==============================================================================
 # ===== BLOCCO L: CONTENUTO TAB 4 - LETTURA FEED ICAL OCTORATE =====
