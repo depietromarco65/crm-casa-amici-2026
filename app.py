@@ -4,23 +4,22 @@ import pandas as pd
 import re
 import urllib.parse
 import time
-from datetime import datetime, timedelta
+import datetime
+import streamlit as st
 
-st.set_page_config(page_title="CRM A Casa di Amici 2026", page_icon="🏠", layout="wide")
+# Configurazione della pagina (se non già presente)
+st.set_page_config(page_title="CRM A Casa di Amici", layout="wide")
 
-@st.cache_data(ttl=60)
-def carica_database():
-    try:
-        df_raw = pd.read_csv("database_ospiti.csv")
-        df_raw.columns = df_raw.columns.str.strip()
-        return df_raw
-    except Exception as e:
-        st.error(f"Errore caricamento: {e}")
-        return pd.DataFrame()
+# Inserimento del logo aziendale da GitHub in formato Raw
+logo_url = "https://githubusercontent.comhttps://github.com/depietromarco65/crm-casa-amici-2026/blob/main/logo-scritta.gif"
+st.image(logo_url, width=300)
 
-df = carica_database()
-st.title("🏨 CRM A Casa di Amici - Gestione Stagionale 2026")
-st.markdown("---")
+# Calcolo dinamico dell'anno in corso
+anno_corrente = datetime.datetime.now().year
+
+# Titolo del CRM con anno variabile automatico
+st.title(f"🏨 CRM A Casa di Amici - Gestione Stagionale {anno_corrente}")
+
 
 # ===== BLOCCO 2: CRUSCOTTO STATISTICO KPI =====
 if not df.empty:
