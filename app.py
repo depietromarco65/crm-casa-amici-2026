@@ -2,6 +2,7 @@
 # ===== BLOCCO 1: CARICAMENTO DATI, CONFIGURAZIONE E LOGO DINAMICO =====
 # ==============================================================================
 import datetime
+import time
 import pandas as pd
 import streamlit as st
 
@@ -23,23 +24,39 @@ st.title(f"🏨 CRM A Casa di Amici - Gestione Stagionale {anno_corrente}")
 # 4. Definizione dell'endpoint di rete per il database degli ospiti (formato CSV grezzo)
 csv_url = "https://githubusercontent.com"
 
-# 5. Esecuzione del caricamento corazzato contro errori di tokenizzazione e virgolette aperte
-try:
-    df = pd.read_csv(
-        csv_url, 
-        encoding="utf-8",
-        engine="python",       # Sostituisce il motore C, gestisce meglio le stringhe complesse
-        quoting=3,             # Disabilita il controllo delle virgolette (evita che inglobi più righe)
-        on_bad_lines="skip"    # Salta automaticamente la singola riga sporca senza far crashare l'app
-    )
-except Exception as e:
-    # Fallback protettivo estremo per azzerare i NameError a valle
-    df = pd.DataFrame()
-    st.error(f"Errore critico non gestibile nel file CSV: {e}")
+# 5. Esecuzione del caricamento sicuro con tentativi di riprova in caso di blackout di rete
+df = pd.DataFrame() # Inizializzazione di sicurezza
+caricato = False
+tentativi_massimi = 3
+
+for tentativo in range(tentativi_massimi):
+    try:
+        df = pd.read_csv(
+            csv_url, 
+            encoding="utf-8",
+            engine="python",
+            quoting=3,
+            on_bad_lines="skip"
+        )
+        caricato = True
+        break # Successo! Esce dal ciclo di riprova
+    except Exception as e:
+        # Se è l'ultimo tentativo fallito, intercetta l'errore per lo schermo
+        ultimo_errore = e
+        time.sleep(1) # Attende un secondo prima del prossimo tentativo
+
+# 6. Gestione degli avvisi visivi all'utente basati sull'esito
+if not caricato:
+    st.error(f"Errore di connessione o lettura del file CSV: {ultimo_errore}")
+    st.warning("🔄 Il server di GitHub sembra temporaneamente irraggiungibile. Prova a ricaricare la pagina del browser tra qualche istante.")
+else:
+    # Opzionale: mostra un piccolo feedback se il database è pronto
+    pass
 
 # ==============================================================================
-# ===== FINE BLOCCO 1 (L'applicazione ora si avvia in ogni scenario) =====
+# ===== FINE BLOCCO 1 (L'applicazione gestisce ora i micro-blackout di rete) =====
 # ==============================================================================
+
 
 
 # ===== BLOCCO 2: CRUSCOTTO STATISTICO KPI =====
