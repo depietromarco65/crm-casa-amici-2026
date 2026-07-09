@@ -1,8 +1,8 @@
 # ==============================================================================
-# ===== BLOCCO 1: CARICAMENTO DATI, CONFIGURAZIONE E LOGO DINAMICO =====
+# ===== BLOCCO 1: CARICAMENTO DATI LOCALE, CONFIGURAZIONE E LOGO =====
 # ==============================================================================
 import datetime
-import time
+import os
 import pandas as pd
 import streamlit as st
 
@@ -13,50 +13,43 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. Renderizzazione del logo ufficiale aziendale direttamente dalla repository GitHub
-logo_url = "https://githubusercontent.com"
-st.image(logo_url, width=300)
+# 2. Renderizzazione del logo ufficiale caricato localmente nella cartella del progetto
+logo_locale = "logo-scritta.gif"
+if os.path.exists(logo_locale):
+    st.image(logo_locale, width=300)
+else:
+    # Fallback visivo se il file non viene trovato nella cartella principale
+    st.info("Logo aziendale non rilevato localmente nella root del progetto.")
 
 # 3. Estrazione dell'anno corrente dal server per l'automazione del titolo stagionale
 anno_corrente = datetime.datetime.now().year
 st.title(f"🏨 CRM A Casa di Amici - Gestione Stagionale {anno_corrente}")
 
-# 4. Definizione dell'endpoint di rete per il database degli ospiti (formato CSV grezzo)
-csv_url = "https://githubusercontent.com"
+# 4. Definizione del percorso locale per il database degli ospiti
+csv_locale = "database_ospiti.csv"
 
-# 5. Esecuzione del caricamento sicuro con tentativi di riprova in caso di blackout di rete
-df = pd.DataFrame() # Inizializzazione di sicurezza
-caricato = False
-tentativi_massimi = 3
-
-for tentativo in range(tentativi_massimi):
-    try:
+# 5. Esecuzione del caricamento sicuro da file system locale con gestione errori
+try:
+    if os.path.exists(csv_locale):
         df = pd.read_csv(
-            csv_url, 
+            csv_locale, 
             encoding="utf-8",
             engine="python",
             quoting=3,
             on_bad_lines="skip"
         )
-        caricato = True
-        break # Successo! Esce dal ciclo di riprova
-    except Exception as e:
-        # Se è l'ultimo tentativo fallito, intercetta l'errore per lo schermo
-        ultimo_errore = e
-        time.sleep(1) # Attende un secondo prima del prossimo tentativo
-
-# 6. Gestione degli avvisi visivi all'utente basati sull'esito
-if not caricato:
-    st.error(f"Errore di connessione o lettura del file CSV: {ultimo_errore}")
-    st.warning("🔄 Il server di GitHub sembra temporaneamente irraggiungibile. Prova a ricaricare la pagina del browser tra qualche istante.")
-else:
-    # Opzionale: mostra un piccolo feedback se il database è pronto
-    pass
+    else:
+        # Se il file non esiste ancora localmente, crea un DataFrame con la struttura corretta
+        df = pd.DataFrame()
+        st.warning(f"File '{csv_locale}' non trovato. Assicurati di averlo caricato nella stessa cartella di app.py.")
+except Exception as e:
+    # Protezione estrema contro i crash di sdoppiamento variabili (NameError)
+    df = pd.DataFrame()
+    st.error(f"Errore critico di lettura nel file CSV locale: {e}")
 
 # ==============================================================================
-# ===== FINE BLOCCO 1 (L'applicazione gestisce ora i micro-blackout di rete) =====
+# ===== FINE BLOCCO 1 (L'applicazione è ora offline ed immune da errori di rete) =====
 # ==============================================================================
-
 
 
 # ===== BLOCCO 2: CRUSCOTTO STATISTICO KPI =====
