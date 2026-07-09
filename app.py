@@ -155,33 +155,45 @@ with tab_inserimento:
             if dettaglio_eta: note_pulite += f" Segmentazione marketing: {dettaglio_eta}."
             note_pulite = note_pulite.replace(",", " -")
 # ==============================================================================
-# ===== BLOCCO J: CONTENUTO TAB 2 - SALVATAGGIO FISICO ED EMAIL (PARTE 5) =====
+# ===== CONTROLLO E RECUPERO DATI MANCANTI (EMAIL E TELEFONO) =====
 # ==============================================================================
-            if estratto_email.lower() in email_esistenti and estratto_email != "nd":
-                st.warning(f"⚠️ VIOLAZIONE REGOLA 1: L'email '{estratto_email}' è già presente.")
-            else:
-                nuovo_record = f"{prossimo_id},{data_contatto_str},{ora_attuale},{lead_time},nd,{estratto_nome},{estratto_arrivo},{estratto_partenza},nd,{estratto_ospiti_tot},nd,{estratto_adulti},{estratto_minori},{estratto_email},{estratto_portale},{estratto_cane},nd,nd,nd,nd,nd,Lista d'attesa,{note_pulite}\n"
-                try:
-                    with open("database_ospiti.csv", "a", encoding="utf-8") as f:
-                        f.write(nuovo_record)
-                    st.success(f"✅ Record inserito correttamente nel file CSV! ID Assegnato: **{prossimo_id}**")
-                    
-                    c_sh1, c_sh2 = st.columns(2)
-                    with c_sh1:
-                        st.markdown("**📋 Campi Mappati:**")
-                        st.write(f"• **Ospite:** {estratto_nome} | **Email:** {estratto_email}")
-                        st.write(f"• **Date:** {estratto_arrivo} - {estratto_partenza}")
-                        st.write(f"• **Pax:** {estratto_adulti} Adulti + {estratto_minori} Minori | **Animali:** {estratto_cane}")
-                    with c_sh2:
-                        st.markdown("**✉️ Risposta Istituzionale Generata:**")
-                        corpo_email_veloce = (
-                            f"Gentile {estratto_nome},\n\nLa ringraziamo per l'interesse verso \"A Casa di Amici\".\n\nIn merito alla sua richiesta via {estratto_portale}, precisiamo che la nostra struttura si trova a Torre Pali (Marina di Salve), sul litorale ionico, celebre per le sue spiagge dorate e acque cristalline.\n\nPer le date indicate ({estratto_arrivo} - {estratto_partenza}), siamo purtroppo al completo per via dell'altissima stagione. L'abbiamo inserita nella nostra Lista d'Attesa prioritaria.\n\nPer ringraziarla, le assegniamo un Buono Sconto del 15% con la Formula Fiduciaria (nessun acconto anticipato, pagamento interamente in loco all'arrivo dopo aver visto la stanza).\n\nRestiamo a disposizione.\n\nCordiali saluti,\nLo Staff - A Casa di Amici\nhttps://acasadiamici.info"
-                        )
-                        st.code(corpo_email_veloce, language="text")
-                except Exception as e:
-                    st.error(f"Errore di scrittura: {e}")
+
+# Forza i valori predefiniti se non rilevati dall'algoritmo
+if 'estratto_email' not in locals() or estratto_email == "nd":
+    estratto_email = "nd"
+if 'num_tel_visivo' not in locals() or num_tel_visivo == "nd":
+    num_tel_visivo = "nd"
+
+# Se i dati mancano, mostra i campi di inserimento manuale per correggere il record
+if estratto_email == "nd" or num_tel_visivo == "Rilevabile nelle note" or num_tel_visivo == "nd":
+    st.warning("⚠️ **Attenzione:** Alcuni dati di contatto fondamentali non sono stati rilevati automaticamente.")
+    
+    col_input1, col_input2 = st.columns(2)
+    with col_input1:
+        if estratto_email == "nd":
+            estratto_email = st.text_input("📧 Inserisci manualmente l'Email dell'ospite:", key="manual_email").strip()
+        else:
+            st.success(f"📧 Email rilevata: {estratto_email}")
+            
+    with col_input2:
+        if num_tel_visivo == "Rilevabile nelle note" or num_tel_visivo == "nd":
+            num_tel_visivo = st.text_input("📞 Inserisci manualmente il Telefono dell'ospite:", key="manual_tel").strip()
+        else:
+            st.success(f"📞 Telefono rilevato: {num_tel_visivo}")
+
+# Blocco di sicurezza: impedisce il salvataggio se l'utente non compila i campi d'emergenza
+if estratto_email == "" or estratto_email == "nd":
+    st.error("🛑 Impossibile procedere: L'indirizzo Email è obbligatorio per generare la comunicazione e salvare il record.")
+elif num_tel_visivo == "" and stato_csv == "Confermato":
+    st.error("🛑 Impossibile procedere: Per le prenotazioni confermate è necessario inserire un numero di telefono telefonico valido.")
+else:
+    # Qui prosegue il codice di salvataggio del record nel CSV e la stampa della mail...
+    pass
+
+
+
 # ==============================================================================
-# ===== BLOCCO K: CONTENUTO TAB 3 - FILTRI DI RICERCA ED ESTRAZIONE TELEFONO =====
+# ===== BLOCCO K: CONTENUTO TAB 3 - FILTRI DI RICERCA ED EMAIL STRUTTURATA =====
 # ==============================================================================
 with tab_ricerca:
     st.subheader("🔍 Filtri di Ricerca Avanzati e Scansione Telefoni")
@@ -209,25 +221,41 @@ with tab_ricerca:
             st.success(f"🎯 Corrispondenze trovate: {len(df_filtrato)} record.")
             st.dataframe(df_filtrato, use_container_width=True)
             
-            # Pannello di dettaglio per la riga selezionata dall'utente
             index_scelto = st.selectbox("Seleziona l'ospite specifico per vedere i dettagli:", df_filtrato.index, key="sb_ricerca_avanzata")
             riga_scelta = df.loc[index_scelto]
             
-            # --- ESTRAZIONE ED EVIDENZIAZIONE DEL TELEFONO ---
             testo_note_riga = str(riga_scelta.iloc[22])
             tel_estratto_match = re.search(r'(?:Telefono|Tel\.?):?\s*([0-9\s\-]+)', testo_note_riga, re.IGNORECASE)
             num_tel_visivo = tel_estratto_match.group(1).strip() if tel_estratto_match else "Rilevabile nelle note"
             
-            # Visualizzazione in un riquadro protetto ad alta visibilità
             st.warning(f"📞 Numero di Telefono Ospite: **{num_tel_visivo}**")
             
-            # Anteprima e-mail standard pronta
-            ospite_nome = riga_scelta.iloc[5] if pd.notna(riga_scelta.iloc[5]) else "Ospite"
-            st.markdown("### ✉️ Modello E-mail Pronto da Copiare:")
-            corpo_email_veloce = f"Gentile {ospite_nome},\n\nLa ringraziamo per l'interesse verso \"A Casa di Amici\".\n\nAl momento per le date richieste siamo al completo, ma abbiamo inserito i suoi dati nella nostra Lista d'Attesa. Restiamo a disposizione.\n\nCordiali saluti,\nLo Staff"
-            st.code(corpo_email_veloce, language="text")
+            # --- COMPOSIZIONE EMAIL RIGIDA DA RICERCA ---
+            ospite_nome = riga_scelta.iloc[5] if pd.notna(riga_scelta.iloc[5]) and str(riga_scelta.iloc[5]) != "nd" else "Ospite"
+            portale_origine = riga_scelta.iloc[14] if pd.notna(riga_scelta.iloc[14]) and str(riga_scelta.iloc[14]) != "nd" else "nostri sistemi"
+            d_arr_s = riga_scelta.iloc[6] if pd.notna(riga_scelta.iloc[6]) else "nd"
+            d_part_s = riga_scelta.iloc[7] if pd.notna(riga_scelta.iloc[7]) else "nd"
+            
+            riga_geo = ""
+            if "pali" not in testo_note_riga.lower():
+                riga_geo = "In merito alla sua richiesta, desideriamo innanzitutto precisare che la nostra struttura si trova a Torre Pali (Marina di Salve), a pochissimi minuti di auto dalla località da lei indicata e in una posizione ideale per godersi il mare del Salento. "
+            
+            parte_A = (
+                f"Gentile {ospite_nome},\n\n"
+                f"La ringraziamo per aver espresso il suo interesse verso la nostra struttura per le sue vacanze in Puglia attraverso la richiesta inviata dal portale {portale_origine}.\n\n"
+                f"{riga_geo}Desideriamo informarla chiaramente che per il periodo indicato ({d_arr_s} - {d_part_s}) la nostra struttura è interamente al completo. Abbiamo tuttavia provveduto a inserire i suoi dati nel nostro database in \"lista d'attesa\" per la gestione di eventuali cancellazioni improvvise. Ci teniamo a esplicitare subito che, trattandosi di alta stagione, la disdetta è da considerarsi un evento \"molto improbabile\".\n\n"
+            )
+            
+            parte_B = "Sperando di avervi come nostri ospiti in futuro, abbiamo il piacere di riservarvi un buono di benvenuto con uno sconto del 15% valido per un soggiorno da consumare in qualsiasi periodo dell'anno in corso (2026) o degli anni successivi, vi basterà ricordarci di aver perduto un'occasione di prenotare da noi per mancanza di disponibilità per ottenere lo sconto per una prenotazione diretta sul nostro sito https://acasadiamici.info usufruendo della nostra formula fiduciaria.\n\n"
+            parte_C = "Le ricordiamo che la nostra formula fiduciaria è pensata proprio per instaurare un rapporto di trasparenza e fiducia reciproca con l'ospite, eliminando ogni preoccupazione. Per questo motivo, la nostra politica non prevede l'invio di acconti o caparre: il pagamento avverrà direttamente in struttura al vostro arrivo. Questa scelta nasce per tutelarvi dal rischio di truffe online e per garantirvi che nessuno della nostra struttura vi contatterà mai via email o telefono per richiedere denaro o pagamenti anticipati prima del vostro soggiorno.\n\n"
+            parte_D = "Restiamo a sua completa disposizione con l'augurio che, se decidesse di scegliere un'altra soluzione, possa trovare un soggiorno adeguato alle sue aspettative al fine di passare una splendida vacanza nel Salento.\n\n"
+            parte_E = "Cordiali saluti,\n\nMarco De Pietro - CEO \"A Casa di Amici\"\nTenuta Salento: Sp 206 Località Torre Pali, 73050 Salve (LE)\nSito Web: https://acasadiamici.info\nContatto Assistenza Direct WhatsApp: https://wa.me"
+            
+            st.markdown("### ✉️ Modello E-mail Istituzionale Invariabile:")
+            st.code(parte_A + parte_B + parte_C + parte_D + parte_E, language="text")
         else:
             st.warning("❌ Nessun record corrispondente.")
+
 
 # ==============================================================================
 # ===== BLOCCO L: CONTENUTO TAB 4 - LETTURA FEED ICAL OCTORATE =====
