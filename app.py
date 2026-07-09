@@ -216,13 +216,13 @@ with tab_ricerca:
 with tab_ical:
     st.subheader("📅 Sincronizzazione iCal Octorate in Tempo Reale")
     ICAL_FEEDS = {
-        "Appartamento Girasole": "https://octorate.com_",
-        "Casale Lucia": "https://octorate.com_",
-        "Villa Tulipano": "https://octorate.com_",
-        "Pajara Lucy": "https://octorate.com_",
-        "Monolocale Marina": "https://octorate.com_",
-        "Monolocale Margherita": "https://octorate.com_",
-        "Monolocale Glicine": "https://octorate.com_"
+        "Appartamento Girasole": "https://admin.octorate.com/cron/ICS/calendar/ics.php?ics=873815_",
+        "Casale Lucia": "https://admin.octorate.com/cron/ICS/calendar/ics.php?ics=873817_",
+        "Villa Tulipano": "https://admin.octorate.com/cron/ICS/calendar/ics.php?ics=873819_",
+        "Pajara Lucy": "https://admin.octorate.com/cron/ICS/calendar/ics.php?ics=874479_",
+        "Monolocale Marina": "https://admin.octorate.com/cron/ICS/calendar/ics.php?ics=873826_",
+        "Monolocale Margherita": "https://admin.octorate.com/cron/ICS/calendar/ics.php?ics=873824_",
+        "Monolocale Glicine": "https://admin.octorate.com/cron/ICS/calendar/ics.php?ics=873821_"
     }
 
     def leggi_impegni_ical(url_feed):
@@ -236,15 +236,27 @@ with tab_ical:
                 dtstart = component.get('dtstart').dt if component.get('dtstart') else None
                 dtend = component.get('dtend').dt if component.get('dtend') else None
                 if dtstart and dtend:
-                    eventi_bloccati.append({"Stato/Nota": str(summary), "Check-in (Dal)": dtstart.strftime("%d/%m/%Y") if hasattr(dtstart, 'strftime') else str(dtstart), "Check-out (Al)": dtend.strftime("%d/%m/%Y") if hasattr(dtend, 'strftime') else str(dtend)})
-        except Exception as e: return [{"Stato/Nota": f"Errore sincro: {e}", "Check-in (Dal)": "-", "Check-out (Al)": "-"}]
+                    eventi_bloccati.append({
+                        "Stato/Nota": str(summary), 
+                        "Check-in (Dal)": dtstart.strftime("%d/%m/%Y") if hasattr(dtstart, 'strftime') else str(dtstart), 
+                        "Check-out (Al)": dtend.strftime("%d/%m/%Y") if hasattr(dtend, 'strftime') else str(dtend)
+                    })
+        except Exception as e: 
+            return [{"Stato/Nota": f"Errore sincro: {e}", "Check-in (Dal)": "-", "Check-out (Al)": "-"}]
         return eventi_bloccati
 
     scelta_alloggio = st.selectbox("Seleziona l'alloggio da controllare:", list(ICAL_FEEDS.keys()), key="sb_alloggio_ical")
     if st.button("🔄 Sincronizza Octorate Now", key="btn_sync_ical"):
         blocchi = leggi_impegni_ical(ICAL_FEEDS[scelta_alloggio])
-        if blocchi and blocchi[0]["Check-in (Dal)"] != "-":
-            st.dataframe(pd.DataFrame(blocchi), use_container_width=True)
-        else: st.success("✅ Libero nei calendari remoti!")
+        if blocchi and len(blocchi) > 0:
+            # Controllo posizionale corretto sulla lista per intercettare gli errori di rete
+            if blocchi[0]["Check-in (Dal)"] == "-":
+                st.error(blocchi[0]["Stato/Nota"])
+            else:
+                st.dataframe(pd.DataFrame(blocchi), use_container_width=True)
+                st.info(f"Trovati **{len(blocchi)}** periodi di occupazione estratti dal feed remoto.")
+        else: 
+            st.success("✅ Libero nei calendari remoti!")
+
 
 
