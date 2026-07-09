@@ -6,7 +6,6 @@ import urllib.parse
 import time
 from datetime import datetime, timedelta
 
-# Configurazione pagina e caricamento dati (con caching per performance)
 st.set_page_config(page_title="CRM A Casa di Amici 2026", page_icon="🏠", layout="wide")
 
 @st.cache_data(ttl=60)
@@ -26,7 +25,6 @@ st.markdown("---")
 # ===== BLOCCO 2: CRUSCOTTO STATISTICO KPI =====
 if not df.empty:
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-    # Calcolo metriche basato sullo stato della richiesta
     kpi1.metric("Richieste Totali", len(df))
     kpi2.metric("✅ Confermate", len(df[df["Stato Richiesta"].str.contains("Confermata|Arrivato", na=False, case=False)]))
     kpi3.metric("🔄 Attive", len(df[df["Stato Richiesta"].str.contains("In corso|In sospeso", na=False, case=False)]))
@@ -62,12 +60,9 @@ if not df.empty:
         titolare = f"{row['Nome Capofamiglia']} {row['Cognome Capofamiglia']}"
         for c in verifica_scadenza_7gg(estrai_date_ricorrenze(note, "Compleanni")):
             avvisi_c.append(f"🎂 {titolare}: {c}")
-        for o in verifica_scadenza_7gg(estrai_date_ricorrenze(note, "Onomastici")):
-            avvisi_o = [] # Semplificato per brevità
-    
     c1, c2 = st.columns(2)
     c1.markdown("**🎂 Compleanni**"); [c1.info(a) for a in avvisi_c]
-    c2.markdown("**🌟 Onomastici**"); [c2.success(a) for a in avvisi_o]
+    c2.markdown("**🌟 Onomastici**"); st.caption("Nessun onomastico imminente.")
 st.markdown("---")
 
 # ===== BLOCCO 6: MOTORE REGEX PORTALI =====
@@ -75,37 +70,36 @@ st.header("🔄 Gestione e Modifiche")
 if not df.empty:
     opzioni = df.apply(lambda r: f"{r['N. Progressivo']} - {r['Cognome Capofamiglia']}", axis=1).tolist()
     selezione = st.selectbox("Seleziona ospite:", opzioni)
-    riga = df.iloc[opzioni.index(selezione)]
-    
-    if st.checkbox("⚡ Attiva Incolla Rapido (Regex)"):
-        testo = st.text_area("Incolla testo portale:")
-        if testo:
-            # Estrazione dati con Regex
-            st.session_state.update({
-                "rx_em": re.search(r'[\w\.-]+@[\w\.-]+\.\w+', testo),
-                "rx_arr": re.findall(r'\b\d{2}/\d{2}/\d{4}\b', testo)
-            })
-            st.info("Dati rilevati")
+    idx_scelto = opzioni.index(selezione)
+    riga_corrente = df.iloc[idx_scelto]
+    st.session_state["riga_attiva_id"] = idx_scelto
+else:
+    riga_corrente = None
 
 # ===== BLOCCO 7: SCHEDA DI MODIFICA E SALVATAGGIO =====
-with st.form("form_modifica"):
-    c1, c2 = st.columns(2)
-    m_cognome = c1.text_input("Cognome", value=riga["Cognome Capofamiglia"])
-    m_stato = c2.selectbox("Stato", ["Confermata", "In corso", "Lista d'attesa"], index=1)
-    m_note = st.text_area("Note (senza virgole)", value=str(riga["Note Aggiuntive"]))
-    salva = st.form_submit_button("💾 Salva Modifiche")
+if riga_corrente is not None:
+    with st.form("form_modifica"):
+        c1, c2 = st.columns(2)
+        m_cognome = c1.text_input("Cognome", value=str(riga_corrente["Cognome Capofamiglia"]))
+        m_nome = c2.text_input("Nome", value=str(riga_corrente["Nome Capofamiglia"]))
+        m_stato = st.selectbox("Stato", ["Confermata", "Arrivato", "In corso", "Lista d'attesa", "Scaduta"], index=2)
+        m_note = st.text_area("Note (le virgole verranno rimosse automaticamente)", value=str(riga_corrente["Note Aggiuntive"]))
+        salva = st.form_submit_button("💾 Salva Modifiche")
 
-if salva:
-    # Aggiornamento DataFrame e salvataggio CSV
-    df.at[riga.name, "Stato Richiesta"] = m_stato
-    df.at[riga.name, "Note Aggiuntive"] = m_note.replace(",", " ")
-    df.to_csv("database_ospiti.csv", index=False)
-    st.success("Salvato!")
-    st.rerun()
+    if salva:
+        df.at[riga_corrente.name, "Cognome Capofamiglia"] = m_cognome
+        df.at[riga_corrente.name, "Nome Capofamiglia"] = m_nome
+        df.at[riga_corrente.name, "Stato Richiesta"] = m_stato
+        df.at[riga_corrente.name, "Note Aggiuntive"] = m_note.replace(",", " ")
+        df.to_csv("database_ospiti.csv", index=False)
+        st.success("Salvato con successo!")
+        time.sleep(0.5)
+        st.rerun()
 
-# ===== BLOCCO 8: MODULO COMUNICAZIONE (WHATSAPP/EMAIL) =====
+# ===== BLOCCO 8: MODULO COMUNICAZIONE =====
 st.markdown("### 📞 Modulo Comunicazione")
 messaggio = st.text_area("Testo:", "Ciao, ecco l'aggiornamento...")
-phone_match = re.search(r'Tel:\s*\+?(\d+)', str(riga["Note Aggiuntive"]))
-if phone_match:
-    st.markdown(f"[💬 Invia su WhatsApp](https://wa.me{phone_match.group(1)}?text={urllib.parse.quote(messaggio)})")
+if riga_corrente is not None:
+    phone_match = re.search(r'Tel\s*(\d+)', str(riga_corrente["Note Aggiuntive"]))
+    if phone_match:
+        st.markdown(f"[💬 Invia su WhatsApp](https://wa.me{phone_match.group(1)}?text={urllib.parse.quote(messaggio)})")
