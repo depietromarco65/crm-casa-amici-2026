@@ -13,7 +13,7 @@ st.set_page_config(
 )
 
 # 2. Renderizzazione del logo ufficiale aziendale direttamente dalla repository GitHub
-logo_url = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/logo-scritta.gif"
+logo_url = "https://githubusercontent.com"
 st.image(logo_url, width=300)
 
 # 3. Estrazione dell'anno corrente dal server per l'automazione del titolo stagionale
@@ -21,22 +21,25 @@ anno_corrente = datetime.datetime.now().year
 st.title(f"🏨 CRM A Casa di Amici - Gestione Stagionale {anno_corrente}")
 
 # 4. Definizione dell'endpoint di rete per il database degli ospiti (formato CSV grezzo)
-csv_url = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/database_ospiti.csv"
+csv_url = "https://githubusercontent.com"
 
-# 5. Esecuzione del caricamento sicuro del file con prevenzione dei crash di tokenizzazione
+# 5. Esecuzione del caricamento corazzato contro errori di tokenizzazione e virgolette aperte
 try:
-    # Lettura standard con codifica universale UTF-8 per la gestione dei caratteri accentati
-    df = pd.read_csv(csv_url, encoding="utf-8")
+    df = pd.read_csv(
+        csv_url, 
+        encoding="utf-8",
+        engine="python",       # Sostituisce il motore C, gestisce meglio le stringhe complesse
+        quoting=3,             # Disabilita il controllo delle virgolette (evita che inglobi più righe)
+        on_bad_lines="skip"    # Salta automaticamente la singola riga sporca senza far crashare l'app
+    )
 except Exception as e:
-    # Fallback protettivo: inizializzazione di un DataFrame vuoto per azzerare i NameError successivi
+    # Fallback protettivo estremo per azzerare i NameError a valle
     df = pd.DataFrame()
-    st.error(f"Errore critico di lettura nel tracciato record del file CSV: {e}")
-    st.warning("Nota di controllo: verifica la presenza di virgole non schermate all'interno delle note di testo dell'ultimo log.")
+    st.error(f"Errore critico non gestibile nel file CSV: {e}")
 
 # ==============================================================================
-# ===== FINE BLOCCO 1 (I dati sono ora memorizzati nella variabile 'df') =====
+# ===== FINE BLOCCO 1 (L'applicazione ora si avvia in ogni scenario) =====
 # ==============================================================================
-
 
 
 # ===== BLOCCO 2: CRUSCOTTO STATISTICO KPI =====
