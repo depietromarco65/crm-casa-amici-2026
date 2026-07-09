@@ -62,106 +62,136 @@ except Exception as e:
 # ==============================================================================
 
 # ==============================================================================
-# ===== BLOCCO 3: INTERFACCIA GRAFICA DI INSERIMENTO NUOVE RICHIESTE =====
+# ===== BLOCCO 3 - PARTE 1: INTERFACCIA RAPIDA INTELLIGENTE (PARSER) =====
 # ==============================================================================
 import os
+import re
 from datetime import datetime
 import pandas as pd
 import streamlit as st
 
 st.markdown("---")
-st.subheader("📝 Inserimento Nuova Richiesta / Log Ospite")
+st.subheader("🚀 Inserimento Rapido Intelligente (Incolla Email Grezza)")
+st.info("Incolla qui sotto il testo copiato dalla notifica email per estrarre e mapparne i dati.")
 
 # Controllo preliminare di sicurezza sullo stato del database caricato nel Blocco 1
 if 'df' in locals() and not df.empty:
-    # Calcolo automatico del prossimo N. Progressivo (Evita sovrascritture)
     try:
         prossimo_id = int(df.iloc[:, 0].max()) + 1
     except:
         prossimo_id = 1
-    
-    # Lista delle email storiche per il controllo preventivo dei duplicati
     email_esistenti = df.iloc[:, 13].dropna().astype(str).str.lower().str.strip().tolist()
 else:
     prossimo_id = 1
     email_esistenti = []
 
-# Creazione del Form Streamlit per raggruppare i campi di input
-with st.form(key="form_nuova_richiesta", clear_on_submit=True):
-    st.info(f"ID Progressivo Assegnato Automaticamente: **{prossimo_id}**")
-    
-    # Suddivisione grafica dei campi in colonne per massimizzare la scansionabilità
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        cognome = st.text_input("Cognome Capofamiglia *").strip()
-        nome = st.text_input("Nome Capofamiglia *").strip()
-        email = st.text_input("Email Cliente *").strip()
-        alloggio = st.selectbox("Alloggio Assegnato", ["nd", "Appartamento Girasole", "Casale Lucia", "Villa Tulipano", "Pajara Lucy", "Monolocale Marina", "Monolocale Margherita", "Monolocale Glicine"])
-        
-    with col2:
-        data_arrivo_dt = st.date_input("Data Arrivo", value=None)
-        data_partenza_dt = st.date_input("Data Partenza", value=None)
-        portale = st.selectbox("Portale di Provenienza *", ["UltimissimoMinuto", "LovelyITALIA", "Octorate Direct", "Agoda", "Prenotazione Diretta", "nd"])
-        stato_prenotazione = st.selectbox("Stato Richiesta *", ["Lista d'attesa", "In corso", "Confermata", "Arrivato"])
+# Casella di testo unica ad alta capacità per il testo della mail
+testo_email_grezzo = st.text_area("Incolla qui il testo della mail ricevuta:", height=250, placeholder="Incolla la notifica...")
 
-    with col3:
-        ospiti_tot = st.number_input("Numero Ospiti Totale", min_value=0, value=0, step=1)
-        adulti = st.number_input("Di cui Adulti", min_value=0, value=0, step=1)
-        minori = st.number_input("Di cui Minori", min_value=0, value=0, step=1)
-        lead_time = st.number_input("Lead Time (Giorni)", min_value=0, value=0, step=1)
-
-    # Campi estesi e note posizionati in righe intere a fondo maschera
-    nominativo_dettaglio = st.text_input("Nominativo Ospiti Dettaglio (Nomi, Date Nascita, Documenti, Residenza)").strip()
-    
-    st.markdown("**💰 Dati Economici e Logistici (Impostare a 0 o lasciar vuoti se non applicabili):**")
-    col_eco1, col_eco2, col_eco3, col_eco4, col_eco5, col_eco6 = st.columns(6)
-    with col_eco1: acconto = st.text_input("Acconto (€)", value="0")
-    with col_eco2: tariffa_tot = st.text_input("Tariffa Totale (€)", value="nd")
-    with col_eco3: imposta_sogg = st.text_input("Imposta Soggiorno (€)", value="nd")
-    with col_eco4: tipo_tariffa = st.selectbox("Tipo Tariffa", ["nd", "Standard", "Non Rimb."])
-    with col_eco5: stato_pagamento = st.selectbox("Stato Pagamento", ["nd", "Saldato", "In attesa"])
-    with col_eco6: mezzo_trasporto = st.text_input("Mezzo e Ora Arrivo", value="nd")
-
-    note_aggiuntive = st.text_area("Note Aggiuntive e Storico Interazioni (ATTENZIONE: Non inserire virgole nel testo) *").strip()
-
-    # Pulsante di sottomissione del form
-    submit_button = st.form_submit_button(label="💾 Salva Richiesta nel Database")
-
-# Logica di Validazione e Salvataggio dei Dati al Click
-if submit_button:
-    if not cognome or not nome or not email or not note_aggiuntive:
-        st.error("❌ Errore: I campi Cognome, Nome, Email e Note Aggiuntive sono obbligatori per la stesura del log.")
-    
-    elif email.lower() in email_esistenti:
-        st.warning(f"⚠️ VIOLAZIONE REGOLA 1 (DUPLICATI): L'email '{email}' è già presente nello storico. È VIETATO generare una nuova riga di log. Cerca la riga esistente nel database e accorpa i nuovi dettagli nel campo Note Aggiuntive.")
-    
-    elif "," in note_aggiuntive:
-        st.error("❌ Errore di Formattazione: Non puoi utilizzare la virgola ( , ) all'interno delle Note Aggiuntive perché corrompe il tracciato delle colonne del file CSV. Sostituisci tutte le virgole con punti ( . ) o trattini ( - ).")
-        
+if st.button("⚡ Parsifica e Salva Istantaneamente Richiesta"):
+    if not testo_email_grezzo.strip():
+        st.error("❌ Il campo di testo è vuoto. Incolla una notifica prima di procedere.")
     else:
+        # --- ALGORITMO DI ESTRAZIONE AUTOMATICA (PARSER) ---
+        testo_pulito = testo_email_grezzo.replace("\n", " ").replace("\r", " ")
+        
+        # 1. Estrazione Email
+        email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', testo_pulito)
+        estratto_email = email_match.group(0).strip() if email_match else "nd"
+        
+        # 2. Estrazione Telefono
+        tel_match = re.search(r'(?:Telefono|Tel\.?|Cell\.?)\s*:?\s*([0-9\s\-]{8,15})', testo_pulito, re.IGNORECASE)
+        estratto_tel = tel_match.group(1).strip() if tel_match else ""
+        if not estratto_tel:
+            tel_match_libero = re.search(r'\b(3\d{2}[0-9\s\-]{6,8})\b', testo_pulito)
+            estratto_tel = tel_match_libero.group(1).strip() if tel_match_libero else "nd"
+            
+        # 3. Estrazione Nome/Nominativo
+        nome_match = re.search(r'(?:Nome|Cliente)\s*\n*([A-Za-zÀ-ú\s]+)', testo_email_grezzo, re.IGNORECASE)
+        estratto_nome = nome_match.group(1).strip() if nome_match else "nd"
+        if estratto_nome.lower() in ["adulti", "num", "email", "telefono", "arrivo"]:
+            estratto_nome = "nd"
+            
+        # 4. Estrazione Ospiti, Adulti, Minori
+        adulti_match = re.search(r'(?:Num\.\s*Adulti|Adulti)\s*:?\s*(\d+)', testo_pulito, re.IGNORECASE)
+        estratto_adulti = int(adulti_match.group(1)) if adulti_match else 2
+        
+        minori_match = re.search(r'(?:Bambini|Minori|Ragazzi)\s*:?\s*(\d+)', testo_pulito, re.IGNORECASE)
+        estratto_minori = int(minori_match.group(1)) if minori_match else 0
+        estratto_ospiti_tot = estratto_adulti + estratto_minori
+        # --- BLOCCO 3 - PARTE 2: PROSEGUIMENTO ESTRATTORI E SALVATAGGIO ---
+        # 5. Estrazione Portale di Provenienza
+        estratto_portale = "nd"
+        if "ultimissimo" in testo_pulito.lower(): estratto_portale = "UltimissimoMinuto"
+        elif "lovely" in testo_pulito.lower(): estratto_portale = "LovelyITALIA"
+        elif "agoda" in testo_pulito.lower(): estratto_portale = "Agoda"
+        
+        # 6. Estrazione Date (Arrivo e Partenza)
+        date_trovate = re.findall(r'(\d{1,2})\s*[\/\-]\s*(\d{1,2})\s*[\/\-]\s*(\d{4})', testo_pulito)
+        data_contatto_str = datetime.now().strftime("%d/%m/%Y")
+        estratto_arrivo, estratto_partenza, lead_time = "nd", "nd", 0
+        
+        if len(date_trovate) >= 2:
+            d_arr, d_part = date_trovate[-2], date_trovate[-1]
+            estratto_arrivo = f"{int(d_arr[0]):02d}/{int(d_arr[1]):02d}/{d_arr[2]}"
+            estratto_partenza = f"{int(d_part[0]):02d}/{int(d_part[1]):02d}/{d_part[2]}"
+            if len(date_trovate) >= 3:
+                d_cont = date_trovate[0]
+                data_contatto_str = f"{int(d_cont[0]):02d}/{int(d_cont[1]):02d}/{d_cont[2]}"
+            try:
+                dt_contatto = datetime.strptime(data_contatto_str, "%d/%m/%Y")
+                dt_arrivo = datetime.strptime(estratto_arrivo, "%d/%m/%Y")
+                lead_time = max(0, (dt_arrivo - dt_contatto).days)
+            except: lead_time = 0
+                
+        # 7. Estrazione Località ed elementi geografici
+        localita_match = re.search(r'(?:Localita\'?\s*richiesta\s*:?|per)\s*([A-Za-zÀ-ú\s]+(?:dintorni)?)', testo_pulito, re.IGNORECASE)
+        estratto_localita = localita_match.group(1).strip() if localita_match else "nd"
+        
+        # 8. Estrazione Cani ed Animali (Mappatura Colonna 16)
+        cane_match = re.search(r'(\d*\s*(?:cane|cani|gatto|gatti|animale|animali)\s*(?:taglia|piccola|media|grande|nd|\w+)*)', testo_pulito, re.IGNORECASE)
+        estratto_cane = cane_match.group(1).strip() if cane_match else "nd"
+        
+        # Creazione note senza virgole dannose
         ora_attuale = datetime.now().strftime("%H:%M")
-        data_oggi = datetime.now().strftime("%d/%m/%Y")
+        note_pulite = f"Telefono: {estratto_tel}. Ricevuto tramite {estratto_portale}. Localita richiesta: {estratto_localita}. Inserito in lista d'attesa."
+        if estratto_cane != "nd": note_pulite += f" Presenza animali: {estratto_cane}."
+        note_pulite = note_pulite.replace(",", " -")
         
-        data_arrivo = data_arrivo_dt.strftime("%d/%m/%Y") if data_arrivo_dt else "nd"
-        data_partenza = data_partenza_dt.strftime("%d/%m/%Y") if data_partenza_dt else "nd"
-        
-        nominativo_dettaglio = nominativo_dettaglio if nominativo_dettaglio else "nd"
-        alloggio = alloggio if alloggio else "nd"
-        
-        nuovo_record = f"{prossimo_id},{data_oggi},{ora_attuale},{lead_time},{cognome},{nome},{data_arrivo},{data_partenza},{alloggio},{ospiti_tot},{nominativo_dettaglio},{adulti},{minori},{email},{portale},{acconto},{tariffa_tot},{imposta_sogg},{tipo_tariffa},{stato_pagamento},{mezzo_trasporto},{stato_prenotazione},{note_aggiuntive}\n"
-        
-        try:
-            with open(csv_locale, "a", encoding="utf-8") as f:
-                f.write(nuovo_record)
-            st.success(f"✅ Riga {prossimo_id} inserita con successo! Modifiche salvate localmente nel file '{csv_locale}'.")
-            st.info("Fai un refresh della pagina del browser per aggiornare i contatori della dashboard.")
-        except Exception as e:
-            st.error(f"Errore tecnico durante la scrittura sul file CSV: {e}")
+        # Controllo Duplicati e Scrittura File CSV Locale
+        if estratto_email.lower() in email_esistenti and estratto_email != "nd":
+            st.warning(f"⚠️ VIOLAZIONE REGOLA 1: L'email '{estratto_email}' è già presente. È VIETATO generare un nuovo record.")
+        else:
+            nuovo_record = f"{prossimo_id},{data_contatto_str},{ora_attuale},{lead_time},nd,{estratto_nome},{estratto_arrivo},{estratto_partenza},nd,{estratto_ospiti_tot},nd,{estratto_adulti},{estratto_minori},{estratto_email},{estratto_portale},{estratto_cane},nd,nd,nd,nd,nd,Lista d'attesa,{note_pulite}\n"
+            try:
+                with open("database_ospiti.csv", "a", encoding="utf-8") as f:
+                    f.write(nuovo_record)
+                st.success(f"✅ Richiesta Registrata! ID Progressivo: {prossimo_id}")
+                
+                col_r1, col_r2 = st.columns(2)
+                with col_r1:
+                    st.markdown("**Dati Estratti:**")
+                    st.write(f"• **Ospite:** {estratto_nome} | **Email:** {estratto_email}")
+                    st.write(f"• **Periodo:** {estratto_arrivo} - {estratto_partenza} ({estratto_ospiti_tot} pax)")
+                    st.write(f"• **Animali:** {estratto_cane} | **Lead Time:** {lead_time} giorni")
+                with col_r2:
+                    st.markdown("**✉️ E-mail Pronta da Inviare:**")
+                    nota_animali = " I vostri amici a quattro zampe sono i benvenuti nelle nostre soluzioni." if estratto_cane != "nd" else ""
+                    corpo_email_veloce = (
+                        f"Gentile {estratto_nome},\n\n"
+                        f"In merito alla sua richiesta tramite {estratto_portale}, precisiamo che la nostra struttura si trova a Torre Pali (Marina di Salve), nel cuore del Salento ionico.{nota_animali}\n\n"
+                        f"Per il periodo indicato ({estratto_arrivo} - {estratto_partenza}), siamo al completo. L'abbiamo inserita in Lista d'Attesa prioritaria.\n\n"
+                        f"Per ringraziarla, le assegniamo un Buono Sconto del 15% con la nostra Formula Fiduciaria (nessun acconto o caparra da versare, pagamento interamente in loco al vostro arrivo).\n\n"
+                        f"Restiamo a disposizione.\n\n"
+                        f"Cordiali saluti,\nLo Staff - A Casa di Amici\nhttps://acasadiamici.info"
+                    )
+                    st.code(corpo_email_veloce, language="text")
+            except Exception as e:
+                st.error(f"Errore di scrittura sul file CSV: {e}")
+# ==============================================================================
+# ===== FINE BLOCCO 3 - PARTE 2 =====
+# ==============================================================================
 
-# ==============================================================================
-# ===== FINE BLOCCO 3 =====
-# ==============================================================================
 
 # ==============================================================================
 # ===== BLOCCO 4: SINCRONIZZAZIONE CALENDARI ICAL E DISPONIBILITÀ =====
