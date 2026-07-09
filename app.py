@@ -1,8 +1,9 @@
 # ==============================================================================
-# ===== BLOCCO 1: CARICAMENTO DATI LOCALE, CONFIGURAZIONE E LOGO =====
+# ===== BLOCCO 1: CARICAMENTO DATI LOCALE, CONFIGURAZIONE E LIBRERIE =====
 # ==============================================================================
 import datetime
 import os
+import re  # <--- IMPORTAZIONE FONDAMENTALE PER LO SCANNER RICORRENZE (Risolve NameError)
 import pandas as pd
 import streamlit as st
 
@@ -18,7 +19,6 @@ logo_locale = "logo-scritta.gif"
 if os.path.exists(logo_locale):
     st.image(logo_locale, width=300)
 else:
-    # Fallback visivo se il file non viene trovato nella cartella principale
     st.info("Logo aziendale non rilevato localmente nella root del progetto.")
 
 # 3. Estrazione dell'anno corrente dal server per l'automazione del titolo stagionale
@@ -39,16 +39,14 @@ try:
             on_bad_lines="skip"
         )
     else:
-        # Se il file non esiste ancora localmente, crea un DataFrame con la struttura corretta
         df = pd.DataFrame()
         st.warning(f"File '{csv_locale}' non trovato. Assicurati di averlo caricato nella stessa cartella di app.py.")
 except Exception as e:
-    # Protezione estrema contro i crash di sdoppiamento variabili (NameError)
     df = pd.DataFrame()
     st.error(f"Errore critico di lettura nel file CSV locale: {e}")
 
 # ==============================================================================
-# ===== FINE BLOCCO 1 (L'applicazione è ora offline ed immune da errori di rete) =====
+# ===== FINE BLOCCO 1 (L'applicazione ora ha tutte le librerie caricate) =====
 # ==============================================================================
 
 
