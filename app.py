@@ -60,6 +60,118 @@ if not df.empty:
     kpi4.metric("📋 Lista Attesa", len(df[df["Stato Richiesta"].str.contains("Lista", na=False, case=False)]))
     st.markdown("---")
 
+# ==============================================================================
+# ===== BLOCCO 3: INTERFACCIA GRAFICA DI INSERIMENTO NUOVE RICHIESTE =====
+# ==============================================================================
+import os
+from datetime import datetime
+import pandas as pd
+import streamlit as st
+
+st.markdown("---")
+st.subheader("📝 Inserimento Nuova Richiesta / Log Ospite")
+
+# Controllo preliminare di sicurezza sullo stato del database caricato nel Blocco 1
+if 'df' in locals() and not df.empty:
+    # Calcolo automatico del prossimo N. Progressivo (Evita sovrascritture)
+    try:
+        prossimo_id = int(df.iloc[:, 0].max()) + 1
+    except:
+        prossimo_id = 1
+    
+    # Lista delle email storiche per il controllo preventivo dei duplicati
+    email_esistenti = df.iloc[:, 13].dropna().astype(str).str.lower().str.strip().tolist()
+else:
+    prossimo_id = 1
+    email_esistenti = []
+
+# Creazione del Form Streamlit per raggruppare i campi di input
+with st.form(key="form_nuova_richiesta", clear_on_submit=True):
+    st.info(f"ID Progressivo Assegnato Automaticamente: **{prossimo_id}**")
+    
+    # Suddivisione grafica dei campi in colonne per massimizzare la scansionabilità
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        cognome = st.text_input("Cognome Capofamiglia *").strip()
+        nome = st.text_input("Nome Capofamiglia *").strip()
+        email = st.text_input("Email Cliente *").strip()
+        alloggio = st.selectbox("Alloggio Assegnato", ["nd", "Monolocale Marina", "Monolocale Margherita", "Pajara Lucy"])
+        
+    with col2:
+        data_arrivo_dt = st.date_input("Data Arrivo", value=None)
+        data_partenza_dt = st.date_input("Data Partenza", value=None)
+        portale = st.selectbox("Portale di Provenienza *", ["UltimissimoMinuto", "LovelyITALIA", "Octorate Direct", "Agoda", "Prenotazione Diretta", "nd"])
+        stato_prenotazione = st.selectbox("Stato Richiesta *", ["Lista d'attesa", "In corso", "Confermata", "Arrivato"])
+
+    with col3:
+        ospiti_tot = st.number_input("Numero Ospiti Totale", min_value=0, value=0, step=1)
+        adulti = st.number_input("Di cui Adulti", min_value=0, value=0, step=1)
+        minori = st.number_input("Di cui Minori", min_value=0, value=0, step=1)
+        lead_time = st.number_input("Lead Time (Giorni)", min_value=0, value=0, step=1)
+
+    # Campi estesi e note posizionati in righe intere a fondo maschera
+    nominativo_dettaglio = st.text_input("Nominativo Ospiti Dettaglio (Nomi, Date Nascita, Documenti, Residenza)").strip()
+    
+    st.markdown("**💰 Dati Economici e Logistici (Impostare a 0 o lasciar vuoti se non applicabili):**")
+    col_eco1, col_eco2, col_eco3, col_eco4, col_eco5, col_eco6 = st.columns(6)
+    with col_eco1: acconto = st.text_input("Acconto (€)", value="0")
+    with col_eco2: tariffa_tot = st.text_input("Tariffa Totale (€)", value="nd")
+    with col_eco3: imposta_sogg = st.text_input("Imposta Soggiorno (€)", value="nd")
+    with col_eco4: tipo_tariffa = st.selectbox("Tipo Tariffa", ["nd", "Standard", "Non Rimb."])
+    with col_eco5: stato_pagamento = st.selectbox("Stato Pagamento", ["nd", "Saldato", "In attesa"])
+    with col_eco6: mezzo_trasporto = st.text_input("Mezzo e Ora Arrivo", value="nd")
+
+    note_aggiuntive = st.text_area("Note Aggiuntive e Storico Interazioni (ATTENZIONE: Non inserire virgole nel testo) *").strip()
+
+    # Pulsante di sottomissione del form
+    submit_button = st.form_submit_button(label="💾 Salva Richiesta nel Database")
+
+# Logica di Validazione e Salvataggio dei Dati al Click
+if submit_button:
+    # Controllo dei campi obbligatori di struttura
+    if not cognome or not nome or not email or not note_aggiuntive:
+        st.error("❌ Errore: I campi Cognome, Nome, Email e Note Aggiuntive sono obbligatori per la stesura del log.")
+    
+    # Applicazione della Regola Rigida 1: Controllo Preventivo dei Duplicati Email
+    elif email.lower() in email_esistenti:
+        st.warning(f"⚠️ VIOLAZIONE REGOLA 1 (DUPLICATI): L'email '{email}' è già presente nello storico. È VIETATO generare una nuova riga di log. Cerca la riga esistente nel database e accorpa i nuovi dettagli nel campo Note Aggiuntive.")
+    
+    # Controllo di sicurezza sintattico per impedire la corruzione del parser CSV
+    elif "," in note_aggiuntive:
+        st.error("❌ Errore di Formattazione: Non puoi utilizzare la virgola ( , ) all'interno delle Note Aggiuntive perché corrompe il tracciato delle colonne del file CSV. Sostituisci tutte le virgole con punti ( . ) o trattini ( - ).")
+        
+    else:
+        # Generazione automatica dei metadati temporali di inserimento
+        ora_attuale = datetime.now().strftime("%H:%M")
+        data_oggi = datetime.now().strftime("%d/%m/%Y")
+        
+        # Conversione e normalizzazione delle date nel formato standard DD/MM/YYYY
+        data_arrivo = data_arrivo_dt.strftime("%d/%m/%Y") if data_arrivo_dt else "nd"
+        data_partenza = data_partenza_dt.strftime("%d/%m/%Y") if data_partenza_dt else "nd"
+        
+        # Gestione automatica del valore predefinito "nd" per le stringhe vuote
+        nominativo_dettaglio = nominativo_dettaglio if nominativo_dettaglio else "nd"
+        alloggio = alloggio if alloggio else "nd"
+        
+        # Costruzione della stringa record CSV rispettando l'ordine esatto delle 23 colonne
+        nuovo_record = f"{prossimo_id},{data_oggi},{ora_attuale},{lead_time},{cognome},{nome},{data_arrivo},{data_partenza},{alloggio},{ospiti_tot},{nominativo_dettaglio},{adulti},{minori},{email},{portale},{acconto},{tariffa_tot},{imposta_sogg},{tipo_tariffa},{stato_pagamento},{mezzo_trasporto},{stato_prenotazione},{note_aggiuntive}\n"
+        
+        # Scrittura fisica sul file system locale (database_ospiti.csv)
+        csv_locale = "database_ospiti.csv"
+        try:
+            with open(csv_locale, "a", encoding="utf-8") as f:
+                f.write(nuovo_record)
+            st.success(f"✅ Riga {prossimo_id} inserita con successo! Modifiche salvate localmente nel file '{csv_locale}'.")
+            st.info("Fai un refresh della pagina del browser per aggiornare i contatori della dashboard.")
+        except Exception as e:
+            st.error(f"Errore tecnico durante la scrittura sul file CSV: {e}")
+
+# ==============================================================================
+# ===== FINE BLOCCO 3 =====
+# ==============================================================================
+
+
 # ===== BLOCCO 3: ESTRATTORI RICORRENZE (REGEX) =====
 def estrai_date_ricorrenze(campo_note, tipo):
     pattern = r"Cpl(\d{2}-\d{2})" if tipo == "Compleanni" else r"On(\d{2}-\d{2})"
