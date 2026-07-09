@@ -1,5 +1,5 @@
 # ==============================================================================
-# ===== BLOCCO 1: CARICAMENTO DATI DA GITHUB, CONFIGURAZIONE E LIBRERIE =====
+# ===== BLOCCO 1: CARICAMENTO DATI LOCALE, CONFIGURAZIONE E LIBRERIE =====
 # ==============================================================================
 from datetime import datetime
 import os
@@ -25,26 +25,31 @@ else:
 anno_corrente = datetime.now().year
 st.title(f"🏨 CRM A Casa di Amici - Gestione Stagionale {anno_corrente}")
 
-# 4. Definizione dell'URL Raw di GitHub per attingere al database completo di 1900+ righe
-csv_url = "https://githubusercontent.com"
+# 4. Definizione del percorso locale (Offline) per il database degli ospiti
+csv_locale = "database_ospiti.csv"
 
-# 5. Esecuzione del caricamento sicuro da internet con tolleranza d'errore
+# 5. Esecuzione del caricamento sicuro da file system locale con gestione errori
 try:
-    df = pd.read_csv(
-        csv_url, 
-        encoding="utf-8",
-        engine="python",
-        quoting=3,
-        on_bad_lines="skip"
-    )
-    st.success(f"📊 Database sincronizzato con GitHub. Record totali rilevati: {len(df)}")
+    if os.path.exists(csv_locale):
+        df = pd.read_csv(
+            csv_locale, 
+            encoding="utf-8",
+            engine="python",
+            quoting=3,
+            on_bad_lines="skip"
+        )
+        st.success(f"📊 Database locale caricato correttamente. Record totali rilevati: {len(df)}")
+    else:
+        df = pd.DataFrame()
+        st.warning(f"File '{csv_locale}' non trovato nella cartella principale del progetto.")
 except Exception as e:
     df = pd.DataFrame()
-    st.error(f"Errore critico di lettura nel file CSV da GitHub: {e}")
+    st.error(f"Errore critico di lettura nel file CSV locale: {e}")
 
 # ==============================================================================
 # ===== FINE BLOCCO 1 =====
 # ==============================================================================
+
 
 
 # ==============================================================================
