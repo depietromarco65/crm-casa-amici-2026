@@ -72,7 +72,7 @@ import streamlit as st
 
 st.markdown("---")
 st.subheader("🚀 Inserimento Rapido Intelligente (Incolla Email Grezza)")
-st.info("Incolla qui sotto il testo copiato dalla notifica email per estrarre e mapparne i dati.")
+st.info("Incolla qui sotto il testo copiato dalla notifica email per estrarre e mapparne i dati in modo avanzato.")
 
 # Controllo preliminare di sicurezza sullo stato del database caricato nel Blocco 1
 if 'df' in locals() and not df.empty:
@@ -92,8 +92,8 @@ if st.button("⚡ Parsifica e Salva Istantaneamente Richiesta"):
     if not testo_email_grezzo.strip():
         st.error("❌ Il campo di testo è vuoto. Incolla una notifica prima di procedere.")
     else:
-        # --- ALGORITMO DI ESTRAZIONE AUTOMATICA (PARSER) ---
-        testo_pulito = testo_email_grezzo.replace("\n", " ").replace("\r", " ")
+        # --- ALGORITMO DI ESTRAZIONE AUTOMATICA AVANZATA ---
+        testo_pulito = re.sub(r'\s+', ' ', testo_email_grezzo) # Normalizza tutti gli spazi e a capo folli
         
         # 1. Estrazione Email
         email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', testo_pulito)
@@ -102,29 +102,34 @@ if st.button("⚡ Parsifica e Salva Istantaneamente Richiesta"):
         # 2. Estrazione Telefono
         tel_match = re.search(r'(?:Telefono|Tel\.?|Cell\.?)\s*:?\s*([0-9\s\-]{8,15})', testo_pulito, re.IGNORECASE)
         estratto_tel = tel_match.group(1).strip() if tel_match else ""
-        if not estratto_tel:
+        if not延_tel:
             tel_match_libero = re.search(r'\b(3\d{2}[0-9\s\-]{6,8})\b', testo_pulito)
             estratto_tel = tel_match_libero.group(1).strip() if tel_match_libero else "nd"
             
-        # 3. Estrazione Nome/Nominativo
-        nome_match = re.search(r'(?:Nome|Cliente)\s*\n*([A-Za-zÀ-ú\s]+)', testo_email_grezzo, re.IGNORECASE)
+        # 3. Estrazione Nome/Nominativo (Risolve il bug delle righe spezzate)
+        nome_match = re.search(r'Nome\s+([A-Za-zÀ-ú\s]+?)(?=\s+Num|\s+Adulti|\s+Email|$)', testo_pulito, re.IGNORECASE)
         estratto_nome = nome_match.group(1).strip() if nome_match else "nd"
         if estratto_nome.lower() in ["adulti", "num", "email", "telefono", "arrivo"]:
             estratto_nome = "nd"
             
         # 4. Estrazione Ospiti, Adulti, Minori
-        adulti_match = re.search(r'(?:Num\.\s*Adulti|Adulti)\s*:?\s*(\d+)', testo_pulito, re.IGNORECASE)
+        adulti_match = re.search(r'(?:Num\.\s*Adulti|Adulti)\s*(\d+)', testo_pulito, re.IGNORECASE)
         estratto_adulti = int(adulti_match.group(1)) if adulti_match else 2
         
-        minori_match = re.search(r'(?:Bambini|Minori|Ragazzi)\s*:?\s*(\d+)', testo_pulito, re.IGNORECASE)
+        # Analisi intelligente per contare i bambini nelle "Ulteriori informazioni"
+        minori_match = re.search(r'(\d+)\s*(?:bambini|minori|ragazzi|figli)', testo_pulito, re.IGNORECASE)
         estratto_minori = int(minori_match.group(1)) if minori_match else 0
         estratto_ospiti_tot = estratto_adulti + estratto_minori
+
         # --- BLOCCO 3 - PARTE 2: PROSEGUIMENTO ESTRATTORI E SALVATAGGIO ---
-        # 5. Estrazione Portale di Provenienza
+        # 5. Estrazione Portale di Provenienza (Riconosce lo schema automatico)
         estratto_portale = "nd"
-        if "ultimissimo" in testo_pulito.lower(): estratto_portale = "UltimissimoMinuto"
-        elif "lovely" in testo_pulito.lower(): estratto_portale = "LovelyITALIA"
-        elif "agoda" in testo_pulito.lower(): estratto_portale = "Agoda"
+        if "ultimissimo" in testo_pulito.lower() or "prop105499" in testo_pulito.lower(): 
+            estratto_portale = "UltimissimoMinuto"
+        elif "lovely" in testo_pulito.lower(): 
+            estratto_portale = "LovelyITALIA"
+        elif "agoda" in testo_pulito.lower(): 
+            estratto_portale = "Agoda"
         
         # 6. Estrazione Date (Arrivo e Partenza)
         date_trovate = re.findall(r'(\d{1,2})\s*[\/\-]\s*(\d{1,2})\s*[\/\-]\s*(\d{4})', testo_pulito)
@@ -145,18 +150,23 @@ if st.button("⚡ Parsifica e Salva Istantaneamente Richiesta"):
             except: lead_time = 0
                 
         # 7. Estrazione Località ed elementi geografici
-        localita_match = re.search(r'(?:Localita\'?\s*richiesta\s*:?|per)\s*([A-Za-zÀ-ú\s]+(?:dintorni)?)', testo_pulito, re.IGNORECASE)
+        localita_match = re.search(r'(?:Localita\'?\s*richiesta\s*:?)\s*([A-Za-zÀ-ú\s]+(?:dintorni)?)', testo_pulito, re.IGNORECASE)
         estratto_localita = localita_match.group(1).strip() if localita_match else "nd"
         
         # 8. Estrazione Cani ed Animali (Mappatura Colonna 16)
         cane_match = re.search(r'(\d*\s*(?:cane|cani|gatto|gatti|animale|animali)\s*(?:taglia|piccola|media|grande|nd|\w+)*)', testo_pulito, re.IGNORECASE)
         estratto_cane = cane_match.group(1).strip() if cane_match else "nd"
         
+        # Estrazione info minori specifiche per il marketing mirato
+        info_minori_match = re.search(r'(\d+\s*bambini\s*di\s*[\d\s,e]+anni)', testo_pulito, re.IGNORECASE)
+        dettaglio_minori = info_minori_match.group(1).strip() if info_minori_match else ""
+        
         # Creazione note senza virgole dannose
         ora_attuale = datetime.now().strftime("%H:%M")
-        note_pulite = f"Telefono: {estratto_tel}. Ricevuto tramite {estratto_portale}. Localita richiesta: {estratto_localita}. Inserito in lista d'attesa."
+        note_pulite = f"Telefono: {estratto_tel}. Ricevuto tramite {estratto_portale}. Localita richiesta: {estratto_localita}."
+        if dettaglio_minori: note_pulite += f" Nucleo familiare: {dettaglio_minori}."
         if estratto_cane != "nd": note_pulite += f" Presenza animali: {estratto_cane}."
-        note_pulite = note_pulite.replace(",", " -")
+        note_pulite = note_pulite.replace(",", " -").strip()
         
         # Controllo Duplicati e Scrittura File CSV Locale
         if estratto_email.lower() in email_esistenti and estratto_email != "nd":
@@ -166,24 +176,31 @@ if st.button("⚡ Parsifica e Salva Istantaneamente Richiesta"):
             try:
                 with open("database_ospiti.csv", "a", encoding="utf-8") as f:
                     f.write(nuovo_record)
-                st.success(f"✅ Richiesta Registrata! ID Progressivo: {prossimo_id}")
+                st.success(f"✅ Richiesta Registrata con Successo! ID Progressivo: {prossimo_id}")
                 
                 col_r1, col_r2 = st.columns(2)
                 with col_r1:
-                    st.markdown("**Dati Estratti:**")
-                    st.write(f"• **Ospite:** {estratto_nome} | **Email:** {estratto_email}")
-                    st.write(f"• **Periodo:** {estratto_arrivo} - {estratto_partenza} ({estratto_ospiti_tot} pax)")
-                    st.write(f"• **Animali:** {estratto_cane} | **Lead Time:** {lead_time} giorni")
+                    st.markdown("**📊 Dati Estratti dal Sistema:**")
+                    st.write(f"• **Ospite:** {estratto_nome}")
+                    st.write(f"• **Email:** {estratto_email} | **Tel:** {estratto_tel}")
+                    st.write(f"• **Periodo:** {estratto_arrivo} - {estratto_partenza} ({estratto_ospiti_tot} persone totali)")
+                    st.write(f"• **Composizione:** {estratto_adulti} Adulti e {estratto_minori} Minori ({dettaglio_minori})")
+                    st.write(f"• **Lead Time:** {lead_time} giorni | **Portale:** {estratto_portale}")
                 with col_r2:
-                    st.markdown("**✉️ E-mail Pronta da Inviare:**")
-                    nota_animali = " I vostri amici a quattro zampe sono i benvenuti nelle nostre soluzioni." if estratto_cane != "nd" else ""
+                    st.markdown("**✉️ Modello E-mail Professionale (Completo ed Esteso):**")
+                    nota_pax = f" per il vostro nucleo di {estratto_ospiti_tot} persone"
                     corpo_email_veloce = (
                         f"Gentile {estratto_nome},\n\n"
-                        f"In merito alla sua richiesta tramite {estratto_portale}, precisiamo che la nostra struttura si trova a Torre Pali (Marina di Salve), nel cuore del Salento ionico.{nota_animali}\n\n"
-                        f"Per il periodo indicato ({estratto_arrivo} - {estratto_partenza}), siamo al completo. L'abbiamo inserita in Lista d'Attesa prioritaria.\n\n"
-                        f"Per ringraziarla, le assegniamo un Buono Sconto del 15% con la nostra Formula Fiduciaria (nessun acconto o caparra da versare, pagamento interamente in loco al vostro arrivo).\n\n"
-                        f"Restiamo a disposizione.\n\n"
-                        f"Cordiali saluti,\nLo Staff - A Casa di Amici\nhttps://acasadiamici.info"
+                        f"La ringraziamo sinceramente per aver espresso il suo interesse verso la nostra struttura \"A Casa di Amici\" per il vostro prossimo soggiorno in Puglia.\n\n"
+                        f"In merito alla sua richiesta inviata tramite il portale {estratto_portale}, ci teniamo innanzitutto a precisare che le nostre soluzioni abitative si trovano nella splendida località di Torre Pali (Marina di Salve), sul litorale ionico salentino. Si tratta di una posizione strategica e rinomata, celebre per le sue spiagge di sabbia fine, le acque cristalline e la tranquillità, ideale per ospitare famiglie.\n\n"
+                        f"Abbiamo verificato con attenzione i nostri registri per le date indicate, dal {estratto_arrivo} al {estratto_partenza}{nota_pax}. Trattandosi di un periodo di altissima stagione, le nostre unità (Appartamento Girasole, Villa Tulipano, Casale Lucia, la caratteristica Pajara Lucy e i Monolocali Marina, Margherita e Glicine) risultano al momento interamente occupate.\n\n"
+                        f"Tuttavia, abbiamo provveduto a inserire il suo nominativo all'interno della nostra Lista d'Attesa prioritaria per la gestione delle cancellazioni. Qualora dovesse verificarsi una disdetta imprevista o una riorganizzazione delle disponibilità per la settimana da lei richiesta, sarà nostra premura contattarla con la massima priorità ai recapiti forniti.\n\n"
+                        f"Per ringraziarla della fiducia e scusarci della mancanza di alloggi liberi immediati, siamo lieti di assegnarle un Buono Sconto speciale del 15% valido per la nostra esclusiva \"Formula Fiduciaria\", utilizzabile sia per un'eventuale apertura di questo periodo sia per qualsiasi soggiorno futuro presso di noi.\n\n"
+                        f"Ci teniamo a sottolineare la massima trasparenza della nostra politica di prenotazione: la Formula Fiduciaria non richiede MAI il versamento di alcun acconto, caparra confirmatoria o transazione bancaria anticipata all'atto del blocco delle date. Si tratta di un vero e proprio scudo antifrode a tutela totale del cliente: l'accordo si basa sulla reciproca parola e il pagamento del soggiorno verrà effettuato interamente in loco, al momento del vostro arrivo in struttura, solo dopo aver preso visione dell'alloggio ed averne confermato il gradimento.\n\n"
+                        f"Restiamo a sua completa disposizione per qualsiasi chiarimento sulle nostre soluzioni o per fornirle suggerimenti turistici sulla costa di Salve. Ci auguriamo di potervi accogliere presto come nostri graditi ospiti nel Salento.\n\n"
+                        f"Cordiali saluti,\n"
+                        f"Lo Staff - A Casa di Amici\n"
+                        f"https://acasadiamici.info"
                     )
                     st.code(corpo_email_veloce, language="text")
             except Exception as e:
@@ -191,6 +208,7 @@ if st.button("⚡ Parsifica e Salva Istantaneamente Richiesta"):
 # ==============================================================================
 # ===== FINE BLOCCO 3 - PARTE 2 =====
 # ==============================================================================
+
 
 
 # ==============================================================================
