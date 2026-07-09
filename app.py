@@ -280,62 +280,123 @@ if st.button("🔄 Sincronizza e Verifica Chiusure Octorate"):
 
 
 # ==============================================================================
-# ===== BLOCCO 5: MODULO DI RICERCA OSPITI ED E-MAIL AUTOMATICHE =====
+# ===== BLOCCO 5 - PARTE 1: SISTEMA DI RICERCA MULTI-SCHEMA E FILTRI =====
 # ==============================================================================
 st.markdown("---")
-st.subheader("🔍 Ricerca Storico Ospiti e Generatore E-mail")
+st.subheader("🔍 Centrale di Ricerca Avanzata e Segmentazione Clienti")
 
 if 'df' in locals() and not df.empty:
-    chiave_ricerca = st.text_input("Inserisci il Cognome o l'Email dell'ospite da cercare:").strip().lower()
+    # Creazione di due colonne: una per la ricerca testuale, una per i filtri rapidi
+    col_cerca1, col_cerca2 = st.columns([2, 1])
     
-    if chiave_ricerca:
-        risultati = df[
-            df.iloc[:, 4].astype(str).str.lower().str.contains(chiave_ricerca) | 
-            df.iloc[:, 13].astype(str).str.lower().str.contains(chiave_ricerca)
+    with col_cerca1:
+        # Ricerca universale: inserendo cognome, email o telefono (scansiona anche le note)
+        chiave_ricerca = st.text_input("✍️ Ricerca Universale (Cognome, Email, Telefono o parole chiave nelle note):").strip().lower()
+        
+    with col_cerca2:
+        # Menu a tendina per i filtri di segmentazione commerciale richiesti
+        schema_filtro = st.selectbox(
+            "🎯 Filtri di Segmentazione Rapida:",
+            ["Nessun filtro", "Ospiti con Cane/Animali", "Famiglie con Figli", "Solo Coppie (2 Adulti, 0 Minori)", "Gruppi Numerosi (da 5 persone in su)"]
+        )
+    
+    # Copia di partenza del database per applicare i filtri a cascata
+    df_filtrato = df.copy()
+    
+    # --- APPLICAZIONE DEI FILTRI STRATEGICI ---
+    if schema_filtro == "Ospiti con Cane/Animali":
+        # Filtra se la colonna 15 (Cane) non è 'nd' o se nelle note si parla di animali
+        df_filtrato = df_filtrato[
+            (df_filtrato.iloc[:, 15].astype(str).str.lower() != "nd") & 
+            (df_filtrato.iloc[:, 15].astype(str).str.lower() != "0") &
+            (df_filtrato.iloc[:, 15].notna()) |
+            (df_filtrato.iloc[:, 22].astype(str).str.lower().str.contains("cane|cani|cocker|pincer|animali|gatto"))
         ]
         
-        if not risultati.empty:
-            st.success(f"Trovati {len(risultati)} record corrispondenti nello storico:")
-            st.dataframe(risultati, use_container_width=True)
-            
-            index_scelto = st.selectbox("Seleziona la riga specifica per generare l'e-mail di risposta:", risultati.index)
-            riga_scelta = df.loc[index_scelto]
-            
-            ospite_nome = riga_scelta.iloc[5] if pd.notna(riga_scelta.iloc[5]) else "Ospite"
-            ospite_email = riga_scelta.iloc[13]
-            note_storiche = str(riga_scelta.iloc[22]).lower()
-            
-            st.markdown("### ✉️ Modello E-mail Precompilato")
-            st.info(f"Inviare a: **{ospite_email}**")
-            
-            nota_ritardo = ""
-            if "ritard" in note_storiche or "tardiv" in note_storiche:
-                nota_ritardo = "Ci scusiamo sinceramente per il ritardo nel risponderle, dovuto a un carico straordinario di richieste in questi giorni.\n\n"
-            
-            corpo_email = (
-                f"Gentile {ospite_nome},\n\n"
-                f"{nota_ritardo}"
-                f"In merito alla sua richiesta, desideriamo innanzitutto precisare che la nostra struttura si trova a Torre Pali (Marina di Salve), "
-                f"nel cuore del Salento ionico, in una posizione ottimale per godersi il mare e le spiagge della zona.\n\n"
-                f"Al momento attuale, per il periodo da lei indicato, la struttura è purtroppo al completo. Abbiamo tuttavia provveduto a inserirla "
-                f"nella nostra Lista d'Attesa prioritaria: in questo modo, qualora dovesse verificarsi una cancellazione dell'ultimo minuto, "
-                f"sarà nostra cura ricontattarla immediatamente.\n\n"
-                f"Per ringraziarla dell'interesse e scusarci della mancata disponibilità immediata, siamo lieti di assegnarle un Buono Sconto del 15% "
-                f"valido per la Formula Fiduciaria (utilizzabile per un soggiorno futuro o qualora si liberasse il posto).\n\n"
-                f"Vi ricordiamo la nostra politica di Trasparenza e Sicurezza: la Formula Fiduciaria non richiede MAI il versamento di alcun acconto o caparra "
-                f"all'atto della prenotazione. Si tratta di uno scudo antifrode a tutela totale del cliente: il pagamento del soggiorno verrà effettuato "
-                f"interamente in loco al momento del vostro arrivo, dopo aver preso visione dell'alloggio.\n\n"
-                f"Restiamo a sua completa disposizione per qualsiasi ulteriore informazione e ci auguriamo di averla presto come nostro gradito ospite.\n\n"
-                f"Cordiali saluti,\n"
-                f"Lo Staff - A Casa di Amici\n"
-                f"https://acasadiamici.info"
-            )
-            st.code(corpo_email, language="text")
-        else:
-            st.warning("❌ Nessun ospite trovato con i criteri inseriti.")
+    elif schema_filtro == "Famiglie con Figli":
+        # Filtra se la colonna 12 (Minori) è maggiore di 0 o se ci sono bambini nelle note
+        df_filtrato = df_filtrato[
+            (pd.to_numeric(df_filtrato.iloc[:, 12], errors='coerce').fillna(0) > 0) |
+            (df_filtrato.iloc[:, 22].astype(str).str.lower().str.contains("bambin|minore|ragazz|figli"))
+        ]
+        
+    elif schema_filtro == "Solo Coppie (2 Adulti, 0 Minori)":
+        # Filtra esattamente 2 adulti (colonna 11) e 0 minori (colonna 12)
+        df_filtrato = df_filtrato[
+            (pd.to_numeric(df_filtrato.iloc[:, 11], errors='coerce').fillna(0) == 2) &
+            (pd.to_numeric(df_filtrato.iloc[:, 12], errors='coerce').fillna(0) == 0)
+        ]
+        
+    elif schema_filtro == "Gruppi Numerosi (da 5 persone in su)":
+        # Filtra se il totale ospiti (colonna 9) è maggiore o uguale a 5
+        df_filtrato = df_filtrato[
+            pd.to_numeric(df_filtrato.iloc[:, 9], errors='coerce').fillna(0) >= 5
+        ]
 
-st.markdown("---")
-# ==============================================================================
-# ===== FINE BLOCCO 5 - DA QUI IN POI COMINCIA IL TUO SCANNER RICORRENZE =====
-# ==============================================================================
+    # --- APPLICAZIONE DELLA RICERCA TESTUALE UNIVERSALE ---
+    if chiave_ricerca:
+        df_filtrato = df_filtrato[
+            df_filtrato.iloc[:, 4].astype(str).str.lower().str.contains(chiave_ricerca) |     # Cognome
+            df_filtrato.iloc[:, 5].astype(str).str.lower().str.contains(chiave_ricerca) |     # Nome
+            df_filtrato.iloc[:, 13].astype(str).str.lower().str.contains(chiave_ricerca) |    # Email
+            df_filtrato.iloc[:, 22].astype(str).str.lower().str.contains(chiave_ricerca)      # Note (contiene Telefono e dettagli)
+        ]
+    # --- BLOCCO 5 - PARTE 2: VISUALIZZAZIONE E GENERAZIONE MESSAGGI ---
+    if not df_filtrato.empty:
+        st.success(f"🎯 Risultati trovati in base ai criteri selezionati: {len(df_filtrato)} record.")
+        st.dataframe(df_filtrato, use_container_width=True)
+        
+        # Selezione della riga specifica per estrarre il testo pronto dell'e-mail
+        index_scelto = st.selectbox("Seleziona l'ospite specifico per generare la mail di risposta:", df_filtrato.index, key="sb_ricerca_avanzata")
+        riga_scelta = df.loc[index_scelto]
+        
+        # Estrazione dati anagrafici e logistici
+        ospite_nome = riga_scelta.iloc[5] if pd.notna(riga_scelta.iloc[5]) and str(riga_scelta.iloc[5]).lower() != "nd" else "Ospite"
+        ospite_email = riga_scelta.iloc[13] if pd.notna(riga_scelta.iloc[13]) else "nd"
+        portale_origine = riga_scelta.iloc[14] if pd.notna(riga_scelta.iloc[14]) else "nostri sistemi"
+        note_storiche = str(riga_scelta.iloc[22]).lower()
+        cane_dettaglio = str(riga_scelta.iloc[15]).lower()
+        
+        st.markdown("### ✉️ Modello Comunicazione Ottimizzato")
+        st.info(f"Inviare a: **{ospite_email}**")
+        
+        # Controllo se è presente un cane per personalizzare l'accoglienza pet-friendly
+        ha_cane = "cane" in note_storiche or "cani" in note_storiche or (cane_dettaglio != "nd" and cane_dettaglio != "0")
+        nota_pet = " Un caloroso saluto va anche ai vostri amici a quattro zampe, che sono da sempre i benvenuti nelle nostre case vacanza." if ha_cane else ""
+        
+        # Controllo se la richiesta originaria era per un'altra località
+        nota_localita = "ci teniamo a precisare che la nostra struttura si trova nella splendida località balneare di Torre Pali (Marina di Salve)"
+        if "lido marini" in note_storiche:
+            nota_localita = "in merito alla sua richiesta per Lido Marini, desideriamo specificare che la nostra struttura si trova nella confinante e bellissima Torre Pali (Marina di Salve)"
+        elif "pescoluse" in note_storiche:
+            nota_localita = "in merito alla sua richiesta per Pescoluse, ci teniamo a precisare che le nostre soluzioni abitative si trovano nella vicina località di Torre Pali (Marina di Salve)"
+        elif "torre san giovanni" in note_storiche:
+            nota_localita = "in merito alla sua richiesta per Torre San Giovanni, le specifichiamo che la nostra struttura sorge a Torre Pali (Marina di Salve)"
 
+        # Controllo se la richiesta era arretrata/in ritardo per aggiungere le scuse formali
+        nota_scuse = ""
+        if "tardiv" in note_storiche or "ritard" in note_storiche:
+            nota_scuse = "Ci scusiamo sinceramente per il ritardo nel risponderle, dovuto a un carico straordinario di contatti ricevuto in questi giorni.\n\n"
+
+        # Composizione finale dell'e-mail professionale ad ampio raggio
+        corpo_email_avanzato = (
+            f"Gentile {ospite_nome},\n\n"
+            f"{nota_scuse}"
+            f"La ringraziamo per averci contattato tramite {portale_origine} per le sue vacanze in Salento.{nota_pet}\n\n"
+            f"Relativamente al periodo di suo interesse, {nota_localita}, in una posizione ottimale per raggiungere comodamente tutte le spiagge sabbiose più rinomate del litorale ionico.\n\n"
+            f"Essendo un periodo di altissima stagione, i nostri alloggi risultano attualmente al completo. Abbiamo comunque provveduto a inserire i suoi dati nella nostra Lista d'Attesa per le cancellazioni: qualora dovesse liberarsi una sistemazione idonea, sarà nostra cura ricontattarla immediatamente.\n\n"
+            f"Per ringraziarla dell'interesse, le assegniamo un Buono Sconto del 15% valido con la nostra \"Formula Fiduciaria\" (nessun acconto o caparra richiesta al momento del blocco, pagamento sicuro effettuato interamente in loco al vostro arrivo, solo dopo aver visionato l'alloggio).\n\n"
+            f"Restiamo a sua completa disposizione per ogni dettaglio.\n\n"
+            f"Cordiali saluti,\n"
+            f"Lo Staff - A Casa di Amici\n"
+            f"https://acasadiamici.info"
+        )
+        st.code(corpo_email_avanzato, language="text")
+    else:
+        st.warning("❌ Nessun ospite trovato con i filtri o le parole chiave inserite.")
+else:
+    st.info("Carica il database per abilitare la centrale di ricerca.")
+
+# ==============================================================================
+# ===== FINE BLOCCO 5 - DA QUI PARTE LO SCANNER RICORRENZE ORIGINALE =====
+# ==============================================================================
