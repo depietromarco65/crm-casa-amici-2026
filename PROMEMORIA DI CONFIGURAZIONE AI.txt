@@ -128,4 +128,21 @@ la tariffa scende a soli 64,00 € al giorno, bloccando il prezzo finale a 448,0
 
 Nel file log del database CSV, inserire nel campo tariffe esclusivamente il 
 Prezzo Netto Scontato (es. 448.00) e specificare lo sviluppo nelle note.
+
+=============================================================================
+10. GESTIONE RICHIESTE ARRETRATE SCADUTE (STATO: "Richiesta Scaduta")
+=============================================================================
+Se la richiesta perviene dal server in data palesemente successiva al periodo 
+di soggiorno richiesto dall'ospite (date di arrivo e partenza già passate), 
+è ASSOLUTAMENTE VIETATO inserire l'utente in "Lista d'attesa" nel testo della mail.
+
+Procedura obbligatoria:
+1. Nel file di log CSV di GitHub, impostare tassativamente il campo STATO RICHIESTA 
+   come "Richiesta Scaduta" (evitando sempre la parola "Rifiutato").
+2. Nel testo della mail (Blocco C), eliminare ogni riferimento a graduatorie o 
+   disdette future per quel periodo specifico. 
+3. Giustificare il ritardo imputandolo congiuntamente al sovraccarico tecnico 
+   del server e all'elevatissimo numero di richieste di prenotazione che la 
+   nostra struttura riceve ogni anno, scusandosi per la gestione tardiva.
+4. Mantenere l'invio del buono speciale al 20% per il futuro e la Formula Fiduciaria.
 =============================================================================
