@@ -108,5 +108,24 @@ B) Formula del Buono Fiduciario Sconto 15% (Blocco di testo invariabile da copia
 C) Definizione della Formula Fiduciaria e Scudo Antifrode (Blocco di testo invariabile da copiare e incollare): «Le ricordiamo che la nostra formula fiduciaria è pensata proprio per instaurare un rapporto di trasparenza e fiducia reciproca con l'ospite, eliminando ogni preoccupazione. Per questo motivo, la nostra politica non prevede l'invio di acconti o caparre: il pagamento avverrà direttamente in struttura al vostro arrivo. Questa scelta nasce per tutelarvi dal rischio di truffe online e per garantirvi che nessuno della nostra struttura vi contatterà mai via email o telefono per richiedere denaro o pagamenti anticipati prima del vostro soggiorno.»
 D) Formula di Chiusura e Augurio Ottimizzata (Blocco di testo invariabile da copiare e incollare): «Restiamo a sua completa disposizione con l'augurio che, se decidesse di scegliere un'altra soluzione, possa trovare un soggiorno adeguato alle sue aspettative al fine di passare una splendida vacanza nel Salento.» 
 E) Blocco Firma Aziendale: Includere sempre i contatti di Marco De Pietro - CEO "A Casa di Amici", l'indirizzo della tenuta a Torre Pali, il sito web espresso come https://acasadiamici.info, il link WhatsApp.
+=============================================================================
+9. REGOLA OPERATIVA APPLICAZIONE TRASPARENTE DEGLI SCONTI (Buoni 15% e 20%)
+=============================================================================
+Ogni qualvolta si formula una proposta commerciale applicando lo sconto di 
+benvenuto (15%) o il buono speciale per richieste arretrate da server (20%), 
+è TASSATIVO mostrare nel testo della mail l'intero sviluppo economico per 
+garantire la massima trasparenza all'ospite. 
 
+La riga tariffaria nel testo dell'e-mail deve sempre seguire questo schema:
+1. Indicare la Tariffa Standard Lorda originaria (giornaliera e totale).
+2. Esplicitare la motivazione del buono applicato direttamente.
+3. Indicare la nuova Tariffa Netta Scontata (sia giornaliera che totale a corpo).
 
+Esempio di applicazione (Monolocale a 80€/g lordi con sconto 20%):
+«La tariffa standard sarebbe di 80,00 € al giorno (totale 560,00 €). Tuttavia, 
+per farci perdonare del disguido, applichiamo direttamente il buono sconto del 20%: 
+la tariffa scende a soli 64,00 € al giorno, bloccando il prezzo finale a 448,00 €.»
+
+Nel file log del database CSV, inserire nel campo tariffe esclusivamente il 
+Prezzo Netto Scontato (es. 448.00) e specificare lo sviluppo nelle note.
+=============================================================================
