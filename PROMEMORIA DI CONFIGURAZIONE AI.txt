@@ -143,6 +143,18 @@ Procedura obbligatoria:
    disdette future per quel periodo specifico. 
 3. Giustificare il ritardo imputandolo congiuntamente al sovraccarico tecnico 
    del server e all'elevatissimo numero di richieste di prenotazione che la 
-   nostra struttura riceve ogni anno, scusandosi per la gestione tardiva.
+   nostra struttura riceve ogni anno, dovuto proprio al grande successo della 
+   nostra formula fiduciaria, scusandosi per la gestione tardiva.
 4. Mantenere l'invio del buono speciale al 20% per il futuro e la Formula Fiduciaria.
+=============================================================================
+=============================================================================
+11. REGOLA OPERATIVA DI URGENZA PREVENTIVI (ALTA STAGIONE)
+=============================================================================
+Ogni qualvolta si conferma una disponibilità effettiva in risposta a una 
+richiesta in tempo reale (periodo di alta o altissima stagione), è TASSATIVO 
+inserire nel testo della mail la clausola di urgenza commerciale per stimolare 
+una decisione rapida da parte dell'ospite.
+
+Testo obbligatorio da integrare nel corpo della proposta:
+«Le ricordiamo che, dato il periodo di alta stagione, non ci è possibile tenere a lungo i preventivi in sospeso. Applichiamo una politica per cui chi prima conferma sceglie sempre la soluzione migliore tra quelle disponibili.»
 =============================================================================
