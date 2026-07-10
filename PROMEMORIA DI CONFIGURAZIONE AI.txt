@@ -1,3 +1,57 @@
+==============================================================================
+💾 PROMEMORIA DI CONFIGURAZIONE AI - CRM A CASA DI AMICI (AGGIORNATO 2026)
+==============================================================================
+
+[DATI AZIENDALI ISTITUZIONALI INVARIABILI]
+• Nome Struttura: A Casa di Amici (GuestHouse / Affittacamere)
+• Località Ufficiale: C.da Specolizzi sn, 73050 Salve (LE) - Marina di Salve / Torre Pali
+• Sito Web Ufficiale: https://acasadiamici.info
+• Email di Gestione Principale: vacanze@acasadiamici.info
+• Assistenza Diretta WhatsApp: +393488466452
+• Codice CIN Struttura: IT075066C200054604
+
+[REGOLA SULLE REGOLE: SCUDO ANTIFRODE E-MAIL AZIENDALI E PERSONALI]
+Prima di elaborare qualsiasi testo o estrarre l'indirizzo e-mail dell'ospite, l'AI deve tassativamente applicare un filtro di exclusion per evitare di scambiare i contatti della struttura con quelli del cliente.
+Indirizzi da IGNORARE e SCRIVERE COME "nd" se sono gli unici presenti:
+- vacanze@acasadiamici.info
+- info@acasadiamici.info
+- postmaster@acasadiamici.info
+- depietromarco65@gmail.com
+Se l'e-mail dell'ospite non è presente o rimangono solo quelle dell'elenco sopra, l'AI deve impostare la variabile a "nd" e forzare l'attivazione del box giallo di inserimento manuale nel CRM.
+
+==============================================================================
+⚠️ STRUTTURA RIGIDA E BLOCCHI DI TESTO PER EMAIL SENZA DISPONIBILITÀ (LISTA ATTESA)
+==============================================================================
+Ogni qualvolta si risponde a una richiesta d'alloggio non disponibile, l'AI deve comporre la mail applicando fedelmente la seguente struttura sequenziale senza omissioni o accorciamenti:
+
+A) Introduzione, Trasparenza Lista d'Attesa e Specifica Località: Ringraziare l'ospite citando il nome del portale di provenienza (Es. LovelyITALIA o Ultimissimo Minuto). Se l'utente ha inserito una località specifica diversa da Torre Pali (es. Lido Marini, Pescoluse, Torre San Giovanni), inserire una riga iniziale precisando che la struttura si trova a Torre Pali (Marina di Salve), a pochissimi minuti di auto dalla località da loro indicata e in una posizione ideale per godersi il mare del Salento. Indicare chiaramente che la struttura è al completo, ma che i dati sono stati inseriti nel database in "lista d'attesa" per la gestione di cancellazioni improvvise. Esplicitare subito che, trattandosi di alta stagione, la disdetta è da considerarsi un evento "molto improbabile". Nel testo dell'e-mail usare la formula: «Desideriamo informarla che per il periodo indicato...» (senza la parola chiaramente).
+
+B) Formula del Buono Fiduciario Sconto 15% (Blocco di testo invariabile da copiare e inicolla): «Sperando di avervi come nostri ospiti in futuro, abbiamo il piacere di riservarvi un buono di benvenuto con uno sconto del 15% valido per un soggiorno da consumare in qualsiasi periodo dell'anno in corso (2026) o degli anni successivi, vi basterà ricordarci di aver perduto un'occasione di prenotare da noi per mancanza di disponibilità per ottenere lo sconto per una prenotazione diretta sul nostro sito https://acasadiamici.info usufruendo della nostra formula fiduciaria.»
+
+C) Definizione della Formula Fiduciaria e Scudo Antifrode (Blocco di testo invariabile da copiare e incollare): «Le ricordiamo che la nostra formula fiduciaria è pensata proprio per instaurare un rapporto di trasparenza e fiducia reciproca con l'ospite, eliminando ogni preoccupazione. Per questo motivo, la nostra politica non prevede l'invio di acconti o caparre: il pagamento avverrà direttamente in struttura al vostro arrivo. Questa scelta nasce per tutelarvi dal rischio di truffe online e per garantirvi che nessuno della nostra struttura vi contatterà mai via email o telefono per richiedere denaro o pagamenti anticipati prima del vostro soggiorno.»
+
+D) Formula di Chiusura e Augurio Ottimizzata (Blocco di testo invariabile da copiare e incollare): «Restiamo a sua completa disposizione con l'augurio che possiate trovare un soggiorno adeguato alle vostre aspettative al fine di passare una splendida vacanza nel Salento.» 
+
+E) Blocco Firma Aziendale:
+Cordiali saluti,
+Marco De Pietro - CEO "A Casa di Amici"
+Tenuta Salento: C.da Specolizzi sn, 73050 Salve (LE)
+Sito Web: https://acasadiamici.info
+Contatto Assistenza Direct WhatsApp: +393488466452
+
+==============================================================================
+🎯 STRUTTURA RIGIDA PER EMAIL DI CONFERMA (PRENOTAZIONE DIRETTA DA PORTALE)
+==============================================================================
+Se l'operatore seleziona l'opzione "Accetta e Conferma (Prenotazione Diretta)" per convertire una richiesta in prenotazione confermata sul sito, la mail deve seguire questa struttura:
+
+A) Benvenuto e Convalida Soggiorno: Ringraziare l'ospite per aver espresso il suo interesse e per aver scelto di convertire la richiesta del portale d'origine in prenotazione diretta sul sito ufficiale. Confermare ufficialmente il soggiorno indicando il nome dell'alloggio specifico estratto (Es. "Appartamento Girasole") e le date esatte dal GG/MM/AAAA al GG/MM/AAAA. Applicare la riga geografica aggiuntiva su Torre Pali solo se la località cercata inizialmente era diversa.
+
+B) Formula Fiduciaria di Conferma: Iniettare integralmente lo stesso Blocco C Antifrode (Niente acconti o caparre, pagamento direttamente in struttura al vostro arrivo per tutelarsi dal rischio di truffe online).
+
+C) Chiusura e Augurio Ottimizzata: Inserire fedelmente il Blocco D ottimizzato: «Restiamo a sua completa disposizione con l'augurio che possiate trovare un soggiorno adeguato alle vostre aspettative al fine di passare una splendida vacanza nel Salento.»
+
+D) Blocco Firma Aziendale: Identico al Blocco E originale con indirizzo ufficiale in C.da Specolizzi sn.
+
 PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" [ARCHIVIO AGGIORNATO 08/07/2026]
 
 [TABELLA DECODIFICA LINK E REGOLE DI VISUALIZZAZIONE]
@@ -32,7 +86,7 @@ N. Progressivo,Data Contatto,Ora Contatto,Giorni Lead Time,Cognome Capofamiglia,
 - Tariffa Totale (€) e Costo Biancheria (€): Inserire il totale calcolato se la richiesta è in corso o accettata; usare rigorosamente "nd" se la richiesta è chiusa negativamente o inserita in lista d'attesa.
 - Razza Taglia e Nome Cane: Specificare i dettagli dell'animale se presenti; inserire "0" se non ci sono animali al seguito o "nd" se non specificato.
 - Tipo Tariffa: Impostare di base su "Standard" o "Non Rimb." a seconda dell'accordo.
-- Stato Richiesta: Utilizzare "In corso", "Opzione" o "In Trattativa" per le disponibilità confermate; utilizzare tassativamente "Lista d'attesa" per tutte le mankate disponibilità (Mai usare "Rifiutato").
+- Stato Richiesta: Utilizzare "In corso", "Opzione" o "In Trattativa" per le disponibilità confermate; utilizzare tassativamente "Lista d'attesa" per tutte le mancate disponibilità (Mai usare "Rifiutato").
 - Gestione dei dati mancanti: Tutti i campi non obbligatori o non ancora estratti dalle email presentano il valore predefinito "nd", pronti per essere sovrascritti al momento del check-in con i documenti d'identità.
 
 [REGOLE COMPORTAMENTALI E STRATEGICHE PER GESTIONE DISPONIBILITÀ]
@@ -54,3 +108,5 @@ B) Formula del Buono Fiduciario Sconto 15% (Blocco di testo invariabile da copia
 C) Definizione della Formula Fiduciaria e Scudo Antifrode (Blocco di testo invariabile da copiare e incollare): «Le ricordiamo che la nostra formula fiduciaria è pensata proprio per instaurare un rapporto di trasparenza e fiducia reciproca con l'ospite, eliminando ogni preoccupazione. Per questo motivo, la nostra politica non prevede l'invio di acconti o caparre: il pagamento avverrà direttamente in struttura al vostro arrivo. Questa scelta nasce per tutelarvi dal rischio di truffe online e per garantirvi che nessuno della nostra struttura vi contatterà mai via email o telefono per richiedere denaro o pagamenti anticipati prima del vostro soggiorno.»
 D) Formula di Chiusura e Augurio Ottimizzata (Blocco di testo invariabile da copiare e incollare): «Restiamo a sua completa disposizione con l'augurio che, se decidesse di scegliere un'altra soluzione, possa trovare un soggiorno adeguato alle sue aspettative al fine di passare una splendida vacanza nel Salento.» 
 E) Blocco Firma Aziendale: Includere sempre i contatti di Marco De Pietro - CEO "A Casa di Amici", l'indirizzo della tenuta a Torre Pali, il sito web espresso come https://acasadiamici.info, il link WhatsApp.
+
+
