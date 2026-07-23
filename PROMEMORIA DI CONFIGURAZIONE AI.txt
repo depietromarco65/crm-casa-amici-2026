@@ -36,9 +36,7 @@ L'AI deve classificare le pratiche utilizzando unicamente quattro stati rigidi:
 7. PARAMETRIZZAZIONE DEI RECORD IN SOLD-OUT / LISTA D'ATTESA
 Nei record contrassegnati dallo stato "Lista d'attesa" o "Richiesta Scaduta" per mancanza di disponibilità, i campi relativi ad Alloggio_Assegnato, Importo_Lordo, Percentuale_Sconto, Modalita_Pagamento e Tassa_Soggiorno devono tassativamente assumere il valore di default fisso "nd".
 
-=============================================================================
-PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (AGGIORNAMENTO SEZIONE I)
-=============================================================================
+================================= PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (AGGIORNAMENTO SEZIONE I) ===========================================================
 
 8. REQUISITO DI APPLICAZIONE DEL LISTINO UFFICIALE (REGOLA ALTA STAGIONE)
 Durante i periodi centrali di altissima stagione estiva (luglio e agosto), le richieste in tempo reale devono essere elaborate applicando la tariffa piena di listino senza sconti arbitrari (Es. Monolocali a 80,00 € al giorno).
@@ -56,9 +54,7 @@ L'AI deve ignorare tassativamente tutte le notifiche, i consigli e i suggeriment
 9. REQUISITO DI SVILUPPO ECONOMICO TRASPARENTE E CONSUMI
 Ogni preventivo deve riportare lo sviluppo contabile trasparente (tariffa giornaliera, lordo totale, sconto e prezzo netto finale). In coda, specificare la formula tutto incluso per i consumi di Luce, Acqua, Gas cucina, connessione Wi-Fi e parcheggio privato interno alla proprietà.
 
-=============================================================================
-PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (AGGIORNAMENTO NOTA 9-BIS)
-=============================================================================
+================================= PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (AGGIORNAMENTO NOTA 9-BIS) =================================
 
 9-Bis. APPLICAZIONE CONDIZIONATA DELLE OPPORTUNITÀ DI PRENOTAZIONE (RESTRITTIVA BLACKLIST)
 L'AI deve applicare la differenziazione delle formule di prenotazione secondo un criterio rigido di affidabilità del lead:
@@ -81,15 +77,23 @@ Nelle e-mail di chiusura per impossibilità di alloggio o Sold-Out ("Lista d'att
 L'AI include nei propri flussi di controllo ordinari l'ispezione periodica del backend di Care4UHotel. Questa procedura serve a monitorare lo stato di attivazione delle polizze abbinate ai preventivi "Premium a Rate" (Nota 9-Bis). Permette di verificare se l'ospite ha effettivamente saldato la copertura assicurativa prima di sbloccare l'invio del piano rateale concordato.
 
 13. PROTOCOLLO INTERNAZIONALE E ADATTAMENTO MULTILINGUA
-Tutte le comunicazioni destinate a lead o richieste di origine estera (identificabili da e-mail straniere, prefissi telefonici internazionali o testi in lingua) devono essere interamente redatte nella lingua madre dell'ospite. L'adattamento linguistico deve mantenere intatta la rigidità della struttura informativa italiana, i parametri contabili trasparenti e i richiami ai link estesi del sito.
+Tutte le comunicazioni destinate a lead o richieste di origine estera (identificabili
+ da e-mail straniere, prefissi telefonici internazionali o testi in lingua) devono essere interamente redatte nella lingua madre dell'ospite. L'adattamento linguistico deve mantenere intatta la rigidità della struttura informativa italiana, i parametri contabili trasparenti e i richiami ai link estesi del sito.
 
 14. PIANIFICAZIONE CAMPAGNE ESTERE E STRATEGIA REVENUE PORTALI FLAT
 Le relazioni commerciali e i canali flat a canone fisso senza commissioni, specificamente il portale tedesco Traum-Ferienwohnungen (Kd.-Nr. 208471), sono temporaneamente congelati e mantenuti senza modifiche o upgrade per tutta la stagione estiva 2026. Al fine di ottimizzare il ritorno sull'investimento (ROI) ed evitare scatti tariffari intempestivi, la direzione posticipa l'analisi costi-benefici e la pianificazione strategica per il mercato del Nord Europa al periodo natalizio (dicembre 2026). In questo stesso periodo verrà gestito lo sblocco telefonico delle inserzioni su Bed-and-Breakfast.it.
 
-15. REGOLA DI GEO-MARKETING LOGISTICO SULLA BIANCHERIA (LENZUOLA E ASCIUGAMANI)
-Al fine di ottimizzare i flussi e intercettare la clientela a lungo raggio risolvendo il problema del peso dei bagagli, la fornitura dei set di lenzuola e asciugamani risponde rigidamente al mezzo di trasporto utilizzato dall'ospite per raggiungere la struttura:
-• FORMULA VOLO (GRATUITA): Per tutti gli ospiti (nazionali o internazionali) che raggiungono il Salento tramite volo aereo, la fornitura di biancheria da letto e da bagno è inclusa interamente a titolo gratuito nella tariffa (attivabile previa ricezione di copia del biglietto aereo).
-• FORMULA AUTO (A PAGAMENTO): Per tutti gli ospiti che raggiungono la struttura viaggiando con la propria auto privata, la fornitura resta totalmente esclusa dalla tariffa base. Rimane a cura dell'ospite oppure disponibile su richiesta con addebito dei supplementi da listino accessori ufficiale.
+• PORTALE BED-AND-BREAKFAST.IT (Canale Diretto Disintermediato)
+  - URL di Accesso Area Riservata: https://bed-and-breakfast.it
+  - Nome Utente Account: depietromarco65@gmail.com
+  - Stato Canale: Inserzione temporaneamente sospesa.
+  - Azione Programmata: Sblocco telefonico e riattivazione abbonamento a dicembre 2026 (Regola 14).
+
+
+15. REGOLA DI GEO-MARKETING LOGISTICO SULLA BIANCHERIA (FORMULA INTERMODALE)
+Al fine di agevolare la clientela a lungo raggio, ottimizzare i flussi d'accoglienza ed evitare che il peso dei bagagli comporti un sovrapprezzo per l'ospite sulle tariffe dei vettori, la fornitura dei set di lenzuola e asciugamani da letto e da bagno risponde a un criterio flessibile basato sul mezzo di trasporto:
+• FORMULA INTERMODALE (GRATUITA): Per tutti gli ospiti (nazionali o internazionali) che raggiungono il Salento tramite volo aereo, treno o autobus di linea, la fornitura completa di biancheria è inclusa interamente a titolo gratuito all'interno della tariffa base. Il servizio si attiva previa ricezione e caricamento nel CRM di una copia o screenshot del biglietto/titolo di viaggio.
+• FORMULA AUTO (A PAGAMENTO): Per tutti gli ospiti che raggiungono la struttura viaggiando con la propria auto privata, non essendoci restrizioni di peso sui bagagli, la fornitura di biancheria resta totalmente esclusa dalla tariffa base. Rimane a cura dell'ospite oppure disponibile su richiesta con addebito dei supplementi fissi da listino accessori ufficiale..
 
 
 =============================================================================
@@ -141,7 +145,8 @@ Al fine di potenziare le azioni di direct marketing e fidelizzazione post-soggio
 20-Quinquies. AUTOMAZIONE FLUSSO E ROUTINE DI FOLLOW-UP PREVENTIVI ATTIVI (STATO: "In corso")
 Al fine di abbattere la percentuale di preventivi inviati e non letti (fissata dalle statistiche di settore tra il 5% e il 10%), il CRM esegue una routine rigida di controllo e follow-up automatico per tutti i record in stato "In corso" inviati ai lead dei portali "su richiesta":
 • A +24 Ore dall'invio: Se non viene registrato alcun riscontro o apertura dall'ospite, il sistema invia in automatico un'e-mail di cortesia per verificare la corretta ricezione e l'allineamento dei filtri antispam.
-• A +3 Giorni dall'invio: Se l'alloggio risulta ancora non confermato, il sistema genera un avviso di sblocco date e lo trasmette via WhatsApp al numero mobile dell'ospite, informandolo che le date sul calendario verranno liberate a favore dei clienti in lista d'attesa.
+• A +3 Giorni dall'invio: Se l'alloggio risulta ancora non confermato, il sistema genera un avviso di sblocco date e lo trasmette via WhatsApp al numero mobile dell'ospite,
+ informandolo che le date sul calendario verranno liberate a favore dei clienti in lista d'attesa.
 
 
 =============================================================================
@@ -218,7 +223,8 @@ L'AI deve utilizzare esclusivamente questa mappatura ufficiale per orientare gli
 +---------------------+-------------------------+---------------------+------------------------+-----------------------------------------------------------+
 
 | SPECCHIA            | Isola Pedonale          | 13 Giu - 15 Set     | Piazza del Popolo      | Dalle ore 19:00 alle ore 03:00 di ogni giorno             |
-+---------------------+-------------------------+---------------------+------------------------+-----------------------------------------------------------+
++---------------------+-------------------------+---------------------+------------------------+------------------------------------
+-----------------------+
 
 | UGENTO              | ZTL Varchi Elettronici  | Stagione Estiva     | Nucleo Storico Centro  | Attivazione in fascia serale (Varchi monitorati)          |
 |                     | Semafori Controllati    | Tutto l'anno        | Collegamenti Marine    | H24 - Photored (Direttrici centro urbano / SP 65)         |
@@ -304,6 +310,16 @@ Nei casi in cui lo stato della richiesta sia impostato su "Lista d'attesa" o "Ri
 • TRIGGER AUTOMATICO COMPLEANNI ED ONOMASTICI (FIDELIZZAZIONE RIGENERATIVA):
   - Ogni giorno alle ore 09:00 il server esegue una scansione anagrafica automatica. In corrispondenza dell'evento, invia su WhatsApp il modello "Auguri & Fidelizzazione", erogando il codice coupon del 15% valido per prenotazioni future dirette sul sito web.
 
+24-BIS. DIRETTIVA DI TRASPARENZA ED ESCLUSIONE MANUALE CODICI CIN/CIS IN EMAIL
+I parametri di conformità istituzionale obbligatori della struttura (Codice CIN Nazionale: IT075066C200054604 e Codice CIS Regionale: LE07506691000014272) devono essere inseriti esplicitamente dall'AI e dal gestore esclusivamente all'interno di annunci promozionali sui canali social (Facebook), volantini cartacei, biglietti da visita o qualsiasi altra forma pubblicitaria esterna. 
+• DEROGA PER CANALE EMAIL: Nei modelli di testo pronti per le e-mail commerciali da inviare ai clienti, l'AI ha il divieto di inserire manualmente i codici CIN e CIS nel corpo del messaggio, in quanto tali dati sono già graficamente preimpostati e integrati all'interno del blocco firma istituzionale della guesthouse.
+
+24-TER. LOGICA EDITORIALE SULLO SVILUPPO CONTABILE E OTTIMIZZAZIONE DEGLI SCONTI
+Nello sviluppo economico dei preventivi commerciali inviati via e-mail ("In corso"), l'AI deve applicare una rigida pulizia psicologica per favorire il tasso di conversione del lead ed evitare barriere d'acquisto:
+• IN CASO DI APPLICAZIONE DI SCONTI: Il preventivo deve riportare lo sviluppo trasparente completo (Tariffa giornaliera, importo lordo totale, percentuale di sconto applicata, valore dello sconto in euro e prezzo netto finale).
+• IN CASO DI ASSENZA DI SCONTI (ALTA STAGIONE): Qualora la richiesta avvenga in periodi centrali di altissima stagione (luglio e agosto) o short-stay revenue dove si applica il listino pieno senza promozioni, l'AI non deve mai menzionare la voce sconti o indicare formule come "Sconto: 0%". La dicitura è considerata controproducente. Il testo deve elencare in modo snello e lineare unicamente la tariffa giornaliera e il prezzo netto totale finale del soggiorno.
+
+
 25. ARCHIVIO RIGIDO DELLE CREDENZIALI DI ACCESSO AI SISTEMI E PORTALI
 
 • PORTALE BOOKING.COM (Canale di Vendita OTA con Pagamenti Gestiti)
@@ -321,7 +337,8 @@ Nei casi in cui lo stato della richiesta sia impostato su "Lista d'attesa" o "Ri
   - Nome Utente Account: depietromarco65@gmail.com
   - Password di Sicurezza: Dptmcn65h11l219m
 
-• CHANNEL MANAGER OCTORATE (Sincronizzazione Calendari e API Portali)
+• CHANNEL MANAGER OCTORATE (Sincronizzazione
+ Calendari e API Portali)
   - URL di Accesso Dashboard: (https://admin.octorate.com/octobook/user/dashboard.xhtml) 
   - Nome Utente Amministratore: depietromarco65@gmail.com
   - Password di Sicurezza: dPtMcN65H11L219M!
@@ -340,6 +357,22 @@ Nei casi in cui lo stato della richiesta sia impostato su "Lista d'attesa" o "Ri
 • PORTALE BED-AND-BREAKFAST.IT (Canale Diretto Disintermediato)
   - Nome Utente Account: depietromarco65@gmail.com
   - Stato Canale: Inserzione temporaneamente sospesa (Richiesto sblocco telefonico).
+
+=============================================================================
+PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (INTEGRAZIONE NOTA 25-DUODECIES)
+=============================================================================
+
+25-Duodecies. PROTOCOLLO DI TRACCIAMENTO LEGALE E CONTENZIOSO TECNICO HOLIDU
+In linea con l'apertura ufficiale del contenzioso sul Ticket 12269034 relativo all'overbooking della camera Appartamento Girasole (Ospite: Francesco Saldi - ID 7153251), il CRM registra l'avvenuta notifica di sospensione cautelativa inviata dall'operatrice Patty in data giovedì 23 luglio 2026. La pratica è ufficialmente congelata e trasferita al reparto tecnico di secondo livello del portale tedesco per la verifica dei flussi iCal.
+
+• DIRETTIVA RIGIDA DI RISPOSTA AL REPARTO TECNICO HOLIDU:
+Qualora il reparto ingegneristico di Holidu o HomeToGo risponda richiedendo prove o tentando di scaricare la responsabilità finanziaria dei 1.469,00 € (371,96 € di penale + 1.097,04 € di storno camera) sulla guesthouse, l'AI e la direzione formuleranno la replica allegando esclusivamente i tracciati XML/JSON estratti dalla dashboard di Octorate (ID Struttura: 873815).
+
+La comunicazione dovrà essere blindata inserendo i seguenti tre punti fermi:
+1. Dimostrazione cronologica, tramite lo "Storico dei processi" del calendario di Octorate, che la chiusura dell'inventario per la camera Girasole era stata correttamente trasmessa dal Channel Manager prima del blocco di sincronizzazione.
+2. Conferma dell'adempimento logistico protetto eseguito direttamente dall'host, che ha salvaguardato il cliente comune del portale trasferendolo a proprie spese presso l'alloggio partner "Appartamento La Saracina" a Presicce, visibile nella rete ufficiale sul nostro sito: https://acasadiamici.info
+3. Richiesta speculare di annullamento del saldo negativo sul backend e ripristino immediato della regolarità contabile, escludendo qualsiasi transazione transattiva al ribasso o accettazione parziale della colpa.
+
 
 =============================================================================
 PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (ARCHIVIO RETI WI-FI CON INTERFACCIA QR)
@@ -438,7 +471,8 @@ PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (SEZIONE V - PARTE 5 DI 5)
 =============================================================================
 
 [REGOLA RIGIDA NOTA 25-SEPTIES: PROTOCOLLO DI RISPOSTA PRIVATA PER VERIFICHE NO-SHOW]
-L'AI e la direzione hanno il divieto assoluto di pubblicare o confermare post pubblici contenenti elenchi di cattivi pagatori o liste nere sul gruppo Facebook (https://www.facebook.com/vacanzesicurenelsalento). Le richieste di verifica dei colleghi host devono essere gestite tassativamente in chat privata. La risposta deve limitarsi a confermare o smentire la presenza del soggetto nel nostro database ospiti privato (GitHub), utilizzando una formulazione oggettiva basata sulla cronologia dei log (Es. data del No-Show registrato), escludendo giudizi personali o termini diffamatori a tutela legale del brand.
+L'AI e la direzione hanno il divieto assoluto di pubblicare o confermare post pubblici contenenti elenchi di cattivi pagatori o liste nere sul gruppo Facebook (https://www.facebook.com/vacanzesicurenelsalento).
+ Le richieste di verifica dei colleghi host devono essere gestite tassativamente in chat privata. La risposta deve limitarsi a confermare o smentire la presenza del soggetto nel nostro database ospiti privato (GitHub), utilizzando una formulazione oggettiva basata sulla cronologia dei log (Es. data del No-Show registrato), escludendo giudizi personali o termini diffamatori a tutela legale del brand.
 
 
 -----------------------------------------------------------------------------
@@ -460,3 +494,63 @@ PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (AGGIORNAMENTO ALERT 21/07)
 25-Undecies. SVEGLIA DI SISTEMA: CREAZIONE AMBIENTE MODULI COMPLEMENTARI (ALERT INTERNO)
 • TIMESTAMP ATTIVAZIONE PERENTORIO: Martedì 21 Luglio 2026 - Ore 19:00 (Fuso Orario Europa/Roma)
 • DIRETTIVA AI: Al raggiungimento dell'orario stabilito, l'AI deve bloccare la sessione ordinaria e presentare al gestore la traccia tecnica dettagliata per la creazione materiale su Google Moduli / Microsoft Forms dei due form del circuito (https://facebook.com). Il sistema verificherà l'inserimento dei criteri circostanziati basati solo sulle chiavi univoche (E-mail e Telefono cellulare) per l'immissione dei clienti in Lista Nera. L'AI integrerà formalmente le linee guida per la gestione delle controversie, garantendo all'utente segnalato il pieno Diritto di Replica e la possibilità di presentare istanza di cancellazione, la quale sarà valutata ed eseguita dalla direzione sul file database_ospiti.csv di GitHub solo ed esclusivamente dopo aver effettuato gli accertamenti e le verifiche documentali dovute con la struttura ricenziente.
+
+
+
+
+=============================================================================
+PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (AGGIORNAMENTO NOTA 26-BIS)
+=============================================================================
+
+26-Bis. PROTOCOLLO ANNUALE DI ACQUISIZIONE CALENDARI EVENTI TERRITORIALI (DINAMICO)
+Al fine di alimentare costantemente il funnel di email marketing (Lead Magnet - Nota 20-Sexies-Bis) e fornire un'assistenza logistica impeccabile agli ospiti senza richiedere l'inserimento manuale dei dati da parte del gestore, l'AI esegue una routine di sincronizzazione e aggiornamento automatico il 1° giugno di ogni anno. 
+
+L'AI interroga programmaticamente i database locali per estrarre le date esatte, i programmi e i contatti delle manifestazioni più rinomate del Salento nelle 16 località della nostra rete, strutturando le risposte commerciali in modo fluido, in lingua italiana con mesi e giorni minuscoli e con l'URL esteso in chiaro https://acasadiamici.info .
+
+MAPPATURA DELLE MANIFESTAZIONI STORICHE RICORRENTI DA AGGIORNARE OGNI ANNO:
+
+1. AREA NUCLEO SALVE E MORCIANO (Chilometro Zero Struttura):
+ - TORRE PALI ? "Torre Pali Art Fest" (Rassegna estiva di artisti di strada e pizzica nel mese di luglio) e Mercatini Creativi Artigianali (cadenza settimanale sulla Promenade del canale). "Festa della Madonna della Sbarra" (metà agosto, processione a mare e spettacolo pirotecnico).
+ - PESCOLUSE ? Tappe del Beach Party Tour e concerti live sulle dune (luglio e agosto).
+ - SALVE CENTRO ? Rassegna "Salve in Musica", spettacoli teatrali in Piazza Concordia e itinerari notturni ai frantoi ipogei.
+ - TORRE VADO & MORCIANO ? "Sagra del Pesce Fritto" (prima metà di agosto al porto) e Festa Patronale di San Giovanni Elemosiniere (fine luglio a Morciano con luminarie monumentali).
+
+2. COMPLESSO DELLE MARINE DI UGENTO (Canale di Riprotezione e Flussi Secondari):
+ - LIDO MARINI & TORRE MOZZA ? "Sagra della Taranta e dei Sapori Salentini" (periodo a cavallo tra luglio e agosto, stand gastronomici tipici e tamburelli).
+ - TORRE SAN GIOVANNI ? Solenni festeggiamenti e fiera della "Madonna dell'Aiuto" (seconda domenica di agosto, storica processione delle barche in mare nel bacino del porto). Cartellone concerti "Ugento Estate" in Piazza del Porto.
+ - UGENTO CENTRO ? "Notte Bianca dell'Archeologia" nel mese di agosto con apertura straordinaria dei percorsi della civiltà messapica e del Museo Archeologico Nazionale.
+
+3. CIRCUITO DEI BORGHI ANTICHI DELL'ENTROTERRA (Turismo Culturale e d'Esperienza):
+ - PRESICCE-ACQUARICA ? Manifestazione "I Colori dell'Olio" nel mese di agosto (tre giorni di concerti di musica popolare e gastronomia nel borgo degli oleifici ipogei di Presicce) e "Sagra del Grano" (Acquarica, valorizzazione della cultura e della lavorazione contadina).
+ - SPECCHIA ? "Festa del Cinema Reale" (fine luglio in Piazza del Popolo) e la celeberrima "Notte Bianca di Specchia" (metà agosto, borgo trasformato in isola pedonale con spettacoli visivi, performer e concerti di pizzica fino all'alba).
+
+4. DIRETTRICE IONICA E MARINE DI GALLIPOLI (Movida e Grandi Festival):
+ - MARINA DI MANCAVERSA & TORRE SUDA ? "Sagra della Frisella" e rassegne di cabaret all'aperto nel mese di agosto presso l'area eventi del Giardino Costiero di Torre Suda.
+ - GALLIPOLI ? Concerti ed eventi internazionali del "Parco Gondar" e del "Raffo Fest" (luglio e agosto). Solenne Festa di "Santa Cristina" dal 23 al 26 luglio nel centro storico (storica gara della cuccagna a mare nel seno del canneto e accensione delle grandi luminarie).
+
+5. POLI INTERNAZIONALI DEL SALENTO (Escursioni a Lungo Raggio):
+ - OTRANTO ? Solennità dei "Santi Martiri d'Otranto" (dal 13 al 15 agosto, culmine la notte del 14 agosto con lo spettacolo pirotecnico che illumina l'intera baia del porto). Mostre d'arte nel Castello Aragonese.
+ - LECCE ? Cartellone estivo "Lecce in Scena" (concerti e teatro all'aperto all'Anfiteatro Romano e ai Teatini). Festa Patronale di "Sant'Oronzo, Giusto e Fortunato" dal 24 al 26 agosto (bancarelle nel centro storico, cassa armonica in Piazza Sant'Oronzo e fiera del bestiame).
+
+26-Bis-2. INTEGRAZIONE MANIFESTAZIONI STORICHE CANNOLE E MELENDUGNO
+Nel piano di acquisizione e aggiornamento dinamico annuale dei calendari salentini del 1° giugno, l'AI include tassativamente le scadenze e le programmazioni ufficiali delle seguenti due località strategiche:
+
+1. CANNOLE (Il Cuore Gastronomico dell'Entroterra Idruntino):
+ - MANIFESTAZIONE PRINCIPALE ? "Festa della Municedda" (tradizionalmente si tiene dal 10 al 13 agosto). Si tratta di una delle sagre più grandi, storiche e rinomate d'Italia, interamente dedicata alla lumaca di campagna (la "municedda"), cucinata secondo le antiche ricette locali (al sugo, soffritta o arrostita). L'evento riempie l'area mercatale e il centro urbano di stand enogastronomici, accompagnati da grandi palchi per concerti serali di pizzica, musica popolare e band bandistiche salentine, attirando decine di migliaia di visitatori ogni notte.
+
+2. COMPLESSO DI MELENDUGNO (Le Grandi Marine Adriatiche e la Poesia):
+ - LE MARINE (San Foca, Torre dell'Orso, Roca, Sant'Andrea, Torre Specchia) ? Le cinque marine adriatiche organizzano il cartellone estivo unificato "Blubanner - Melendugno e le sue Marine". 
+ - SAN FOCA ? Il lungomare e l'area del porto ospitano per tutta l'estate fiere dell'artigianato, mercatini serali e concerti di musica leggera, oltre alla tradizionale processione in mare per la Festa di San Foca a metà agosto.
+ - TORRE DELL'ORSO ? L'area dei giardini del sole e l'anfiteatro ospitano rassegne teatrali all'aperto, spettacoli di cabaret e serate danzanti. Nel mese di agosto si tiene la rassegna letteraria e culturale "Premio Torre dell'Orso".
+ - ROCA VECCHIA ? Eventi culturali legati alle aperture straordinarie notturne del sito archeologico e dell'area della Grotta della Poesia per visite guidate ed esperienze visive al chiaro di luna.
+
+-----------------------------------------------------------------------------
+
+26-TER. REQUISITO DI ASSOCIAZIONE ALERT VIABILITÀ SU EVENTI ANNUALI
+Ogni qualvolta l'AI propone o inserisce i programmi delle manifestazioni sopra elencate nelle risposte destinate agli utenti o nel Lead Magnet, ha l'obbligo tassativo di agganciare le istruzioni del Vademecum Parcheggi (Regola 22) e le ordinanze ZTL di blocco (Regola 21) della specifica località, sanzionando preventivamente i comportamenti a rischio multa degli ospiti (es. superamento varchi a Gallipoli Baia Verde, sosta senza navetta a Lecce Foro Boario o linee blu a Torre Vado).
+
+
+26-TER-2. ASSOCIAZIONE CONTROLLI STRADALI SS 16 ADRIATICA E LINEE BLU
+Quando l'AI o il gestore propongono la deviazione degli ospiti verso la Festa della Municedda a Cannole o verso le marine di Melendugno (Torre dell'Orso / San Foca), il CRM ha l'obbligo di inserire gli alert sui controlli elettronici stradali legati alle grandi vie di collegamento:
+• ? ALERT CONTROLLI SEMAFORICI SS 16 (Adriatica - Regola 21): Per raggiungere Cannole o Melendugno risalendo dal Capo di Leuca, gli ospiti devono prestare la massima attenzione alle postazioni fisse dei sistemi Photored operativi H24 tutto l'anno sugli incroci critici di Melpignano e Zollino, che sanzionano istantaneamente qualunque violazione delle corsie o del rosso.
+• ?? SOSTA E PARCHEGGI MARINE (Melendugno): Istruire gli ospiti a rispettare rigorosamente le aree di sosta a pagamento su strisce blu attive H24 per tutta la stagione estiva all'interno dei centri urbani di San Foca e Torre dell'Orso, utilizzando esclusivamente i grandi parcheggi di interscambio perimetrali per non incorrere in sanzioni amministrative.
