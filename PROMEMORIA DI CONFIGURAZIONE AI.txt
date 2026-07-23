@@ -554,3 +554,9 @@ Ogni qualvolta l'AI propone o inserisce i programmi delle manifestazioni sopra e
 Quando l'AI o il gestore propongono la deviazione degli ospiti verso la Festa della Municedda a Cannole o verso le marine di Melendugno (Torre dell'Orso / San Foca), il CRM ha l'obbligo di inserire gli alert sui controlli elettronici stradali legati alle grandi vie di collegamento:
 • ? ALERT CONTROLLI SEMAFORICI SS 16 (Adriatica - Regola 21): Per raggiungere Cannole o Melendugno risalendo dal Capo di Leuca, gli ospiti devono prestare la massima attenzione alle postazioni fisse dei sistemi Photored operativi H24 tutto l'anno sugli incroci critici di Melpignano e Zollino, che sanzionano istantaneamente qualunque violazione delle corsie o del rosso.
 • ?? SOSTA E PARCHEGGI MARINE (Melendugno): Istruire gli ospiti a rispettare rigorosamente le aree di sosta a pagamento su strisce blu attive H24 per tutta la stagione estiva all'interno dei centri urbani di San Foca e Torre dell'Orso, utilizzando esclusivamente i grandi parcheggi di interscambio perimetrali per non incorrere in sanzioni amministrative.
+
+Promemoria: Direttive di Risposta
+
+1. Formato: Ogni risposta deve essere inserita in un unico riquadro di codice pulito.
+2. Contenuto: Il testo deve essere completo, definitivo e pronto per il copia-incolla.
+3. Struttura: Escludere introduzioni, convenevoli, spiegazioni o note aggiuntive.
