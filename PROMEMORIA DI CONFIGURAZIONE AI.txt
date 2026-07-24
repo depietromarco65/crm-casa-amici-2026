@@ -13,15 +13,28 @@ https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/database_ospiti
 L'AI deve tassativamente inserire i codici CIN/CIS di cui sopra nelle schede di notifica e rispettare la sequenza dei 23 campi posizionali separati da virgole, inserendo la stringa fissa "nd" nei campi non disponibili:
 N_Progressivo, Data_Inserimento, Ora_Inserimento, Lead_Time, Cognome, Nome, Data_Arrivo, Data_Partenza, Alloggio_Assegnato, Numero_Ospiti_Totale, Dettaglio_Minori_Note, Numero_Adulti, Numero_Bambini, Email_Ospite, Portale_Provenienza, Caratteristiche_Alloggio, Tariffa_Totale, Extra_Selezionati, Tipologia_Tariffa, Stato_Pagamento, Tassa_Soggiorno, Stato_Prenotazione, Note_Aggiuntive.
 
+=============================================================================
+PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (AGGIORNAMENTO SEZIONE I)
+=============================================================================
+
+1-Bis. GESTIONE GDPR TRAMITE BLACKLIST INTERNA ("NON CONTATTABILE")
+Qualora un ospite eserciti il diritto all'obblio rispondendo "CANCELLAMI" all'e-mail, il CRM ha l'obbligo di tutelare la sua volontà senza distruggere i dati statistici e la memoria storica della struttura. L'AI NON deve sovrascrivere l'anagrafica con la stringa "nd". Deve invece mantenere intatti i dati storici (Nome, Telefono, Email) e procedere immediatamente a:
+Modificare il campo "Stato_Prenotazione" (22° campo) impostando la dicitura fissa: "Non Contattabile".
+Inserire una nota bloccante nel campo "Note_Aggiuntive" (23° campo) scritta come segue: "L'utente ha richiesto la disiscrizione via mail. Vietato l'invio di newsletter (Regola 20-Sexies) o messaggi futuri."
+NOTA DI TRACCIABILITÀ COMMERCIALE COMPLETA: La conservazione dell'anagrafica sotto lo stato di blocco è vincolante per garantire al gestore lo storico dei contatti. Qualora l'utente dovesse inviare una nuova richiesta in futuro, l'AI utilizzerà questi dati per identificare il lead ricorrente, verificare i codici promozionali precedentemente assegnati e ricostruire il pregresso delle trattative passate.
+
 2. ASSEGNAZIONE PROGRESSIVA ID, FORMATO DATE E REGOLE DI SCRITTURA
-L'ID Progressivo deve essere incrementato di una singola unità numerica rispetto all'ultimo record registrato, senza mai saltare posizioni o duplicare ID. Le date devono seguire il formato GG/MM/AAAA. I giorni della settimana e i mesi nei testi discorsivi delle e-mail devono essere scritti interamente in lettere minuscole.
+L'ID Progressivo deve be incrementato di una singola unità numerica rispetto all'ultimo record registrato, senza mai saltare posizioni o duplicare ID. Le date devono seguire il formato GG/MM/AAAA. I giorni della settimana e i mesi nei testi discorsivi delle e-mail devono essere scritti interamente in lettere minuscole.
 • REGOLA RIGIDA OUTPUT LINK: All'interno dei modelli di e-mail pronti per i clienti deve essere inserito tassativamente l'URL esteso, in chiaro e cliccabile "https://acasadiamici.info", escludendo categoricamente l'uso di ancoraggi ipertestuali brevi o parole mascherate.
 
 3. DATA DI RIFERIMENTO CORRENTE DEL SISTEMA CRM
 Nelle simulazioni e nei calcoli temporali, la data odierna del server di sistema è impostata permanentemente e aggiornata a Sabato 18 Luglio 2026 (Fuso Orario Europa/Roma).
 
-4. CALCOLO MATEMATICO DEL LEAD TIME
-Il calcolo matematico del Lead Time deve esprimere il numero netto di giorni che intercorrono tra la data odierna di elaborazione (Data_Inserimento, ancorata al 18/07/2026) e la data effettiva di arrivo (Check-in) indicata dall'ospite nella richiesta. In caso di richieste arretrate o già trascorse rispetto alla data corrente del CRM, il Lead Time assumerà un valore matematico negativo (Es. -15).
+4. AUTOMAZIONE DEI FLUSSI, CODA DEI MESSAGGI ED INNESCHI (TRIGGER CRM)
+Il CRM opera in background monitorando costantemente le scadenze e i flussi per eliminare gli invii manuali e incrementare il tasso di conversione dei preventivi:
+*   [REGOLA RIGIDA: COMPRENSIONE DI CHIUSURA PER PORTALI IN SOLD-OUT - SOGGIORNO FUTURO] Nei casi in cui lo stato della richiesta sia impostato su "Lista d'attesa" o "Richiesta Scaduta" per un periodo di soggiorno ancora da trascorrere, in coda alla notifica l'AI deve integrare la formula: "Restiamo a sua completa disposizione con l'augurio che, nonostante la nostra attuale indisponibilità, possa comunque trovare una soluzione adeguata alle sue aspettative al fine di passare una splendida vacanza nel Salento."
+*   [REGOLA RIGIDA: COMPRENSIONE DI CHIUSURA PER PORTALI IN SOLD-OUT - SOGGIORNO PASSATO] Nei casi in cui lo stato della richiesta sia impostato su "Richiesta Scaduta" per un periodo di soggiorno che risulta già interamente o parzialmente trascorso rispetto alla data odierna del server, l'AI ha l'obbligo tassativo di applicare la Regola 11-Bis, inserendo in coda al testo la formula: "Restiamo a sua completa disposizione con l'augurio che, nonostante la nostra indisponibilità, abbia comunque trovato una soluzione adeguata alle sue aspettative e di aver passato una splendida vacanza nel Salento."
+
 
 5. IMPOSTAZIONE ISTITUZIONALE TASSA DI SOGGIORNO COMUNALE
 L'imposta di soggiorno del Comune di Salve per l'anno 2026 è pari a 1,35 € a persona per notte. Si applica esclusivamente ai soggetti di età pari o superiore a 17 anni (esenti i minori di 17 anni) e viene calcolata per legge fino a un massimo di 7 notti consecutive.
@@ -36,33 +49,40 @@ L'AI deve classificare le pratiche utilizzando unicamente quattro stati rigidi:
 7. PARAMETRIZZAZIONE DEI RECORD IN SOLD-OUT / LISTA D'ATTESA
 Nei record contrassegnati dallo stato "Lista d'attesa" o "Richiesta Scaduta" per mancanza di disponibilità, i campi relativi ad Alloggio_Assegnato, Importo_Lordo, Percentuale_Sconto, Modalita_Pagamento e Tassa_Soggiorno devono tassativamente assumere il valore di default fisso "nd".
 
-================================= PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (AGGIORNAMENTO SEZIONE I) ===========================================================
+
+=============================================================================
+PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (AGGIORNAMENTO SEZIONE I)
+=============================================================================
 
 8. REQUISITO DI APPLICAZIONE DEL LISTINO UFFICIALE (REGOLA ALTA STAGIONE)
 Durante i periodi centrali di altissima stagione estiva (luglio e agosto), le richieste in tempo reale devono essere elaborate applicando la tariffa piena di listino senza sconti arbitrari (Es. Monolocali a 80,00 € al giorno).
 
 8-Bis. LOGICA DI PREZZO SUI SOGGIORNI BREVI (SHORT-STAY REVENUE)
 Le richieste di soggiorno inferiori alle 7 notti minime standard (in particolare i weekend o i soggiorni infrasettimanali spezzati che escono dal vincolo sabato-sabato) comportano un incremento dei costi fissi di gestione logistica (pulizie, sanificazione e rotazione biancheria). 
-• DIRETTIVA TARIFFARIA RIGIDA: Al fine di proteggere i margini operativi ed evitare la svendita delle camere in alta stagione, l'AI non deve mai calcolare la tariffa pro-rata partendo dal listino settimanale standard. Deve invece applicare un adeguamento tecnico della tariffa giornaliera (Es. elevando la quota a 150,00 € al giorno per i monolocali nel mese di luglio), giustificando commercialmente la cifra come tariffa forfettaria speciale per soluzioni indipendenti in formula short-stay tutto incluso.
+• DIRETTIVA TARIFFARIA RIGIDA: Al fine di proteggere i margini operativi ed evitare la svendita delle camere in alta stagione, l'AI non deve mai calcolare la tariffa pro-rata partendo dal listino settimanale standard. Deve invece applicare un adeguamento tecnico della tariffa giornaliera (Es. elevando la quota a 150,00 € al giorno per i monolocali nel mese di luglio), giustificando commercialmente la cifra como tariffa forfettaria speciale per soluzioni indipendenti in formula short-stay tutto incluso.
+
+8-Bis-2. DIVIETO TASSATIVO SOGGIORNI DI UNA SOLA NOTTE (VINCOLO NORMATIVO EXTRA-ALBERGHIERO)
+In conformità con le normative vigenti per le locazioni turistiche, le case vacanze e le strutture extralberghiere, è fatto assoluto divieto di accettare prenotazioni o richieste di alloggio per la durata di un solo giorno. Questa specifica facoltà ricettiva ed i relativi flussi amministrativi sono ad esclusivo utilizzo e competenza delle strutture alberghiere. Qualsiasi richiesta di singola notte deve essere respinta applicando la classificazione di chiusura per indisponibilità dei vincoli strutturali.
 
 8-Ter. REIEZIONE RIGIDA SCONTI AUTOMATICI OTA (PROTEZIONE MARGINE ALTA STAGIONE)
-L'AI deve ignorare tassativamente tutte le notifiche, i consigli e i suggerimenti algoritmici provenienti da Airbnb, Booking o Vrbo riguardanti l'applicazione di sconti last-minute, promozioni automatiche o tariffe smart durante i mesi di luglio e agosto. In conformità con la Regola 8 e la Nota 8-Bis, i margini in altissima stagione devono essere protetti mantenendo fermo il listino pieno della struttura. Le promozioni promozionali last-minute sono ad esclusivo vantaggio della disintermediazione diretta e non devono mai essere delegate agli automatismi al ribasso delle piattaforme esterne.
-
-
-
+L'AI deve ignorare tassativamente tutte le notifiche, i consigli e i suggerimenti algoritmici provenienti da Airbnb, Booking o Vrbo riguardanti l'applicazione di sconti last-minute, promozioni automatiche o tariffe smart durante i mesi di luglio e agosto. In conformità con la Regola 8 e la Nota 8-Bis, i margini in altissima stagione devono essere protetti mantenendo fermo il listino pieno della struttura. Le promozioni last-minute sono ad esclusivo vantaggio della disintermediazione diretta e non devono mai essere delegate agli automatismi al ribasso delle piattaforme esterne.
 
 9. REQUISITO DI SVILUPPO ECONOMICO TRASPARENTE E CONSUMI
 Ogni preventivo deve riportare lo sviluppo contabile trasparente (tariffa giornaliera, lordo totale, sconto e prezzo netto finale). In coda, specificare la formula tutto incluso per i consumi di Luce, Acqua, Gas cucina, connessione Wi-Fi e parcheggio privato interno alla proprietà.
 
-================================= PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (AGGIORNAMENTO NOTA 9-BIS) =================================
 
 9-Bis. APPLICAZIONE CONDIZIONATA DELLE OPPORTUNITÀ DI PRENOTAZIONE (RESTRITTIVA BLACKLIST)
 L'AI deve applicare la differenziazione delle formule di prenotazione secondo un criterio rigido di affidabilità del lead:
 • PER OSPITI ORDINARI / PROFILATI POSITIVI: I preventivi diretti ("In corso") devono proporre esclusivamente la "Formula Fiduciaria Standard" con blocco delle date a zero acconti e saldo interamente in loco al check-in. È tassativamente vietato inserire il blocco dell'Opportunità 2 (Care4UHotel / Rateizzazione).
-• PER OSPITI IN BLACKLIST / SEGNALATI PER NO-SHOW: Qualora l'incrocio dei dati anagrafici (e-mail o telefono) rilevi che il soggetto è inserito nella lista nera interna o segnalato per mancata presentazione nel circuito partner (https://www.facebook.com/vacanzesicurenelsalento), la Formula Fiduciaria è preclusa. In questo caso specifico, l'AI imporrà come unica soluzione l'allineamento obbligatorio all'Opportunità 2 (Formula Protetta Premium), vincolando la conferma delle date alla stipula e al saldo preventivo della polizza assicurativa a tutela della struttura, pena il rifiuto della prenotazione.
+• PER OSPITI IN BLACKLIST / SEGNALATI PER NO-SHOW: Qualora l'incrocio dei dati anagrafici (e-mail o telefono) rilevi che il soggetto è inserito nella lista nera interna o segnalato per mancata presentazione nel circuito partner (https://www.facebook.com/groups/vacanzesicurenelsalento), la Formula Fiduciaria è preclusa. In questo caso specifico, l'AI imporrà come unica soluzione l'allineamento obbligatorio all'Opportunità 2 (Formula Protetta Premium), vincolando la conferma delle date alla stipula e al saldo preventivo della polizza assicurativa a tutela della struttura, pena il rifiuto della prenotazione.
 
 =============================================================================
 PROMEMORIA DI CONFIGURAZIONE AZIENDALE AI - "A CASA DI AMICI" (PARTE 2 DI 5)
+=============================================================================
+
+
+=============================================================================
+PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (PARTE 2 DI 5)
 =============================================================================
 
 [SEZIONE II: GESTIONE ERRORI DI CODA, COMPENSAZIONI E STRATEGIE DI FIDELIZZAZIONE]
@@ -73,31 +93,26 @@ In caso di richieste arretrate ricevute in forte differita a causa di comprovati
 11. PARAMETRIZZAZIONE E LOGICA DEI CODICESCONTO DI BENVENUTO (BLOCCO B)
 Nelle e-mail di chiusura per impossibilità di alloggio o Sold-Out ("Lista d'attesa"), l'AI deve integrare tassativamente il "Blocco B". Questo modulo offre un buono sconto di benvenuto standard del 15% (elevato al 20% solo se scatta la Regola 10) valido esclusivamente per le prossime disponibilità in tempo reale o per soggiorni futuri prenotati direttamente sul nostro Sito Web Ufficiale. Il testo deve specificare chiaramente che per riscattare il codice l'ospite dovrà semplicemente ricordare alla struttura, all'atto del contatto futuro, di non aver potuto soggiornare nel 2026 per indisponibilità delle camere.
 
+11-Bis. ADATTAMENTO TEMPORALE DELLA FORMULA DI CHIUSURA PER SOGGIORNI GIÀ TRASCORSI
+Qualora l'incrocio tra la data corrente del CRM (18/07/2026) e le date richieste dall'ospite rilevi che il periodo di soggiorno indicato è già interamente o parzialmente passato, la formula di chiusura standard inserita in coda alle notifiche di sold-out deve essere modificata modificando i tempi verbali al passato. Il modulo deve tassativamente passare da una proiezione futura ad un augurio consuntivo, strutturato secondo la seguente dicitura rigida: "Restiamo a sua completa disposizione con l'augurio che, nonostante la nostra indisponibilità, abbia comunque trovato una soluzione adeguata alle sue aspettative e di aver passato una splendida vacanza nel Salento."
+
+
 12. VERIFICA E MONITORAGGIO PERIODICO REGISTRO POLIZZE (PANNELLO CARE4UHOTEL)
 L'AI include nei propri flussi di controllo ordinari l'ispezione periodica del backend di Care4UHotel. Questa procedura serve a monitorare lo stato di attivazione delle polizze abbinate ai preventivi "Premium a Rate" (Nota 9-Bis). Permette di verificare se l'ospite ha effettivamente saldato la copertura assicurativa prima di sbloccare l'invio del piano rateale concordato.
 
 13. PROTOCOLLO INTERNAZIONALE E ADATTAMENTO MULTILINGUA
-Tutte le comunicazioni destinate a lead o richieste di origine estera (identificabili
- da e-mail straniere, prefissi telefonici internazionali o testi in lingua) devono essere interamente redatte nella lingua madre dell'ospite. L'adattamento linguistico deve mantenere intatta la rigidità della struttura informativa italiana, i parametri contabili trasparenti e i richiami ai link estesi del sito.
+Tutte le comunicazioni destinate a lead o richieste di origine estera (identificabili da e-mail straniere, prefissi telefonici internazionali o testi in lingua) devono essere interamente redatte nella lingua madre dell'ospite. L'adattamento linguistico deve mantenere intatta la rigidità della struttura informativa italiana, i parametri contabili trasparenti e i richiami ai link estesi del sito.
 
 14. PIANIFICAZIONE CAMPAGNE ESTERE E STRATEGIA REVENUE PORTALI FLAT
 Le relazioni commerciali e i canali flat a canone fisso senza commissioni, specificamente il portale tedesco Traum-Ferienwohnungen (Kd.-Nr. 208471), sono temporaneamente congelati e mantenuti senza modifiche o upgrade per tutta la stagione estiva 2026. Al fine di ottimizzare il ritorno sull'investimento (ROI) ed evitare scatti tariffari intempestivi, la direzione posticipa l'analisi costi-benefici e la pianificazione strategica per il mercato del Nord Europa al periodo natalizio (dicembre 2026). In questo stesso periodo verrà gestito lo sblocco telefonico delle inserzioni su Bed-and-Breakfast.it.
 
-• PORTALE BED-AND-BREAKFAST.IT (Canale Diretto Disintermediato)
-  - URL di Accesso Area Riservata: https://bed-and-breakfast.it
-  - Nome Utente Account: depietromarco65@gmail.com
-  - Stato Canale: Inserzione temporaneamente sospesa.
-  - Azione Programmata: Sblocco telefonico e riattivazione abbonamento a dicembre 2026 (Regola 14).
-
-
 15. REGOLA DI GEO-MARKETING LOGISTICO SULLA BIANCHERIA (FORMULA INTERMODALE)
 Al fine di agevolare la clientela a lungo raggio, ottimizzare i flussi d'accoglienza ed evitare che il peso dei bagagli comporti un sovrapprezzo per l'ospite sulle tariffe dei vettori, la fornitura dei set di lenzuola e asciugamani da letto e da bagno risponde a un criterio flessibile basato sul mezzo di trasporto:
 • FORMULA INTERMODALE (GRATUITA): Per tutti gli ospiti (nazionali o internazionali) che raggiungono il Salento tramite volo aereo, treno o autobus di linea, la fornitura completa di biancheria è inclusa interamente a titolo gratuito all'interno della tariffa base. Il servizio si attiva previa ricezione e caricamento nel CRM di una copia o screenshot del biglietto/titolo di viaggio.
-• FORMULA AUTO (A PAGAMENTO): Per tutti gli ospiti che raggiungono la struttura viaggiando con la propria auto privata, non essendoci restrizioni di peso sui bagagli, la fornitura di biancheria resta totalmente esclusa dalla tariffa base. Rimane a cura dell'ospite oppure disponibile su richiesta con addebito dei supplementi fissi da listino accessori ufficiale..
-
+• FORMULA AUTO (A PAGAMENTO): Per tutti gli ospiti che raggiungono la struttura viaggiando con la propria auto privata, non essendoci restrizioni di peso sui bagagli, la fornitura di biancheria resta totalmente esclusa dalla tariffa base. Rimane a cura dell'ospite oppure disponibile su richiesta con addebito dei supplementi fissi da listino accessori ufficiale.
 
 =============================================================================
-PROMEMORIA DI CONFIGURAZIONE AZIENDALE AI - "A CASA DI AMICI" (PARTE 3 DI 5)
+PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (PARTE 3 DI 5)
 =============================================================================
 
 [SEZIONE III: MODELLO JOLLY UNIFICATO, SPECIFICHE STRUTTURA E VINCOLI REPUTAZIONALI]
@@ -114,17 +129,26 @@ Al fine di mantenere massimi i margini operativi rispetto al mercato immobiliare
 
 
 17. REGOLA RIGIDA SUI LINK IN CHIARO E VINCOLI FISICI DELLE UNITÀ ABITATIVE
-Nei preventivi positivi ("In corso"), l'AI deve tassativamente inserire l'URL esteso e completo in chiaro estratto dal sito ufficiale per mostrare la soluzione (Es. https://acasadiamici.info). Nota di conformazione strutturale obbligatoria per il CRM: Casale Lucia e Monolocale Glicine NON sono recintati. L'unico monolocale con giardinetto interamente recintato e adatto a ospitare 3 persone con un cane al seguito è il Monolocale Marina.
+Nei preventivi positivi ("In corso"), l'AI deve tassativamente inserire l'URL esteso e completo in chiaro estratto dal sito ufficiale per mostrare la soluzione specifica.
+• MAPPARE VINCOLI STRUTTURALI E ACCESSIBILITÀ:
+  - Unità INTERAMENTE RECINTATE (con recinto e cancelletto, idonee per cani): Appartamento Girasole, Villa Tulipano, Monolocale Marina, Monolocale Margherita.
+  - Unità NON RECINTATE: Casale Lucia, Monolocale Glicine.
+  - Accessibilità: Il Monolocale Glicine è l'unica soluzione dotata di tutte le caratteristiche strutturali necessarie per ospitare persone con difficoltà motorie o disabilità.
+• ARCHIVIO URL REPOSITORIO UNITÀ ABITATIVE:
+  - Monolocale Marina: "https://www.acasadiamici.info/monolocale-marina/"
+  - Monolocale Glicine: "https://www.acasadiamici.info/monolocale-glicine/"
+  - Monolocale Margherita: "https://www.acasadiamici.info/monolocale-margherita/"
+  - Appartamento Girasole: "https://www.acasadiamici.info/appartamento-girasole/"
+  - Casale Lucia: "https://www.acasadiamici.info/casale-lucia/"
+  - Villa Tulipano: "https://www.acasadiamici.info/villa-tulipano/"
+  - Pajara Lucy: "https://www.acasadiamici.info/appartamento-pajara-lucy/"
 
 18. ESCLUSIONE DELLA FORMULA FIDUCIARIA PER CANALI OTA CON INCASSO INTEGRATO
 Per tutte le prenotazioni confermate attraverso piattaforme in cui la transazione finanziaria e l'addebito delle penali sono interamente gestiti e garantiti dal portale (Es. Airbnb, Vrbo, pagamenti gestiti Booking), la nostra Formula Fiduciaria (zero acconto e saldo in loco) decade automaticamente. Nelle note e nelle chat non deve mai essere menzionata, rimandando l'ospite esclusivamente ai termini di saldo elettronici dell'OTA.
 
 19. CLAUSOLA REPUTAZIONALE RIGIDA CONTRO IL NO-SHOW
-Il No-Show (mancata presentazione in struttura il giorno del check-in senza un preventivo preavviso scritto inviato via e-mail o WhatsApp) costituisce una grave violazione dell'impegno morale e fiduciario. Comporta l'inserimento permanente dei dati identificativi dell'utente nel registro dei soggetti non affidabili, con il blocco automatico e totale di ogni richiesta di preventivo futura su tutti i canali aziendali e patners aderenti al circuito (https://www.facebook.com/groups/vacanzesicurenelsalento).
+Il No-Show (mancata presentazione in struttura il giorno del check-in senza un preventivo preavviso scritto inviato via e-mail o WhatsApp) costituisce una grave violazione dell'impegno morale e fiduciario. Comporta l'inserimento permanente dei dati identificativi dell'utente nel registro dei soggetti non affidabili, con il blocco automatico e totale di ogni richiesta di preventivo futura su tutti i canali aziendali e partner aderenti al circuito all'indirizzo completo:"https://www.facebook.com/groups/vacanzesicurenelsalento".
 
-=============================================================================
-PROMEMORIA DI CONFIGURAZIONE AZIENDALE AI - "A CASA DI AMICI" (PARTE 3 DI 5)
-=============================================================================
 
 [SEZIONE III: LINEE GUIDA EDITORIALI, STRATEGIE DI AUTOMAZIONE E FUNNEL DI EMAIL MARKETING]
 
@@ -142,16 +166,15 @@ Qualora un potenziale ospite sollevi dubbi, critiche o resistenze in merito alle
 20-Quater. MODULO COMPLEANNI E ONOMASTICI (ALERT ANAGRAFICA DI FIDELIZZAZIONE)
 Al fine di potenziare le azioni di direct marketing e fidelizzazione post-soggiorno, il CRM sfrutta un modulo automatico di tracciamento per le ricorrenze speciali. I dati (Data di Nascita e Nome proprio) vengono estratti dai documenti d'identità in fase di check-in. Ogni mattina alle ore 09:00 il server genera un alert interno. L'AI utilizzerà questo innesco per l'invio automatico del modello "Auguri & Fidelizzazione" prioritariamente sul canale WhatsApp direct (al numero della struttura +393488466452) o via e-mail (all'indirizzo vacanze@acasadiamici.info), omaggiando l'ospite con un codice sconto del 15% non cumulabile, valido per bloccare in anticipo il listino della stagione successiva.
 
-20-Quinquies. AUTOMAZIONE FLUSSO E ROUTINE DI FOLLOW-UP PREVENTIVI ATTIVI (STATO: "In corso")
-Al fine di abbattere la percentuale di preventivi inviati e non letti (fissata dalle statistiche di settore tra il 5% e il 10%), il CRM esegue una routine rigida di controllo e follow-up automatico per tutti i record in stato "In corso" inviati ai lead dei portali "su richiesta":
-• A +24 Ore dall'invio: Se non viene registrato alcun riscontro o apertura dall'ospite, il sistema invia in automatico un'e-mail di cortesia per verificare la corretta ricezione e l'allineamento dei filtri antispam.
-• A +3 Giorni dall'invio: Se l'alloggio risulta ancora non confermato, il sistema genera un avviso di sblocco date e lo trasmette via WhatsApp al numero mobile dell'ospite,
- informandolo che le date sul calendario verranno liberate a favore dei clienti in lista d'attesa.
-
 
 =============================================================================
 PROMEMORIA DI CONFIGURAZIONE AZIENDALE AI - "A CASA DI AMICI" (PARTE 3-BIS DI 5)
 =============================================================================
+
+20-Quinquies. AUTOMAZIONE FLUSSO E ROUTINE DI FOLLOW-UP PREVENTIVI ATTIVI (STATO: "In corso")
+Al fine di abbattere la percentuale di preventivi inviati e non letti (fissata dalle statistiche di settore tra il 5% e il 10%), il CRM esegue una routine rigida di controllo e follow-up automatico per tutti i record in stato "In corso" inviati ai lead dei portali "su richiesta":
+• A +24 Ore dall'invio: Se non viene registrato alcun riscontro o apertura dall'ospite, il sistema invia in automatico un'e-mail di cortesia per verificare la corretta ricezione e l'allineamento dei filtri antispam.
+• A +3 Giorni dall'invio: Se l'alloggio risulta ancora non confermato, il sistema genera un avviso di sblocco date e lo trasmette via WhatsApp al numero mobile dell'ospite, informandolo che le date sul calendario verranno liberate a favore dei clienti in lista d'attesa.
 
 20-Sexies. IL FUNNEL POST-CHECKOUT E LA NEWSLETTER RIGENERATIVA COSTANTE
 La relazione con l'ospite non termina al momento del pagamento, ma prosegue a struttura chiusa. Al momento del rilascio dell'alloggio da parte di un ospite in stato "Confermata", il CRM pianifica una sequenza automatizzata di contatto:
@@ -159,8 +182,8 @@ La relazione con l'ospite non termina al momento del pagamento, ma prosegue a st
 • A +2 Giorni dal Check-out: Invio di una e-mail istituzionale contenente il link diretto per la raccolta del feedback e della recensione sulla nostra scheda ufficiale di Google My Business.
 • Ogni 30 Giorni (In autunno e inverno): Invio automatico della "Newsletter Rigenerativa" (trasmessa dall'indirizzo ufficiale vacanze@acasadiamici.info) per raccontare la storia, gli eventi, i fichi d'India, le ricette e le tradizioni del territorio, mantenendo vivo il brand senza finalità di vendita speculativa immediata.
 
-20-Sexies-Bis. INTERCETTAZIONE CAMPAGNE SOCIAL (FANNEL FACEBOOK LEAD MAGNET)
-Quando il gestore o l'AI interagiscono all'interno del circuito di direct marketing (come il gruppo Facebook "? PUGLIA SALENTO CASE VACANZE ?" all'URL esteso: https://facebook.com), in caso di Sold-Out non si applicherà un rifiuto sterile. Il sistema deve proporre all'utente un "Lead Magnet" territoriale (Es. «Siamo al completo, ma lasciaci la tua e-mail in privato per ricevere gratuitamente la mappa unificata delle ZTL, dei parcheggi di interscambio e dei semafori del Salento 2026»). Il contatto raccolto verrà inserito nella lista d'attesa del CRM per recuperi last-minute.
+20-Sexies-Bis. INTERCETTAZIONE CAMPAGNE SOCIAL (FUNNEL FACEBOOK LEAD MAGNET)
+Quando il gestore o l'AI interagiscono all'interno del circuito di direct marketing (come il gruppo Facebook "PÚGLIA SALENTO CASE VACANZE" all'URL esteso: https://facebook.com), in caso di Sold-Out non si applicherà un rifiuto sterile. Il sistema deve proporre all'utente un "Lead Magnet" territoriale (Es. «Siamo al completo, ma lasciaci la tua e-mail in privato per ricevere gratuitamente la mappa unificata delle ZTL, dei parcheggi di interscambio e dei semafori del Salento 2026»). Il contatto raccolto verrà inserito nella lista d'attesa del CRM per recuperi last-minute.
 
 20-Septies. STRATEGIA DI SCRITTURA ED OTTIMIZZAZIONE GENERATIVE ENGINE OPTIMIZATION (GEO)
 Al fine di garantire che la struttura venga intercettata e consigliata dagli assistenti virtuali (ChatGPT, Gemini) usati dal 43% degli italiani per pianificare i viaggi, l'AI e il gestore devono applicare criteri di copywriting espliciti, oggettivi e specifici su tutte le descrizioni del sito ufficiale (https://acasadiamici.info). È tassativamente vietato l'uso di formule poetiche o astratte (Es. "luogo di emozioni"). I testi devono elencare dati testuali precisi: distanze chilometriche e temporali verificate (1,9 km dal mare di Torre Pali e 2,9 km dalle Maldive del Salento), caratteristiche strutturali (Monolocale Marina recintato per animali) e specifiche sui servizi, per permettere ai motori generativi di indicizzare correttamente l'identità del brand.
@@ -168,162 +191,12 @@ Al fine di garantire che la struttura venga intercettata e consigliata dagli ass
 20-Octies. CONTRO-STRATEGIA SUL FLUSSO INVISIBILE E TUTELA DELLE CANCELLAZIONI (LOGICA AXA / ASSIGLOBAL)
 In linea con i dati di mercato che registrano un aumento del 62% delle cancellazioni complessive, l'AI deve ricordare che la fermezza tariffaria e le penali della struttura (Nota 19) non devono mai essere ammorbidite o rimosse per timore di perdere il cliente al checkout. Nei preventivi attivi ("In corso"), l'AI utilizzerà l'Opportunità 2 (Premium a Rate) per rispondere alla paura dell'imprevisto che blocca il viaggiatore prima della conferma. Fornendo il link ufficiale in chiaro delle condizioni (https://care4uhotel.com), l'AI presenterà la polizza (StornoHotel al 4,8% o Travel al 5,5% garantita da AXA Partners) come la rete di protezione sotto ai piedi che tutela i soldi versati dall'ospite nelle rate, trasformando il rischio di annullamento in una prenotazione diretta blindata a costo zero per la guesthouse.
 
-=============================================================================
-PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (INTEGRAZIONE NOTA 20-DECIES)
-=============================================================================
-
-20-Decies. TUTELA LEGALE DELLA REPUTAZIONE ONLINE E CONFORMITÀ NORMATIVA (REPUTATION MARKETING)
-In conformità con le direttive sulle recensioni online e le tutele del codice civile per le strutture extralberghiere, l'AI e il gestore devono applicare una linea di massima fermezza legale a difesa del brand. 
-• AZIONE INBOUND: Le recensioni raccolte tramite il Funnel Post-Checkout (Nota 20-Sexies) convogliano in modo organico e trasparente sulla nostra scheda ufficiale di Google My Business. 
-• CONTRO-STRATEGIA DIFFAMAZIONE E NO-SHOW: Qualora un utente registrato come No-Show o soggetto non affidabile minacci o rilasci recensioni false, diffamatorie o ricattatorie, l'AI istruirà la direzione a procedere immediatamente con la segnalazione al portale ospitante per violazione dei termini e, se necessario, alla trasmissione della pratica legale al circuito partner (https://www.facebook.com/vacanzesicurenelsalento) per la tutela del patrimonio e dell'immagine della guesthouse, escludendo qualsiasi transazione o sconto di compromesso.
 
 
-
-
-[SEZIONE IV: INTEGRALITÀ LOGISTICA TRASPORTI DA LECCE STAZIONE FS]
-
-[LINEA DIRETTA SALENTO IN BUS - LINEA 108 STP (VALIDITÀ 01/07 - 31/08)]
-Istruire tassativamente i passeggeri provenienti dalla Stazione FS di Lecce a NON attendere il bus 108 nel piazzale interno della stazione ferroviaria. La fermata intermedia ufficiale di riferimento si trova in Viale Gallipoli (fronte Camera di Commercio), raggiungibile a piedi in pochissimi minuti.
-• Orari di partenza da Torre Pali a Lecce (Fermata Litoranea ang. Via Troisi): 07:27 | 08:57 | 10:57 | 12:27 | 13:27 | 15:27 | 17:27 | 18:27 | 19:57 | 22:57 (Tempo di percorrenza circa 1 ora e 47 minuti).
-• Orari di transito da Lecce (Viale Gallipoli fronte Camera di Commercio) a Torre Pali: Il bus transita esattamente 10 minuti dopo la partenza dal City Terminal capolinea. Orari fissi di passaggio: 07:50 | 08:20 | 09:30 | 10:40 | 12:10 | 14:40 (Consigliata per check-in pomeridiani delle ore 17:00, arrivo a Torre Pali alle ore 16:24) | 16:10 | 18:10 | 20:40 | 23:10.
-• Opzione Alternativa via Gallipoli (Bus Sostitutivo FSE): In caso di mancata coincidenza oraria con il bus diretto 108 STP, istruire i passeggeri a prendere uno dei Bus Sostitutivi di FSE (Ferrovie del Sud Est) che partono direttamente dall'interno del piazzale della Stazione di Lecce. Questo mezzo conduce alla stazione di Gallipoli, utilizzabile come snodo intermedio per poi proseguire verso la nostra struttura a Torre Pali.
-
-
-=============================================================================
-PROMEMORIA DI CONFIGURAZIONE AZIENDALE AI - "A CASA DI AMICI" (PARTE 4 DI 5)
-=============================================================================
-
-[SEZIONE V: TABELLA TERRITORIALE INTEGRATA DI VIABILITÀ, SOSTA E CONTROLLI ELETTRONICI 2026]
-
-21. TABELLA UNIFICATA ORDINANZE, ZTL E MONITORAGGI FOTOGRAFICI
-L'AI deve utilizzare esclusivamente questa mappatura ufficiale per orientare gli ospiti durante le loro escursioni nel Salento, mettendoli al riparo da sanzioni amministrative:
-
-+---------------------+-------------------------+---------------------+------------------------+-----------------------------------------------------------+
-
-| LOCALITÀ / ARTERIA  | TIPOLOGIA VINCOLO / INF.| PERIODO DI VALIDITÀ | FARE ATTENZIONE A:     | ORARIO DI ATTIVAZIONE / DETTAGLI                          |
-+---------------------+-------------------------+---------------------+------------------------+-----------------------------------------------------------+
-
-| LECCE (Capoluogo)   | ZTL / Varchi Elettronici| Tutto l'anno        | Porte Antiche          | H24 - Permanente (Tutti i giorni, divieto totale)        |
-|                     | Semafori Controllati    | Tutto l'anno        | Viali Circonvallazione | H24 - Photored (Viale Rossini / Viale Alfieri)            |
-+---------------------+-------------------------+---------------------+------------------------+-----------------------------------------------------------+
-
-| GALLIPOLI           | ZTL Centro Storico      | 01 Giu - 30 Set     | Ponte G. Paolo II      | Dalle ore 11:00 alle ore 03:00 del mattino successivo     |
-|                     | ZTL Litoranea           | Intera Stagione     | Baia Verde             | H24 - Accesso riservato ai soli residenti/autorizzati    |
-|                     | Semafori Controllati    | Tutto l'anno        | Svincoli / Incroci urb.| H24 - Photored/Vista Red (Via Salento / Via Kennedy)      |
-+---------------------+-------------------------+---------------------+------------------------+-----------------------------------------------------------+
-
-| OTRANTO             | ZTL Varco Cappuccini    | 15 Giu - 15 Set     | Accesso Borgo          | Dalle ore 20:00 alle ore 06:00 del mattino successivo     |
-|                     | ZTL Varco S. Francesco  | 15 Giu - 15 Set     | Accesso Borgo/Porto    | Dalle ore 18:00 alle ore 06:00 del mattino successivo     |
-+---------------------+-------------------------+---------------------+------------------------+-----------------------------------------------------------+
-
-| PORTO CESAREO       | ZTL Varchi Elettronici  | 01 Lug - 06 Set     | Vie dello Shopping     | Dalle ore 09:30 del mattino alle ore 01:30 di notte       |
-+---------------------+-------------------------+---------------------+------------------------+-----------------------------------------------------------+
-
-| PRESICCE            | ZTL Centro Storico      | 15 Lug - 13 Set     | Borgo Antico           | Dalle ore 20:30 alle ore 03:00 di ogni giorno             |
-+---------------------+-------------------------+---------------------+------------------------+-----------------------------------------------------------+
-
-| SPECCHIA            | Isola Pedonale          | 13 Giu - 15 Set     | Piazza del Popolo      | Dalle ore 19:00 alle ore 03:00 di ogni giorno             |
-+---------------------+-------------------------+---------------------+------------------------+------------------------------------
------------------------+
-
-| UGENTO              | ZTL Varchi Elettronici  | Stagione Estiva     | Nucleo Storico Centro  | Attivazione in fascia serale (Varchi monitorati)          |
-|                     | Semafori Controllati    | Tutto l'anno        | Collegamenti Marine    | H24 - Photored (Direttrici centro urbano / SP 65)         |
-+---------------------+-------------------------+---------------------+------------------------+-----------------------------------------------------------+
-
-| TORRE S. GIOVANNI   | Modifica Circolazione   | 09 Lug - 31 Lug     | Flussi Diurni          | Dalle ore 00:00 alle ore 15:30 (Fascia diurna TSG)        |
-+---------------------+-------------------------+---------------------+------------------------+-----------------------------------------------------------+
-
-| TRICASE             | Chiusura Veicolare      | Dal 07 Lug in poi   | Piazza Pisanelli       | Attivazione serale (Compresa Via Toma)                    |
-+---------------------+-------------------------+---------------------+------------------------+-----------------------------------------------------------+
-
-| TORRE VADO (Morc.)  | Sosta Zone Blu (€)      | 15 Giu - 15 Set     | Lungomare / Porto      | Dalle ore 09:00 alle ore 01:00 di notte (Tutti i giorni)  |
-+---------------------+-------------------------+---------------------+------------------------+-----------------------------------------------------------+
-
-| SS 274 (Ionica)     | Semafori Controllati    | Tutto l'anno        | Incrocio Castrignano   | H24 - Photored bivio Salignano (Entrambe le direzioni)    |
-|                     | Semafori Controllati    | Tutto l'anno        | Ingresso Leuca         | H24 - Photored (Incrocio Via G. Salento / L. da Vinci)    |
-+---------------------+-------------------------+---------------------+------------------------+-----------------------------------------------------------+
-
-| SS 16 (Adriatica)   | Semafori Controllati    | Tutto l'anno        | Melpignano / Zollino   | H24 - Photored postazioni fisse (Incroci critici)         |
-+---------------------+-------------------------+---------------------+------------------------+-----------------------------------------------------------+
-
-| CASTRO / GAGLIANO   | Isola Pedonale / ZTL    | Luglio e Agosto     | Borghi Alti / Porti    | Attivazione in fascia serale                              |
-+---------------------+-------------------------+---------------------+------------------------+-----------------------------------------------------------+
-
-22. VADEMECUM STRATEGICO PARCHEGGI DI INTERSCAMBIO E REGOLE DI GUIDA
-Nelle risposte d'aiuto logistico, forzare l'uso dei grandi parcheggi esterni e ricordare all'ospite che le telecamere semaforiche (Photored/Vista Red) sanzionano istantaneamente sia il passaggio con il rosso, sia il superamento della linea bianca di arresto, sia il cambio di corsia non consentito (Es. proseguire dritto da una corsia riservata alla svolta obbligatoria):
-
-• STRATEGIA PARCHEGGI LECCE ? Tassativo vietare il superamento delle Porte Storiche (Porta Napoli, Porta Rudiae, Porta San Biagio). Consigliare l'uso dei Parcheggi di Interscambio Ufficiali SGM (Zona Viola, tariffa agevolata di € 0,60/ora o formula speciale a € 2,00/giorno che include il trasporto in navetta bus verso il centro): EX FORO BOARIO (City Terminal) e LARGO CIMITERO per chi giunge da Nord, TORRE DEL PARCO per chi giunge da Sud.
-• STRATEGIA PARCHEGGI GALLIPOLI ? Impedire l'accesso sul ponte Giovanni Paolo II e rampa San Francesco. Indirizzare tassativamente i clienti verso i due grandi parcheggi di interscambio strategici esterni e gratuiti/agevolati situati in VIA ZACA (zona mercato/stadio) o in VIA PAVIA (zona cimitero), per evitare il blocco del traffico urbano e le sanzioni delle ZTL (Centro e Baia Verde), proseguendo verso il borgo a piedi o tramite navette comunali.
-• STRATEGIA PARCHEGGI OTRANTO ? Vietare l'avvicinamento al borgo antico oltre gli orari dei varchi. Forzare l'uso delle grandi aree di sosta esterne perimetrali collocate a ridosso del perimetro pedonale: VIA RENIS (zona Eurospin), VIA PRIMALDO (zona Porto) o VIA SAN GIOVANNI.
-• STRATEGIA PARCHEGGI PORTO CESAREO ? Consigliare la sosta nell'area di scambio esterna situata nei pressi del Cimitero, per sfruttare le navette comunali dirette verso il centro ed evitare il nucleo centrale dello shopping.
-• BORGHI MINORI (Specchia, Presicce, Ugento, Tricase, Castro, Gagliano) ? Sosta tassativa al di fuori del perimetro urbano e della cinta muraria dei nuclei storici prima dell'orario di attivazione serale dei varchi e delle aree pedonali.
-
-
-=============================================================================
-PROMEMORIA DI CONFIGURAZIONE AZIENDALE AI - "A CASA DI AMICI" (PARTE 5 DI 5)
-=============================================================================
-
-[SEZIONE V CONTINUA: LISTINO ACCESSORI, AUTOMAZIONE INVII ED ARCHIVIO CREDENZIALI]
-
-23. LISTINO UFFICIALE PREZZI ACCESSORI E SERVIZI EXTRA (AGGIORNATO 2026)
-L'AI deve applicare tassativamente queste tariffe standard per ogni richiesta di servizi aggiuntivi, calcolando i relativi importi all'interno del campo "Extra_Selezionati" del log:
-
-• NOLEGGIO BIANCHERIA (Se non inclusa gratuitamente tramite Formula Volo - Regola 15):
- - Kit Letto Singolo: € 10,00 a fornitura.
- - Kit Letto Matrimoniale: € 15,00 a fornitura.
- - Kit Bagno Completo (Asciugamani): € 10,00 a persona per singolo set.
- - Telo Mare Singolo: € 20,00 a settimana.
- - Nota sul cambio: Le tariffe sopra indicate si riferiscono alla singola fornitura con cambio settimanale.
-
-• SERVIZIO LAVANDERIA INTERNA:
- - Primi 2 lavaggi a soggiorno: Completamente Gratuiti (Inclusi come bonus di benvenuto).
- - Lavaggi successivi (Dal 3° lavaggio in poi): € 3,50 a ciclo di lavaggio.
-
-• KIT SPIAGGIA COMPLETO:
- - Tariffa unica: € 30,00 per l'intero soggiorno (Include 1 ombrellone e 2 spiaggine).
-
-• SERVIZIO TRANSFER ED ACCOGLIENZA INTERMODALE:
- - Navetta da/per Aeroporto di Bari (Karol Wojty?a): € 250,00 a tratta.
- - Navetta da/per Aeroporto di Brindisi (Salento): € 150,00 a tratta.
- - Navetta da/per Stazione Centrale di Lecce FS: € 100,00 a tratta.
- - Navetta da/per Stazione Locale di Presicce-Acquarica: INTERAMENTE GRATUITA (Inclusa su richiesta).
- - Navetta da/per Fermata Bus Litoranea Torre Pali: INTERAMENTE GRATUITA (Inclusa su richiesta).
-
-• SERVIZIO IDROMASSAGGIO E COMFORT PISCINE:
-  - Piscina Idromassaggio (Riservata esclusivamente alle grandi unità abitative): € 500,00 a soggiorno.
-  - Mini Piscina per Animali Domestici (Pet-Friendly): € 50,00 a settimana.
-
-24. AUTOMAZIONE DEI FLUSSI, CODA DEI MESSAGGI ED INNESCHI (TRIGGER CRM)
-Il CRM opera in background monitorando costantemente le scadenze e i flussi per eliminare gli invii manuali e incrementare il tasso di conversione dei preventivi:
-[REGOLA RIGIDA: COMPRENSIONE DI CHIUSURA PER PORTALI IN SOLD-OUT]
-Nei casi in cui lo stato della richiesta sia impostato su "Lista d'attesa" o "Richiesta Scaduta" per mancanza di disponibilità, l'AI ha il divieto assoluto di inserire il blocco dettagliato delle due opportunità (Formula Fiduciaria e Formula Protetta Premium con i relativi link). Il testo deve essere snello ed essenziale, limitandosi a comunicare l'indisponibilità, erogare il buono sconto futuro sul sito ufficiale (https://acasadiamici.info) e riportare unicamente la dichiarazione di principio aziendale: la prenotazione avviene senza caparre né acconti anticipati al fine di proteggere gli ospiti dal rischio di truffe e raggiri sul web. Il blocco esteso delle due opportunità (Nota 9-Bis) resta esclusivo dei preventivi attivi con camere disponibili ("In corso").
-
-• TRIGGER AUTOMATICO SU PREVENTIVI ATTIVI (STATO: "In corso"):
-  - A +24 Ore dall'invio: Se non viene registrato alcun riscontro dall'ospite, il sistema invia in automatico un'e-mail di cortesia (Template 1) per intercettare eventuali problemi di recapito nelle cartelle spam.
-  - A +3 Giorni dall'invio: Se l'alloggio risulta ancora non confermato, il sistema genera un avviso di sblocco date (Template 2) inviandolo direttamente sul canale WhatsApp dell'ospite, per informarlo che lo spazio sul calendario verrà ceduto alla lista d'attesa.
-
-• TRIGGER AUTOMATICO SU POST-CHECKOUT (STATO: "Confermata"):
-  - Il sistema rileva in tempo reale l'orario di rilascio dell'alloggio tramite il Channel Manager Octorate.
-  - A +2 Ore dal Check-out: Invio automatico su WhatsApp del messaggio caloroso di buon viaggio (Template 3).
-  - A +2 Giorni dal Check-out: Invio automatico via e-mail del link diretto per la raccolta delle recensioni positive sulla scheda ufficiale Google (Template 4).
-
-• TRIGGER AUTOMATICO COMPLEANNI ED ONOMASTICI (FIDELIZZAZIONE RIGENERATIVA):
-  - Ogni giorno alle ore 09:00 il server esegue una scansione anagrafica automatica. In corrispondenza dell'evento, invia su WhatsApp il modello "Auguri & Fidelizzazione", erogando il codice coupon del 15% valido per prenotazioni future dirette sul sito web.
-
-24-BIS. DIRETTIVA DI TRASPARENZA ED ESCLUSIONE MANUALE CODICI CIN/CIS IN EMAIL
-I parametri di conformità istituzionale obbligatori della struttura (Codice CIN Nazionale: IT075066C200054604 e Codice CIS Regionale: LE07506691000014272) devono essere inseriti esplicitamente dall'AI e dal gestore esclusivamente all'interno di annunci promozionali sui canali social (Facebook), volantini cartacei, biglietti da visita o qualsiasi altra forma pubblicitaria esterna. 
-• DEROGA PER CANALE EMAIL: Nei modelli di testo pronti per le e-mail commerciali da inviare ai clienti, l'AI ha il divieto di inserire manualmente i codici CIN e CIS nel corpo del messaggio, in quanto tali dati sono già graficamente preimpostati e integrati all'interno del blocco firma istituzionale della guesthouse.
-
-24-TER. LOGICA EDITORIALE SULLO SVILUPPO CONTABILE E OTTIMIZZAZIONE DEGLI SCONTI
-Nello sviluppo economico dei preventivi commerciali inviati via e-mail ("In corso"), l'AI deve applicare una rigida pulizia psicologica per favorire il tasso di conversione del lead ed evitare barriere d'acquisto:
-• IN CASO DI APPLICAZIONE DI SCONTI: Il preventivo deve riportare lo sviluppo trasparente completo (Tariffa giornaliera, importo lordo totale, percentuale di sconto applicata, valore dello sconto in euro e prezzo netto finale).
-• IN CASO DI ASSENZA DI SCONTI (ALTA STAGIONE): Qualora la richiesta avvenga in periodi centrali di altissima stagione (luglio e agosto) o short-stay revenue dove si applica il listino pieno senza promozioni, l'AI non deve mai menzionare la voce sconti o indicare formule come "Sconto: 0%". La dicitura è considerata controproducente. Il testo deve elencare in modo snello e lineare unicamente la tariffa giornaliera e il prezzo netto totale finale del soggiorno.
-
-
-25. ARCHIVIO RIGIDO DELLE CREDENZIALI DI ACCESSO AI SISTEMI E PORTALI
+#### 25. ARCHIVIO RIGIDO DELLE CREDENZIALI DI ACCESSO AI SISTEMI E PORTALI
 
 • PORTALE BOOKING.COM (Canale di Vendita OTA con Pagamenti Gestiti)
-  - URL di Accesso Extranet: (https://booking.com)
+  - URL di Accesso Extranet: https://booking.com
   - ID Struttura Ufficiale Backend: 11440847
   - Nome Utente Account: postmaster@acasadiamici.info
   - Password di Sicurezza: DpTmCn65H11L219M
@@ -331,15 +204,13 @@ Nello sviluppo economico dei preventivi commerciali inviati via e-mail ("In cors
   - Direttiva Fiduciaria: ESCLUSA (Nota 18 - Pagamenti e penali interamente gestiti e garantiti dal portale).
   - Adempimento Obbligatorio manuale: Inserimento dati catastali, CIN e CIS nell'Area Conformità.
 
-
 • SISTEMA DOMOTICA SHELLY (Controllo Dispositivi, Luci, Clima e Varchi)
   - URL di Accesso Amministrazione: https://shelly.cloud
   - Nome Utente Account: depietromarco65@gmail.com
   - Password di Sicurezza: Dptmcn65h11l219m
 
-• CHANNEL MANAGER OCTORATE (Sincronizzazione
- Calendari e API Portali)
-  - URL di Accesso Dashboard: (https://admin.octorate.com/octobook/user/dashboard.xhtml) 
+• CHANNEL MANAGER OCTORATE (Sincronizzazione Calendari e API Portali)
+  - URL di Accesso Dashboard: https://octorate.com
   - Nome Utente Amministratore: depietromarco65@gmail.com
   - Password di Sicurezza: dPtMcN65H11L219M!
   - Email di Riferimento Connessione API: vacanze@acasadiamici.info (Stato: Attivo)
@@ -355,208 +226,33 @@ Nello sviluppo economico dei preventivi commerciali inviati via e-mail ("In cors
   - Stato Canale: Visibilità Premium Attiva.
 
 • PORTALE BED-AND-BREAKFAST.IT (Canale Diretto Disintermediato)
+  - URL di Accesso Area Riservata: https://bed-and-breakfast.it
   - Nome Utente Account: depietromarco65@gmail.com
-  - Stato Canale: Inserzione temporaneamente sospesa (Richiesto sblocco telefonico).
-
-=============================================================================
-PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (INTEGRAZIONE NOTA 25-DUODECIES)
-=============================================================================
-
-25-Duodecies. PROTOCOLLO DI TRACCIAMENTO LEGALE E CONTENZIOSO TECNICO HOLIDU
-In linea con l'apertura ufficiale del contenzioso sul Ticket 12269034 relativo all'overbooking della camera Appartamento Girasole (Ospite: Francesco Saldi - ID 7153251), il CRM registra l'avvenuta notifica di sospensione cautelativa inviata dall'operatrice Patty in data giovedì 23 luglio 2026. La pratica è ufficialmente congelata e trasferita al reparto tecnico di secondo livello del portale tedesco per la verifica dei flussi iCal.
-
-• DIRETTIVA RIGIDA DI RISPOSTA AL REPARTO TECNICO HOLIDU:
-Qualora il reparto ingegneristico di Holidu o HomeToGo risponda richiedendo prove o tentando di scaricare la responsabilità finanziaria dei 1.469,00 € (371,96 € di penale + 1.097,04 € di storno camera) sulla guesthouse, l'AI e la direzione formuleranno la replica allegando esclusivamente i tracciati XML/JSON estratti dalla dashboard di Octorate (ID Struttura: 873815).
-
-La comunicazione dovrà essere blindata inserendo i seguenti tre punti fermi:
-1. Dimostrazione cronologica, tramite lo "Storico dei processi" del calendario di Octorate, che la chiusura dell'inventario per la camera Girasole era stata correttamente trasmessa dal Channel Manager prima del blocco di sincronizzazione.
-2. Conferma dell'adempimento logistico protetto eseguito direttamente dall'host, che ha salvaguardato il cliente comune del portale trasferendolo a proprie spese presso l'alloggio partner "Appartamento La Saracina" a Presicce, visibile nella rete ufficiale sul nostro sito: https://acasadiamici.info
-3. Richiesta speculare di annullamento del saldo negativo sul backend e ripristino immediato della regolarità contabile, escludendo qualsiasi transazione transattiva al ribasso o accettazione parziale della colpa.
-
-
-=============================================================================
-PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (ARCHIVIO RETI WI-FI CON INTERFACCIA QR)
-=============================================================================
-
-[SEZIONE V-TER: STRINGHE CODIFICATE PER CONNETTIVITÀ TUTTO INCLUSO - REGOLA 9]
-Le seguenti stringhe seguono il formato standard internazionale per la generazione di codici QR. In conformità con la Regola 9, l'accesso a queste infrastrutture è interamente gratuito per tutti gli ospiti alloggiati e per i dispositivi di domotica Shelly (Nota 25).
-
-• RETE 1: HUB CENTRALE GUESTHOUSE (OMNIA24)
-WIFI:S:OMNIA24;T:WPA;P:169C868B49295C6;H:true;;
-
-• RETE 2: ROUTER PRINCIPALE APPARATO OPERATIVO (TP-LINK)
-WIFI:S:TP-Link_9A5A;T:WPA;P:92548688;H:true;;
-
-• RETE 3: ESTENSIONE DI COPERTURA AREA ESTERNA (2.4G EXTENDER)
-WIFI:S:TP-Link_9A5A-2.4G-ext;T:WPA;P:92548688;H:true;;
-
-• RETE 4: RETE PERTINENZE ALLOGGIO PARTNER (AMICI TULIPAN)
-WIFI:S:Vodafone-CASA DI AMICI TULIPAN;T:WPA;P:Benvenuti2024!;H:true;;
-
-• RETE 5: APPARATO CONNETTIVITÀ STRADALE / AREA ACCESSO (VODAFONE)
-WIFI:S:Vodafonestrada;T:WPA;P:Benvenuti2024!;H:true;;
-
-=============================================================================
-
-
-• TRIGGER AUTOMATICO SU PREVENTIVI ATTIVI (STATO: "In corso"):
-  - A +24 Ore dall'invio: Se non viene registrato alcun riscontro dall'ospite, il sistema invia in automatico un'e-mail di cortesia (Template 1) per intercettare eventuali problemi di recapito nelle cartelle spam.
-  - A +48 Ore (Termine Perentorio Polizza): Il sistema esegue un controllo automatico sul backend del CRM. Se l'ospite ha selezionato l'Opportunità 2 ma non ha caricato la ricevuta di attivazione della polizza Care4UHotel entro il limite rigido delle 48 ore dall'emissione del preventivo, la pre-approvazione decade, lo stato viene riportato in "Lista d'attesa" e le date vengono sbloccate sul calendario a favore dei lead in coda.
-  - A +3 Giorni dall'invio: Se l'alloggio (in formula Opportunità 1) risulta ancora non confermato, il sistema genera un avviso di sblocco date (Template 2) inviandolo direttamente sul canale WhatsApp dell'ospite.
-
-=============================================================================
-
-
-[REGOLA INTEGRATA NOTA 25-BIS: DIAGNOSTICA TECNICA E MANUTENZIONE WP-OK]
-Al fine di garantire la massima velocità di caricamento delle schede degli alloggi in chiaro e la sicurezza del widget YouCanBookMe, l'AI deve monitorare le notifiche di WP-OK (Supporto WordPress/WooCommerce). 
-1. CHECK-UP PERIODICO: Sfruttare il servizio di check-up gratuito di WP-OK inviando una richiesta dal backend per ottenere il report personalizzato sulle prestazioni del dominio acasadiamici.info.
-2. MONITORAGGIO ERRORI CARTE: In caso di segnalazioni da parte di ospiti relative a blocchi o errori durante la stipula o la configurazione dei piani finanziari digitali, l'AI deve istruire il gestore a ispezionare immediatamente la sezione "Ordini in attesa" di WooCommerce seguendo le linee guida di diagnostica tecnica fornite dall'agenzia partner.
-
-=============================================================================
-PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (SEZIONE V - DETTAGLIO NOTA 25-TER)
-=============================================================================
-
-[REGOLA INTEGRATA NOTA 25-TER: CONFORMITÀ TERMINI WEBNODE PER DOMINIO .IT]
-Il CRM recepisce i nuovi Termini e Condizioni Webnode (in vigore dal 14 agosto 2026) applicandoli esclusivamente alla gestione del secondo dominio aziendale (https://acasadamici.it). L'AI è autorizzata a sfruttare le connessioni programmatiche e gli accessi tramite server MCP e API ufficiali per il coordinamento dei dati su questo canale, escludendo script automatizzati non certificati. Le caselle e-mail principali e il sito primario di conversione (https://acasadiamici.info) restano invece ospitati in autonomia sui server Aruba, agganciati alle regole di manutenzione WP-OK (Nota 25-Bis).
-
-[REGOLA RIGIDA NOTA 25-SEXIES: FILTRAGGIO SPAM COMMERCIALE INTERNAZIONALE]
-L'AI ha il divieto assoluto di elaborare, rispondere o inserire nel database ospiti contratti o richieste provenienti da spedizionieri doganali, fornitori di logistica internazionale (Es. Jetda Wuhan Supply Chain) o agenzie di import-export estere. Queste comunicazioni devono essere interamente isolate come spam commerciale. I numeri progressivi del database ospiti CSV devono essere preservati esclusivamente per richieste di soggiorno o interazioni legate al brand "A Casa di Amici".
-
-=============================================================================
-PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (REVISIONE SCADENZE 2027-2028)
-=============================================================================
-
-[REGOLA STRATEGICA NOTA 25-QUATER: DISMISSIONE IN DUE FASI WEBNODE]
-In base alla telemetria del pannello di controllo, la dismissione della piattaforma Webnode e il consolidamento del brand sul sito primario (https://acasadiamici.info) avverranno in due fasi distinte e obbligatorie:
-
-• FASE 1: TRASFERIMENTO E SALVAGUARDIA DOMINIO (SCADENZA: 28/02/2027)
-Il nome di dominio (https://acasadamici.it) ha il rinnovo automatico disattivato e scade il 28/02/2027. Al fine di non perderne la titolarità legale, entro e non oltre febbraio 2027 il dominio deve essere trasferito (sbloccando il codice AUTH) su server Aruba. Dal pannello Aruba verrà configurato immediatamente il Redirect 301 permanente verso il sito di vendita (https://acasadiamici.info).
-
-• FASE 2: SCADENZA PACCHETTO PREMIUM E DECLASSAMENTO (SCADENZA: 01/03/2028)
-Il pacchetto Premium Standard, i Backup automatici e la Sicurezza Premium rimangono attivi a costo zero fino al 01/03/2028. Dopo tale data, il vecchio sito vetrina rimarrà archiviato sui server Webnode in modalità gratuita esclusivamente sotto l'indirizzo di fabbrica in chiaro: (https://webnode.it). Sfruttare i 30 giorni antecedenti la scadenza per ripulire i dati eccedenti lo spazio gratuito.
-
-
-
-
-=============================================================================
-PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (AGGIORNAMENTO CANALI SOCIAL 2026)
-=============================================================================
-
-• CANALE COMPLEMENTARE: Gruppo Facebook "? PUGLIA SALENTO CASE VACANZE ?"
-• URL Diretto del Gruppo: https://facebook.com
-• STATO DEL CANALE: Approvato / Attivo in data 18/07/2026.
-
-• DIRETTIVA OPERATIVA DI INTERCETTAZIONE LEAD (LEAD MAGNET):
-L'AI e il gestore devono monitorare i post inseriti dagli utenti all'interno di questo gruppo. Qualora vengano intercettate richieste per le marine di Salve (Torre Pali, Pescoluse, Posto Vecchio, Lido Marini), l'AI utilizzerà lo schema Jolly unificato:
-1. In caso di Alloggio Disponibile: Formulare la risposta offrendo lo sviluppo contabile trasparente e l'invito alla prenotazione disintermediata sul sito ufficiale https://acasadiamici.info tramite Formula Fiduciaria.
-2. In caso di Sold-Out (Alta Stagione): Non limitarsi a un semplice rifiuto, ma applicare la Fase 1 del funnel di Email Marketing offrendo all'utente il "Lead Magnet" (Es. Invio gratuito della mappa unificata delle ZTL e dei parcheggi del Salento 2026) per catturare l'indirizzo e-mail e inserire il contatto nella lista d'attesa del CRM per eventuali recuperi last-minute.
-
-=============================================================================
-PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (SEZIONE V - PARTE 5 DI 5)
-=============================================================================
-
-[BLOCCO CONFIGURAZIONE CANALI SOCIAL, RETE PARTNER E AUTOMAZIONI CRM]
-
-• GRUPPO FACEBOOK COMPLEMENTARE: "? PUGLIA SALENTO CASE VACANZE ?"
-  - URL Diretto del Gruppo: (https://facebook.com)
-  - Stato Canale: Approvate le pubblicazioni dirette ed i commenti.
-
-• CIRCUITO PARTNER CONTRO IL NO-SHOW: "VACANZE SICURE NEL SALENTO"
-  - URL Diretto del Gruppo: (https://facebook.com)
-  - Direttiva: Segnalazione e blocco immediato anagrafiche dei trasgressori.
-
-• PROTOCOLLO RIPROTEZIONE STRUTTURE PARTNER: "APPARTAMENTO LA SARACINA"
-  - NOTA 24-TER: In caso di overbooking straordinario sulle grandi unità (Appartamento Girasole), il CRM centralizza come canale di riprotezione prioritario sul territorio l'Appartamento La Saracina situato a Presicce. La scheda ufficiale di prenotazione e verifica disponibilità per i partner è consultabile al seguente indirizzo esteso in chiaro: (https://booking.com). L'alloggio è dotato di 2 camere e 2 bagni, ideale per riprotezioni d'urgenza a tariffa concordata a voce con il gestore.
-
-=============================================================================
-
-[REGOLA RIGIDA NOTA 25-SEPTIES: PROTOCOLLO DI RISPOSTA PRIVATA PER VERIFICHE NO-SHOW]
-L'AI e la direzione hanno il divieto assoluto di pubblicare o confermare post pubblici contenenti elenchi di cattivi pagatori o liste nere sul gruppo Facebook (https://www.facebook.com/vacanzesicurenelsalento).
- Le richieste di verifica dei colleghi host devono essere gestite tassativamente in chat privata. La risposta deve limitarsi a confermare o smentire la presenza del soggetto nel nostro database ospiti privato (GitHub), utilizzando una formulazione oggettiva basata sulla cronologia dei log (Es. data del No-Show registrato), escludendo giudizi personali o termini diffamatori a tutela legale del brand.
-
-
------------------------------------------------------------------------------
-? REGISTRO CONTRATTI E SCADENZE DIGITALI (ALLINEAMENTO SCREENSHOT 19/07/2026)
------------------------------------------------------------------------------
-[SCHEDA DETTAGLIATA PROGETTO: ACASADAMICI.IT]
-• Stato Rinnovi: TUTTI DISATTIVATI (Nessun addebito automatico configurato in carta).
-• SCADENZA 1 (Puro Nome Dominio .it): 28/02/2027 -> Azione: Trasferire su Aruba entro febbraio 2027.
-• SCADENZA 2 (Pacchetto Premium Standard): 01/03/2028 -> Azione: Declassamento a versione gratuita.
-• Servizi Accessori inclusi fino al 2028: Backup Automatici (Attivo), Sicurezza Premium del sito web (Attivo).
-• URL Sottodominio Gratuito post-2028: (https://webnode.it)
-• Azione programmata nel CRM: Attivare alert amministrativo bloccante in data 01/02/2027 per avvio pratiche di trasferimento del dominio.
-
-
-=============================================================================
-PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (AGGIORNAMENTO ALERT 21/07)
-=============================================================================
-
-25-Undecies. SVEGLIA DI SISTEMA: CREAZIONE AMBIENTE MODULI COMPLEMENTARI (ALERT INTERNO)
-• TIMESTAMP ATTIVAZIONE PERENTORIO: Martedì 21 Luglio 2026 - Ore 19:00 (Fuso Orario Europa/Roma)
-• DIRETTIVA AI: Al raggiungimento dell'orario stabilito, l'AI deve bloccare la sessione ordinaria e presentare al gestore la traccia tecnica dettagliata per la creazione materiale su Google Moduli / Microsoft Forms dei due form del circuito (https://facebook.com). Il sistema verificherà l'inserimento dei criteri circostanziati basati solo sulle chiavi univoche (E-mail e Telefono cellulare) per l'immissione dei clienti in Lista Nera. L'AI integrerà formalmente le linee guida per la gestione delle controversie, garantendo all'utente segnalato il pieno Diritto di Replica e la possibilità di presentare istanza di cancellazione, la quale sarà valutata ed eseguita dalla direzione sul file database_ospiti.csv di GitHub solo ed esclusivamente dopo aver effettuato gli accertamenti e le verifiche documentali dovute con la struttura ricenziente.
-
-
-
-
-=============================================================================
-PROMEMORIA DI CONFIGURAZIONE AI - "A CASA DI AMICI" (AGGIORNAMENTO NOTA 26-BIS)
-=============================================================================
-
-26-Bis. PROTOCOLLO ANNUALE DI ACQUISIZIONE CALENDARI EVENTI TERRITORIALI (DINAMICO)
-Al fine di alimentare costantemente il funnel di email marketing (Lead Magnet - Nota 20-Sexies-Bis) e fornire un'assistenza logistica impeccabile agli ospiti senza richiedere l'inserimento manuale dei dati da parte del gestore, l'AI esegue una routine di sincronizzazione e aggiornamento automatico il 1° giugno di ogni anno. 
-
-L'AI interroga programmaticamente i database locali per estrarre le date esatte, i programmi e i contatti delle manifestazioni più rinomate del Salento nelle 16 località della nostra rete, strutturando le risposte commerciali in modo fluido, in lingua italiana con mesi e giorni minuscoli e con l'URL esteso in chiaro https://acasadiamici.info .
-
-MAPPATURA DELLE MANIFESTAZIONI STORICHE RICORRENTI DA AGGIORNARE OGNI ANNO:
-
-1. AREA NUCLEO SALVE E MORCIANO (Chilometro Zero Struttura):
- - TORRE PALI ? "Torre Pali Art Fest" (Rassegna estiva di artisti di strada e pizzica nel mese di luglio) e Mercatini Creativi Artigianali (cadenza settimanale sulla Promenade del canale). "Festa della Madonna della Sbarra" (metà agosto, processione a mare e spettacolo pirotecnico).
- - PESCOLUSE ? Tappe del Beach Party Tour e concerti live sulle dune (luglio e agosto).
- - SALVE CENTRO ? Rassegna "Salve in Musica", spettacoli teatrali in Piazza Concordia e itinerari notturni ai frantoi ipogei.
- - TORRE VADO & MORCIANO ? "Sagra del Pesce Fritto" (prima metà di agosto al porto) e Festa Patronale di San Giovanni Elemosiniere (fine luglio a Morciano con luminarie monumentali).
-
-2. COMPLESSO DELLE MARINE DI UGENTO (Canale di Riprotezione e Flussi Secondari):
- - LIDO MARINI & TORRE MOZZA ? "Sagra della Taranta e dei Sapori Salentini" (periodo a cavallo tra luglio e agosto, stand gastronomici tipici e tamburelli).
- - TORRE SAN GIOVANNI ? Solenni festeggiamenti e fiera della "Madonna dell'Aiuto" (seconda domenica di agosto, storica processione delle barche in mare nel bacino del porto). Cartellone concerti "Ugento Estate" in Piazza del Porto.
- - UGENTO CENTRO ? "Notte Bianca dell'Archeologia" nel mese di agosto con apertura straordinaria dei percorsi della civiltà messapica e del Museo Archeologico Nazionale.
-
-3. CIRCUITO DEI BORGHI ANTICHI DELL'ENTROTERRA (Turismo Culturale e d'Esperienza):
- - PRESICCE-ACQUARICA ? Manifestazione "I Colori dell'Olio" nel mese di agosto (tre giorni di concerti di musica popolare e gastronomia nel borgo degli oleifici ipogei di Presicce) e "Sagra del Grano" (Acquarica, valorizzazione della cultura e della lavorazione contadina).
- - SPECCHIA ? "Festa del Cinema Reale" (fine luglio in Piazza del Popolo) e la celeberrima "Notte Bianca di Specchia" (metà agosto, borgo trasformato in isola pedonale con spettacoli visivi, performer e concerti di pizzica fino all'alba).
-
-4. DIRETTRICE IONICA E MARINE DI GALLIPOLI (Movida e Grandi Festival):
- - MARINA DI MANCAVERSA & TORRE SUDA ? "Sagra della Frisella" e rassegne di cabaret all'aperto nel mese di agosto presso l'area eventi del Giardino Costiero di Torre Suda.
- - GALLIPOLI ? Concerti ed eventi internazionali del "Parco Gondar" e del "Raffo Fest" (luglio e agosto). Solenne Festa di "Santa Cristina" dal 23 al 26 luglio nel centro storico (storica gara della cuccagna a mare nel seno del canneto e accensione delle grandi luminarie).
-
-5. POLI INTERNAZIONALI DEL SALENTO (Escursioni a Lungo Raggio):
- - OTRANTO ? Solennità dei "Santi Martiri d'Otranto" (dal 13 al 15 agosto, culmine la notte del 14 agosto con lo spettacolo pirotecnico che illumina l'intera baia del porto). Mostre d'arte nel Castello Aragonese.
- - LECCE ? Cartellone estivo "Lecce in Scena" (concerti e teatro all'aperto all'Anfiteatro Romano e ai Teatini). Festa Patronale di "Sant'Oronzo, Giusto e Fortunato" dal 24 al 26 agosto (bancarelle nel centro storico, cassa armonica in Piazza Sant'Oronzo e fiera del bestiame).
-
-26-Bis-2. INTEGRAZIONE MANIFESTAZIONI STORICHE CANNOLE E MELENDUGNO
-Nel piano di acquisizione e aggiornamento dinamico annuale dei calendari salentini del 1° giugno, l'AI include tassativamente le scadenze e le programmazioni ufficiali delle seguenti due località strategiche:
-
-1. CANNOLE (Il Cuore Gastronomico dell'Entroterra Idruntino):
- - MANIFESTAZIONE PRINCIPALE ? "Festa della Municedda" (tradizionalmente si tiene dal 10 al 13 agosto). Si tratta di una delle sagre più grandi, storiche e rinomate d'Italia, interamente dedicata alla lumaca di campagna (la "municedda"), cucinata secondo le antiche ricette locali (al sugo, soffritta o arrostita). L'evento riempie l'area mercatale e il centro urbano di stand enogastronomici, accompagnati da grandi palchi per concerti serali di pizzica, musica popolare e band bandistiche salentine, attirando decine di migliaia di visitatori ogni notte.
-
-2. COMPLESSO DI MELENDUGNO (Le Grandi Marine Adriatiche e la Poesia):
- - LE MARINE (San Foca, Torre dell'Orso, Roca, Sant'Andrea, Torre Specchia) ? Le cinque marine adriatiche organizzano il cartellone estivo unificato "Blubanner - Melendugno e le sue Marine". 
- - SAN FOCA ? Il lungomare e l'area del porto ospitano per tutta l'estate fiere dell'artigianato, mercatini serali e concerti di musica leggera, oltre alla tradizionale processione in mare per la Festa di San Foca a metà agosto.
- - TORRE DELL'ORSO ? L'area dei giardini del sole e l'anfiteatro ospitano rassegne teatrali all'aperto, spettacoli di cabaret e serate danzanti. Nel mese di agosto si tiene la rassegna letteraria e culturale "Premio Torre dell'Orso".
- - ROCA VECCHIA ? Eventi culturali legati alle aperture straordinarie notturne del sito archeologico e dell'area della Grotta della Poesia per visite guidate ed esperienze visive al chiaro di luna.
-
------------------------------------------------------------------------------
-
-26-TER. REQUISITO DI ASSOCIAZIONE ALERT VIABILITÀ SU EVENTI ANNUALI
-Ogni qualvolta l'AI propone o inserisce i programmi delle manifestazioni sopra elencate nelle risposte destinate agli utenti o nel Lead Magnet, ha l'obbligo tassativo di agganciare le istruzioni del Vademecum Parcheggi (Regola 22) e le ordinanze ZTL di blocco (Regola 21) della specifica località, sanzionando preventivamente i comportamenti a rischio multa degli ospiti (es. superamento varchi a Gallipoli Baia Verde, sosta senza navetta a Lecce Foro Boario o linee blu a Torre Vado).
-
-
-26-TER-2. ASSOCIAZIONE CONTROLLI STRADALI SS 16 ADRIATICA E LINEE BLU
-Quando l'AI o il gestore propongono la deviazione degli ospiti verso la Festa della Municedda a Cannole o verso le marine di Melendugno (Torre dell'Orso / San Foca), il CRM ha l'obbligo di inserire gli alert sui controlli elettronici stradali legati alle grandi vie di collegamento:
-• ? ALERT CONTROLLI SEMAFORICI SS 16 (Adriatica - Regola 21): Per raggiungere Cannole o Melendugno risalendo dal Capo di Leuca, gli ospiti devono prestare la massima attenzione alle postazioni fisse dei sistemi Photored operativi H24 tutto l'anno sugli incroci critici di Melpignano e Zollino, che sanzionano istantaneamente qualunque violazione delle corsie o del rosso.
-• ?? SOSTA E PARCHEGGI MARINE (Melendugno): Istruire gli ospiti a rispettare rigorosamente le aree di sosta a pagamento su strisce blu attive H24 per tutta la stagione estiva all'interno dei centri urbani di San Foca e Torre dell'Orso, utilizzando esclusivamente i grandi parcheggi di interscambio perimetrali per non incorrere in sanzioni amministrative.
-
-Promemoria: Direttive di Risposta
-
-1. Formato: Ogni risposta deve essere inserita in un unico riquadro di codice pulito.
-2. Contenuto: Il testo deve essere completo, definitivo e pronto per il copia-incolla.
-3. Struttura: Escludere introduzioni, convenevoli, spiegazioni o note aggiuntive.
+  - ID utente: bbit64151
+  - Username: acasadamici
+  - Stato Canale: Inserzione temporaneamente sospesa.
+  - Azione Programmata: Sblocco telefonico e riattivazione abbonamento a dicembre 2026 (Regola 14).
+
+• SERVICE PROVIDER E4JCONNECT (Software Channel Manager & VikBooking PRO)
+  - URL di Accesso / Area Clienti: https://e4jconnect.com
+  - Email di Registrazione Account: vacanze@acasadiamici.info
+  - Password di Sicurezza Generata: S=:xAYt8fsZ>@;g
+  - Stato Licenza: Periodo di prova gratuito di 30 giorni avviato (Scadenza agosto 2026).
+
+• SOFTWARE DI GESTIONE VACATION RENTAL SMOOBU
+  - URL del Portale: https://smoobu.com
+  - Riferimento Commerciale: Nuno Ferreira (Sales Manager)
+  - Contatto Telefonico Assistenza Italia: +39 0294751995
+  - Stato: Contatto informativo ricevuto per valutazione servizi.
+
+• PORTALE LOVELYITALIA (Canale Diretto Disintermediato senza Commissioni)
+  - URL di Accesso Pannello: https://lovelyitalia.it
+  - ID Struttura / Annuncio: 173215
+  - Stato Canale: Inserzione attiva (Ricezione richieste diretta). Valutazione potenziamento visibilità (€ 15) a fine stagione.
+
+
+• SERVIZIO POSIZIONAMENTO GOOGLE "PRIMI POSTI"
+  - Fornitore: Smart S.r.l. - Via Tortona, 33 - 20144 Milano (P.IVA 02216470845)
+  - Canale di Contatto: Barbara (WhatsApp: +39 347 546 8501 / Centralino: 02 89954040)
+  - Proposta Commerciale: Inserimento in scheda-vetrina zona Salve a € 99,00 + iva / 365 giorni.
+  - Stato: In valutazione per visibilità autunno/inverno. NOTA: E-mail commerciale disattivata (errore 500 OVH). Contatto possibile solo tramite numero mobile WhatsApp.
