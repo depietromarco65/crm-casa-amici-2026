@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Board - A Casa di Amici</title>
+    <!-- Carica Tailwind CSS per la grafica moderna -->
+    <script src="https://jsdelivr.net"></script>
+    <!-- Carica PapaParse per leggere il file CSV -->
+    <script src="https://cloudflare.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans p-6">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header del CRM -->
+        <div class="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
+            <div>
+                <h1 class="text-2xl font-bold text-white tracking-tight">A Casa di Amici</h1>
+                <p class="text-sm text-slate-400">Pannello di Controllo Flussi e Lead Management</p>
+            </div>
+            <div class="bg-indigo-600/20 text-indigo-400 px-3 py-1.5 rounded-lg text-xs font-semibold border border-indigo-500/30">
+                Server Attivo (2026)
+            </div>
+        </div>
+
+        <!-- Tabella dei Lead -->
+        <div class="bg-slate-800/50 rounded-xl border border-slate-700/60 overflow-hidden backdrop-blur-md">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-800/90 text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-700">
+                            <th class="p-4">ID</th>
+                            <th class="p-4">Ospite</th>
+                            <th class="p-4">Periodo</th>
+                            <th class="p-4">Alloggio</th>
+                            <th class="p-4">Canale</th>
+                            <th class="p-4">Stato</th>
+                        </tr>
+                    </thead>
+                    <tbody id="crm-table-body" class="text-sm divide-y divide-slate-700/50">
+                        <!-- I dati del CSV verranno inseriti qui in automatico tramite JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sostituisci questo URL con il link RAW del tuo file CSV su GitHub
+        const csvUrl = 'https://githubusercontent.com';
+
+        // Funzione per generare i badge colorati in base allo stato
+        function getStatusBadge(status) {
+            const st = status.trim().toLowerCase();
+            if (st === 'in corso') return '<span class="px-2.5 py-1 text-xs font-medium rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">In Corso</span>';
+            if (st === "lista d'attesa") return '<span class="px-2.5 py-1 text-xs font-medium rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">Lista d\'attesa</span>';
+            if (st === 'non contattabile') return '<span class="px-2.5 py-1 text-xs font-medium rounded-full bg-slate-600/20 text-slate-400 border border-slate-500/20">Non Contattabile</span>';
+            return '<span class="px-2.5 py-1 text-xs font-medium rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20">Scaduta</span>';
+        }
+
+        // Legge il CSV e popola la tabella grafica
+        Papa.parse(csvUrl, {
+            download: true,
+            complete: function(results) {
+                const rows = results.data;
+                const tbody = document.getElementById('crm-table-body');
+                
+                // Cicla sui record partendo dal fondo per vedere i più recenti in alto
+                for (let i = rows.length - 1; i >= 0; i--) {
+                    if (rows[i].length < 2) continue; // Salta righe vuote
+                    
+                    const id = rows[i][0];
+                    const nome = rows[i][5] || 'nd';
+                    const arrivo = rows[i][6];
+                    const partenza = rows[i][7];
+                    const alloggio = rows[i][8] || 'nd';
+                    const canale = rows[i][14];
+                    const stato = rows[i][21] || 'Scaduta';
+
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-700/30 transition-colors duration-150';
+                    tr.innerHTML = `
+                        <td class="p-4 font-mono text-xs text-slate-400">${id}</td>
+                        <td class="p-4 font-semibold text-white">${nome}</td>
+                        <td class="p-4 text-slate-300">${arrivo} - ${partenza}</td>
+                        <td class="p-4 text-indigo-300 font-medium">${alloggio}</td>
+                        <td class="p-4 text-slate-400">${canale}</td>
+                        <td class="p-4">${getStatusBadge(stato)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
