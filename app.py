@@ -10,7 +10,8 @@ st.markdown("""
     html, body, .stApp, .main, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stHeader"] {
         background-color: #fcfbf7 !important; background-attachment: fixed !important; min-height: 100% !important; height: auto !important; color: #2d3748 !important;
     }
-    h1, label, p, span, div { color: #2d3748 !important; }
+    h1, h2, h3, label, p, span, div { color: #2d3748 !important; }
+    .metric-box { background-color: #ffffff; border: 1px solid #e2e8f0; padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
     .card-ospite { background-color: #ffffff !important; border: 1px solid #e2e8f0 !important; padding: 22px; border-radius: 14px; margin-bottom: 16px; box-shadow: 0 4px 15px -3px rgba(148, 120, 80, 0.08); }
     .badge { padding: 5px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
     .badge-verde { background-color: #e6fffa !important; color: #008767 !important; border: 1px solid #b2f5ea !important; }
@@ -33,6 +34,7 @@ st.markdown("---")
 # --- 2. RECUPERO DATI E SOLIDO PARSING GEOMETRICO A 23 CAMPI ---
 CSV_URL = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/database_ospiti.csv"
 
+
 try:
     risposta = requests.get(CSV_URL)
     if risposta.status_code == 200:
@@ -42,14 +44,36 @@ try:
             next(lettore)  # Salta intestazione
             righe = list(lettore)
             
+            # --- CALCOLO METRICHE AZIENDALI IN TEMPO REALE ---
+            totale_fatturato = 0.0
+            pratiche_attive = 0
+            
+            for p in righe:
+                if len(p) < 23: continue
+                stato_p = p[21].strip().lower()
+                if "conferma" in stato_p or "corso" in stato_p or "arrivato" in stato_p:
+                    pratiche_attive += 1
+                    try:
+                        valore_tariffa = p[16].strip().replace(",", ".")
+                        totale_fatturato += float(valore_tariffa)
+                    except ValueError:
+                        pass
+            
+            # Rendering Blocchi Indicatori Contabili
+            c_m1, c_m2 = st.columns(2)
+            with c_m1:
+                st.markdown(f'<div class="metric-box"><span style="font-size:14px; color:#718096; font-weight:600;">💰 FATTURATO CONSOLIDATO (PREVENTIVI ATTIVI / CONFERMATI)</span><br><span style="font-size:28px; font-weight:800; color:#2f855a;">€ {totale_fatturato:,.2f}</span></div>', unsafe_allow_html=True)
+            with c_m2:
+                st.markdown(f'<div class="metric-box"><span style="font-size:14px; color:#718096; font-weight:600;">📈 PRATICHE ATTIVE IN CORSO</span><br><span style="font-size:28px; font-weight:800; color:#4c51bf;">{pratiche_attive} CONTATTI VIA WEB</span></div>', unsafe_allow_html=True)
+            
+            st.markdown("<br>", unsafe_allow_html=True)
             ricerca = st.text_input("✍ Cerca per nome, e-mail o note interne:", placeholder="Digita per filtrare i record...").strip().lower()
             conteggio = 0
             
             for p in reversed(righe):
-                if len(p) < 23: 
-                    continue
+                if len(p) < 23: continue
                 
-                # CORREZIONE INDICI: Mappatura millimetrica posizionale (0-22)
+                # Mappatura rigorosa geometrica (0-22)
                 id_p = p[0].strip()
                 d_c = p[1].strip()
                 o_c = p[2].strip()
