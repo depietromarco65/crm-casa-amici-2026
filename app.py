@@ -1,132 +1,147 @@
 import streamlit as st
 import pandas as pd
-import requests
+from datetime import datetime
 
-# --- 1. CONFIGURAZIONE INTERFACCIA PREMIUM (DARK MODE) ---
-st.set_page_config(page_title="CRM BOARD - A Casa di Amici", layout="wide", page_icon="🏨")
+# Configurazione iniziale della pagina
+st.set_page_config(page_title="CRM A Casa di Amici", layout="wide", initial_sidebar_state="expanded")
 
-st.markdown("""
-<style>
-    .stApp { background-color: #0b1329; color: #f1f5f9; }
-    h1 { color: #ffffff; font-family: 'Inter', sans-serif; font-weight: 800; tracking-tight: -0.05em; }
-    .card-ospite {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        border: 1px solid #334155;
-        padding: 22px;
-        border-radius: 14px;
-        margin-bottom: 16px;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-    }
-    .badge {
-        padding: 5px 12px;
-        border-radius: 9999px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-    .badge-verde { background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
-    .badge-giallo { background-color: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); }
-    .badge-rosso { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
-    .badge-grigio { background-color: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.4); }
-    .griglia-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 10px; font-size: 14px; }
-    .dato-evidenziato { color: #e2e8f0; font-weight: 600; }
-</style>
-""", unsafe_allow_html=True)
+st.title("? Pannello di Controllo CRM - A Casa di Amici")
+st.caption("CEO Management System — Marco De Pietro")
 
-st.title("🏨 A Casa di Amici — Dashboard Direzionale")
-st.markdown("---")
+# Funzione per caricare il database in sicurezza
+def carica_database():
+    try:
+        df = pd.read_csv("database_ospiti.csv")
+        df.columns = df.columns.str.strip()
+        return df
+    except FileNotFoundError:
+        # Se il file non esiste, crea una struttura base con le tue colonne
+        colonne = ["numero progressivo", "Data del contatto", "Cognome", "Nome", "Nominativi Ospiti", 
+                   "data presunta di Arrivo", "data presunta di Partenza", "Numero Ospiti", "adulti", 
+                   "minori", "Email", "Portale di provenienza", "Note aggiuntive", "Cane (Razza/Taglia)", "Esito"]
+        return pd.DataFrame(columns=colonne)
 
-CSV_URL = "https://githubusercontent.com"
+df = carica_database()
 
-# --- 2. RETRIEVAL STRUTTURATO E PARSING ROBUSTO DELLE LINEE ---
-try:
-    risposta = requests.get(CSV_URL)
-    if risposta.status_code == 200:
-        linee = risposta.text.splitlines()
+# Logica di calcolo automatico del Lead Time
+def calcola_lead_time(row):
+    try:
+        contatto = pd.to_datetime(row['Data del contatto'], format='%d/%m/%Y')
+        arrivo = pd.to_datetime(row['data presunta di Arrivo'], format='%d/%m/%Y')
+        return (arrivo - contatto).days
+    except:
+        return None
+
+if not df.empty:
+    df['Lead Time (Giorni)'] = df.apply(calcola_lead_time, axis=1)
+
+# --- CREAZIONE DELLE SCHEDE INTERFACCIA ---
+tab1, tab2, tab3, tab4 = st.tabs(["? CEO Dashboard", "? Archivio Ospiti", "? Marketing Iper-Target", "? Nuovo Contatto"])
+
+# --- TAB 1: DASHBOARD STATISTICA ---
+with tab1:
+    st.header("Andamento Business e KPI")
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        st.metric("Totale Contatti Archivio", len(df))
+    with c2:
+        confermati = len(df[df['Esito'].str.contains('?|Confermata', na=False)])
+        st.metric("Prenotazioni Confermate", confermati)
+    with c3:
+        pet_friendly = len(df[~df['Cane (Razza/Taglia)'].str.lower().str.contains('no|-|nessuno', na=False)])
+        st.metric("Clienti Pet-Friendly", pet_friendly)
+    with c4:
+        lt_medio = df['Lead Time (Giorni)'].mean()
+        st.metric("Lead Time Medio (Anticipo)", f"{int(lt_medio) if pd.notna(lt_medio) else 0} Giorni")
+
+# --- TAB 2: ARCHIVIO RICERCABILE ---
+with tab2:
+    st.header("Ricerca Avanzata e Filtri")
+    f_col1, f_col2, f_col3 = st.columns(3)
+    with f_col1:
+        cerca_cognome = st.text_input("Cerca per Cognome")
+    with f_col2:
+        cerca_alloggio = st.text_input("Cerca per Alloggio nelle Note (es. Marina, Girasole)")
+    with f_col3:
+        filtro_pet = st.checkbox("Mostra solo clienti con Animali")
+    
+    # Applicazione dei filtri
+    df_view = df.copy()
+    if cerca_cognome:
+        df_view = df_view[df_view['Cognome'].str.contains(cerca_cognome, case=False, na=False)]
+    if cerca_alloggio:
+        df_view = df_view[df_view['Note aggiuntive'].str.contains(cerca_alloggio, case=False, na=False)]
+    if filtro_pet:
+        df_view = df_view[~df_view['Cane (Razza/Taglia)'].str.lower().str.contains('no|-|nessuno', na=False)]
         
-        if len(linee) > 1:
-            # Isoliamo le righe dei dati scartando l'intestazione iniziale di GitHub
-            righe_dati = linee[1:]
-            
-            # Pannello di ricerca reattivo in testa allo schermo
-            ricerca_testuale = st.text_input("✍ Cerca all'istante per nome, e-mail o note interne:", placeholder="Digita per filtrare i record...").strip().lower()
-            
-            conteggio_visibili = 0
-            
-            # Processiamo il foglio in senso inverso per spingere i nuovi flussi in alto
-            for riga_grezza in reversed(righe_dati):
-                if not riga_grezza.strip():
-                    continue
-                    
-                # Parsing posizionale immune: separiamo solo le prime 22 colonne stabili
-                parti = riga_grezza.split(",", 22)
-                if len(parti) < 22:
-                    continue
-                    
-                # Mappatura sicura legata alla reale struttura geometrica del file CSV
-                id_progressivo = parti[0].strip()
-                data_contatto = parti[1].strip()
-                cognome = parti[4].strip() if parti[4].strip() != "nd" else ""
-                nome_grezzo = parti[5].strip() if parti[5].strip() != "nd" else "Ospite"
-                nome_ospite = f"{cognome} {nome_grezzo}".strip()
-                arrivo = parti[6].strip()
-                partenza = parti[7].strip()
-                alloggio = parti[8].strip() if parti[8].strip() != "nd" else "Da assegnare"
-                portale = parti[14].strip()
-                tariffa = parti[16].strip() if parti[16].strip() != "nd" else "0.00"
-                stato = parti[21].strip() if parti[21].strip() != "nd" else "Lista d'attesa"
-                
-                # Se la nota finale contiene ulteriori virgole, split(..., 22) le mantiene intatte
-                note_interne = parti[22].strip() if len(parti) > 22 else "Nessuna nota aggiuntiva."
-                note_interne = note_interne.strip('"') # Rimuove eventuali virgolette di protezione
+    st.dataframe(df_view, use_container_width=True)
 
-                # Applicazione immediata dei filtri di ricerca sul testo pulito
-                testo_linea_completa = f"{nome_ospite} {parti[13]} {note_interne}".lower()
-                if ricerca_testuale and ricerca_testuale not in testo_linea_completa:
-                    continue
-                    
-                conteggio_visibili += 1
-
-                # Classificazione cromatica degli stati ed estensione delle stringhe visive
-                st_low = stato.lower()
-                if "conferma" in st_low or "corso" in st_low or "arrivato" in st_low:
-                    classe_colore = "badge-verde"
-                    stato_visivo = "Confermata / In Corso"
-                elif "attesa" in st_low or "sospeso" in st_low:
-                    classe_colore = "badge-giallo"
-                    stato_visivo = "Lista d'attesa"
-                elif "non contattabile" in st_low:
-                    classe_colore = "badge-grigio"
-                    stato_visivo = "Non Contattabile"
-                else:
-                    classe_colore = "badge-rosso"
-                    stato_visivo = "Richiesta Scaduta"
-
-                # --- 3. INIEZIONE FRONTEND DELL'INTERFACCIA IN HIGH CONTRAST ---
-                st.markdown(f"""
-                <div class="card-ospite">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #334155; padding-bottom: 8px;">
-                        <span style="font-size: 18px; font-weight: 800; color: #ffffff; tracking-tight: -0.02em;">#{id_progressivo} | {nome_ospite}</span>
-                        <span class="badge {classe_colore}">{stato_visivo}</span>
-                    </div>
-                    <div class="griglia-info">
-                        <div>📅 <span style="color: #94a3b8;">Soggiorno:</span> <span class="dato-evidenziato">{arrivo} ➔ {partenza}</span></div>
-                        <div>🏠 <span style="color: #94a3b8;">Unità Assegnata:</span> <span class="dato-evidenziato" style="color: #6366f1;">{alloggio}</span></div>
-                        <div>💶 <span style="color: #94a3b8;">Tariffa Soggiorno:</span> <span class="dato-evidenziato" style="color: #10b981;">€ {tariffa}</span></div>
-                        <div>🌐 <span style="color: #94a3b8;">Canale d'Origine:</span> <span class="dato-evidenziato">{portale}</span></div>
-                    </div>
-                    <div style="margin-top: 14px; font-size: 13px; color: #94a3b8; background-color: rgba(15, 23, 42, 0.4); padding: 10px; border-radius: 6px; border-left: 3px solid #475569;">
-                        📌 <b>LOGISTICA E NOTE CRM:</b> {note_interne} <span style="float: right; font-size: 11px; color: #64748b;">Contatto: {data_contatto}</span>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-                
-            if conteggio_visibili == 0:
-                st.warning("❌ Nessun record trovato nel database corrispondente ai parametri digitati.")
+# --- TAB 3: GENERATORE EMAIL IPER-PERSONALIZZATE ---
+with tab3:
+    st.header("? Strategia Direct Marketing 2027")
+    st.subheader("Seleziona un cliente storico per generare la mail su misura basata sui suoi dati:")
+    
+    lista_clienti = df[df['Cognome'].notna()]['Cognome'].unique()
+    cliente_selezionato = st.selectbox("Scegli il Cognome dell'ospite da ricontattare:", lista_clienti)
+    
+    if cliente_selezionato:
+        riga_cliente = df[df['Cognome'] == cliente_selezionato].iloc[0]
+        note = str(riga_cliente['Note aggiuntive']).lower()
+        cane = str(riga_cliente['Cane (Razza/Taglia)'])
+        nome_ospite = riga_cliente['Nome'] if pd.notna(riga_cliente['Nome']) else ""
+        
+        st.info(f"**Storico Rilevato:** {riga_cliente['Note aggiuntive']}")
+        
+        # Algoritmo di Intelligenza Artificiale locale per la scelta del gancio commerciale
+        oggetto_mail = "Un saluto da Torre Pali - A Casa di Amici"
+        corpo_mail = ""
+        
+        if "burraco" in note or "machiavelli" in note:
+            corpo_mail = f"Gentile {cliente_selezionato},\n\nle carte sul tavolo a Torre Pali sono già pronte per le nostre sfide a Burraco e Machiavelli fino a tardi! Volevamo ricordarLe che i calendari per la nuova stagione si stanno aprendo e ci farebbe immenso piacere avervi nuovamente nostri ospiti nel vostro Monolocale Marina del cuore.\n\nContattandoci direttamente, la Vostra tariffa speciale senza commissioni è bloccata."
+        elif "barboncino" in note.lower() or "maltese" in note.lower():
+            corpo_mail = f"Gentile {cliente_selezionato},\n\nil nostro prato verde di 15.000 mq è pronto per le corse del Vostro splendido {cane}! Sappiamo quanto sia importante la sicurezza dei nostri amici a quattro zampe, e le nostre recinzioni sono pronte ad accogliervi a Torre Pali per una nuova estate di totale relax."
+        elif "gatto" in note:
+            corpo_mail = f"Gentile {cliente_selezionato},\n\nle nostre ville interamente recintate e sicure sono pronte ad accogliere nuovamente la Vostra famiglia e il Vostro gatto per una vacanza a zero stress logistico a pochissimi minuti dalle spiagge di sabbia di Torre Pali."
         else:
-            st.info("📂 Il database ospiti risulta attualmente vuoto su GitHub.")
-    else:
-        st.error("🛑 Impossibile connettersi alla repository di GitHub per prelevare il file sorgente.")
-except Exception as e:
-    st.error(f"🛑 Errore nel caricamento del database ospiti. Assicurati che il file database_ospiti.csv su GitHub sia formattato correttamente.")
+            corpo_mail = f"Gentile {nome_ospite} {cliente_selezionato},\n\nè stato un vero piacere avervi ospiti presso la nostra tenuta 'A Casa di Amici' a Torre Pali (Marina di Salve). Volevamo informarLe in anteprima che stiamo aprendo le prenotazioni dirette per la nuova stagione, offrendo tariffe esclusive ed evitando le commissioni dei portali online."
+
+        st.subheader("? Mail personalizzata generata (Pronta da copiare):")
+        st.text_input("Oggetto dell'email:", oggetto_mail)
+        st.text_area("Corpo del messaggio (Senza blocchi, seleziona tutto e copia):", corpo_mail, height=250)
+
+# --- TAB 4: INSERIMENTO RAPIDO DATI ---
+with tab4:
+    st.header("? Aggiungi un nuovo contatto al volo")
+    with st.form("nuovo_ospite_form"):
+        col_a, col_b = st.columns(2)
+        with col_a:
+            data_c = st.text_input("Data Contatto (GG/MM/AAAA)", datetime.now().strftime("%d/%m/%Y"))
+            cognome = st.text_input("Cognome")
+            nome = st.text_input("Nome")
+            ospiti_nomi = st.text_area("Nominativi completi ospiti (Divisi da +)")
+            data_arr = st.text_input("Data Arrivo (GG/MM/AAAA)")
+            data_par = st.text_input("Data Partenza (GG/MM/AAAA)")
+        with col_b:
+            num_o = st.number_input("Numero Ospiti Totali", min_value=1, value=2)
+            ad = st.number_input("Adulti", min_value=1, value=2)
+            mn = st.number_input("Minori", min_value=0, value=0)
+            email = st.text_input("Email")
+            portale = st.selectbox("Portale", ["Sito Diretto", "UltMin", "Lovely", "Booking", "Vrbo", "Airbnb"])
+            cane_razza = st.text_input("Cane (Razza/Taglia)", "No")
+            esito = st.selectbox("Esito iniziale", ["? In sospeso", "? Confermata", "? Lista attesa", "? Non disponibile"])
+            note_agg = st.text_area("Note aggiuntive (Evita l'uso di virgole)")
+            
+        submitted = st.form_submit_button("Salva ed Esporta nel CSV")
+        
+        if submitted:
+            nuovo_id = len(df) + 1
+            nuova_riga = {
+                "numero progressivo": nuovo_id, "Data del contatto": data_c, "Cognome": cognome, "Nome": nome,
+                "Nominativi Ospiti": ospiti_nomi, "data presunta di Arrivo": data_arr, "data presunta di Partenza": data_par,
+                "Numero Ospiti": num_o, "adulti": ad, "minori": mn, "Email": email, "Portale di provenienza": portale,
+                "Note aggiuntive": note_agg, "Cane (Razza/Taglia)": cane_razza, "Esito": esito
+            }
+            df_nuovo = pd.concat([df, pd.DataFrame([nuova_riga])], ignore_index=True)
+            df_nuovo.to_csv("database_ospiti.csv", index=False)
+            st.success(f"Ospite registrato con successo con ID progressivo n. {nuovo_id}! Riavvia l'app per aggiornare le tabelle.")
+
