@@ -44,51 +44,52 @@ st.markdown("---")
 
 CSV_URL = "https://githubusercontent.com"
 
-# --- 3. RETRIEVAL E PARSING AVANZATO CON LIBRERIA CSV ---
+# --- 3. RETRIEVAL E PARSING ROBUSTO DELLE RIGHE ---
 try:
     risposta = requests.get(CSV_URL)
     if risposta.status_code == 200:
-        linee = risposta.text.splitlines()
+        # Dividiamo le righe eliminando spazi di a capo spuri
+        linee = [linea for linea in risposta.text.splitlines() if linea.strip()]
         
         if len(linee) > 1:
-            # Sfruttiamo il reader nativo per gestire in automatico le note tra virgolette ed evitare sfasamenti
+            # Legge le righe gestendo i blocchi di testo qualificati tra virgolette
             lettore_csv = csv.reader(linee)
-            intestazione = next(lettore_csv) # Salta la prima riga
+            intestazione = next(lettore_csv) # Salta la riga dei titoli
             
             righe_dati = list(lettore_csv)
             
-            # Pannello di ricerca reattivo
-            ricerca_testuale = st.text_input("✍ Cerca per nome, e-mail o note interne:", placeholder="Digita per filtrare i record...").strip().lower()
+            # Pannello di ricerca reattivo in testa allo schermo
+            ricerca_testuale = st.text_input("✍ Cerca all'istante per nome, e-mail o note interne:", placeholder="Digita per filtrare i record...").strip().lower()
             
             conteggio_visibili = 0
             
-            # Scorriamo in senso inverso per vedere i lead caldi in cima
+            # Scorriamo in senso inverso per vedere le pratiche calde in cima
             for parti in reversed(righe_dati):
                 if len(parti) < 22:
                     continue
                 
-                # Mappatura rigorosa basata sulla geometria reale del file CSV (0-22)
-                id_progressivo = parti[0].strip()
-                data_contatto = parti[1].strip()
-                cognome = parti[4].strip() if parti[4].strip() != "nd" else ""
-                nome_grezzo = parti[5].strip() if parti[5].strip() != "nd" else "Ospite"
+                # Estrazione basata su indici fisici dell'array pulito (0-22)
+                id_progressivo = str(parti[0]).strip().replace(".0", "")
+                data_contatto = str(parti[1]).strip()
+                cognome = str(parti[4]).strip() if str(parti[4]).strip().lower() != "nd" else ""
+                nome_grezzo = str(parti[5]).strip() if str(parti[5]).strip().lower() != "nd" else "Ospite"
                 nome_ospite = f"{cognome} {nome_grezzo}".strip()
-                arrivo = parti[6].strip()
-                partenza = parti[7].strip()
-                alloggio = parti[8].strip() if parti[8].strip() != "nd" else "Da assegnare"
-                portale = parti[14].strip()
-                tariffa = parti[16].strip() if parti[16].strip() != "nd" else "0.00"
-                stato = parti[21].strip() if parti[21].strip() != "nd" else "Lista d'attesa"
-                note_interne = parti[22].strip() if len(parti) > 22 else "Nessuna nota aggiuntiva d'esercizio."
+                arrivo = str(parti[6]).strip()
+                partenza = str(parti[7]).strip()
+                alloggio = str(parti[8]).strip() if str(parti[8]).strip().lower() != "nd" else "Da assegnare"
+                portale = str(parti[14]).strip()
+                tariffa = str(parti[16]).strip() if str(parti[16]).strip().lower() != "nd" else "0.00"
+                stato = str(parti[21]).strip() if str(parti[21]).strip().lower() != "nd" else "Lista d'attesa"
+                note_interne = str(parti[22]).strip() if len(parti) > 22 else "Nessuna nota aggiuntiva."
 
-                # Filtro testuale globale intelligente
-                testo_linea_completa = f"{nome_ospite} {parti[13]} {note_interne}".lower()
-                if ricerca_testuale and ricerca_testuale not in testo_linea_completa:
+                # Filtro testuale globale su tutti i campi visibili della tessera
+                testo_completo_linea = f"{nome_ospite} {portale} {alloggio} {note_interne}".lower()
+                if ricerca_testuale and ricerca_testuale not in testo_completo_linea:
                     continue
                     
                 conteggio_visibili += 1
 
-                # Classificazione cromatica degli stati aziendali
+                # Mappatura cromatica per l'assegnazione dei badge fluo
                 st_low = stato.lower()
                 if "conferma" in st_low or "corso" in st_low or "arrivato" in st_low:
                     classe_colore = "badge-verde"
@@ -103,7 +104,7 @@ try:
                     classe_colore = "badge-rosso"
                     stato_visivo = "Richiesta Scaduta"
 
-                # Renderizzazione Card HTML
+                # Renderizzazione visiva della Card HTML
                 st.markdown(f"""
                 <div class="card-ospite">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #334155; padding-bottom: 8px;">
@@ -129,4 +130,5 @@ try:
     else:
         st.error("🛑 Impossibile connettersi alla repository di GitHub per prelevare il file sorgente.")
 except Exception as e:
-    st.error(f"🛑 Errore nel caricamento del database ospiti: {e}")
+    st.error(f"🛑 Errore nel caricamento del database ospiti. Assicurati che il file database_ospiti.csv su GitHub sia formattato correttamente.")
+
