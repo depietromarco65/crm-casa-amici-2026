@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
+import requests
 
-# --- 1. CONFIGURAZIONE ARCHITETTURA E INTERFACCIA IMMERSIVA (DARK MODE) ---
+# --- 1. CONFIGURAZIONE INTERFACCIA PREMIUM (DARK MODE) ---
 st.set_page_config(page_title="CRM BOARD - A Casa di Amici", layout="wide", page_icon="🏨")
 
-# Iniezione di fogli di stile CSS per la Dark Mode Premium e i Badge Neon
 st.markdown("""
 <style>
     .stApp { background-color: #0b1329; color: #f1f5f9; }
@@ -16,9 +16,7 @@ st.markdown("""
         border-radius: 14px;
         margin-bottom: 16px;
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-        transition: transform 0.2s;
     }
-    .card-ospite:hover { transform: translateY(-2px); border-color: #475569; }
     .badge {
         padding: 5px 12px;
         border-radius: 9999px;
@@ -39,48 +37,60 @@ st.markdown("""
 st.title("🏨 A Casa di Amici — Dashboard Direzionale")
 st.markdown("---")
 
-CSV_URL = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/database_ospiti.csv"
+CSV_URL = "https://githubusercontent.com"
 
-# --- 2. LETTURA SICURA BASATA SU INDICI POSIZIONALI IMMUNI DA ERRORI ---
+# --- 2. RETRIEVAL STRUTTURATO E PARSING ROBUSTO DELLE LINEE ---
 try:
-    # Scarica il file saltando le righe corrotte ed ignorando l'intestazione per massima stabilità
-    df = pd.read_csv(CSV_URL, on_bad_lines="skip", engine="python")
-    
-    if not df.empty:
-        # Barra di ricerca interattiva frontend
-        ricerca_testuale = st.text_input("✍ Cerca all'istante per nome, e-mail o note interne:", placeholder="Digita per filtrare i record...").strip().lower()
+    risposta = requests.get(CSV_URL)
+    if risposta.status_code == 200:
+        linee = risposta.text.splitlines()
         
-        # Applicazione logica del filtro di ricerca globale sul DataFrame
-        df_filtrato = df.copy()
-        if ricerca_testuale:
-            maschera = df_filtrato.apply(lambda row: row.astype(str).str.lower().str.contains(ricerca_testuale).any(), axis=1)
-            df_filtrato = df_filtrato[maschera]
-
-        # --- 3. RENDERIZZAZIONE DEL COMPONENTE GRAFICO PREMIUM ---
-        if not df_filtrato.empty:
-            st.caption(f"Visualizzazione di {len(df_filtrato)} pratiche commerciali nel database.")
+        if len(linee) > 1:
+            # Isoliamo le righe dei dati scartando l'intestazione iniziale di GitHub
+            righe_dati = linee[1:]
             
-            # Scorriamo il database al contrario per mostrare i lead più freschi in cima allo schermo
-            for idx in reversed(df_filtrato.index):
-                riga = df_filtrato.loc[idx]
-                
-                # Sfruttiamo il metodo .iloc con l'indice numerico fisso per blindare l'estrazione dai 23 campi
-                id_progressivo = str(riga.iloc[0]).replace(".0", "").strip()
-                data_contatto = str(riga.iloc[1]).strip()
-                cognome = str(riga.iloc[4]).strip() if str(riga.iloc[4]) != "nd" else ""
-                nome_grezzo = str(riga.iloc[5]).strip() if str(riga.iloc[5]) != "nd" else "Ospite"
+            # Pannello di ricerca reattivo in testa allo schermo
+            ricerca_testuale = st.text_input("✍ Cerca all'istante per nome, e-mail o note interne:", placeholder="Digita per filtrare i record...").strip().lower()
+            
+            conteggio_visibili = 0
+            
+            # Processiamo il foglio in senso inverso per spingere i nuovi flussi in alto
+            for riga_grezza in reversed(righe_dati):
+                if not riga_grezza.strip():
+                    continue
+                    
+                # Parsing posizionale immune: separiamo solo le prime 22 colonne stabili
+                parti = riga_grezza.split(",", 22)
+                if len(parti) < 22:
+                    continue
+                    
+                # Mappatura sicura legata alla reale struttura geometrica del file CSV
+                id_progressivo = parti[0].strip()
+                data_contatto = parti[1].strip()
+                cognome = parti[4].strip() if parti[4].strip() != "nd" else ""
+                nome_grezzo = parti[5].strip() if parti[5].strip() != "nd" else "Ospite"
                 nome_ospite = f"{cognome} {nome_grezzo}".strip()
-                arrivo = str(riga.iloc[6]).strip()
-                partenza = str(riga.iloc[7]).strip()
-                alloggio = str(riga.iloc[8]).strip() if str(riga.iloc[8]) != "nd" else "Da assegnare"
-                portale = str(riga.iloc[14]).strip()
-                tariffa = str(riga.iloc[16]).strip() if str(riga.iloc[16]) != "nd" else "0.00"
-                stato = str(riga.iloc[21]).strip() if str(riga.iloc[21]) != "nd" else "Lista d'attesa"
-                note_interne = str(riga.iloc[22]).strip() if len(str(riga.iloc[22])) > 2 else "Nessuna nota aggiuntiva d'esercizio."
+                arrivo = parti[6].strip()
+                partenza = parti[7].strip()
+                alloggio = parti[8].strip() if parti[8].strip() != "nd" else "Da assegnare"
+                portale = parti[14].strip()
+                tariffa = parti[16].strip() if parti[16].strip() != "nd" else "0.00"
+                stato = parti[21].strip() if parti[21].strip() != "nd" else "Lista d'attesa"
+                
+                # Se la nota finale contiene ulteriori virgole, split(..., 22) le mantiene intatte
+                note_interne = parti[22].strip() if len(parti) > 22 else "Nessuna nota aggiuntiva."
+                note_interne = note_interne.strip('"') # Rimuove eventuali virgolette di protezione
 
-                # Mappatura cromatica dello stato per l'assegnazione dei badge fluo
+                # Applicazione immediata dei filtri di ricerca sul testo pulito
+                testo_linea_completa = f"{nome_ospite} {parti[13]} {note_interne}".lower()
+                if ricerca_testuale and ricerca_testuale not in testo_linea_completa:
+                    continue
+                    
+                conteggio_visibili += 1
+
+                # Classificazione cromatica degli stati ed estensione delle stringhe visive
                 st_low = stato.lower()
-                if "conferma" in st_low or "corso" in st_low:
+                if "conferma" in st_low or "corso" in st_low or "arrivato" in st_low:
                     classe_colore = "badge-verde"
                     stato_visivo = "Confermata / In Corso"
                 elif "attesa" in st_low or "sospeso" in st_low:
@@ -93,7 +103,7 @@ try:
                     classe_colore = "badge-rosso"
                     stato_visivo = "Richiesta Scaduta"
 
-                # Renderizzazione della Card HTML ad alto impatto visivo
+                # --- 3. INIEZIONE FRONTEND DELL'INTERFACCIA IN HIGH CONTRAST ---
                 st.markdown(f"""
                 <div class="card-ospite">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #334155; padding-bottom: 8px;">
@@ -111,9 +121,12 @@ try:
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
+                
+            if conteggio_visibili == 0:
+                st.warning("❌ Nessun record trovato nel database corrispondente ai parametri digitati.")
         else:
-            st.warning("❌ Nessun record trovato nel database corrispondente ai parametri digitati.")
+            st.info("📂 Il database ospiti risulta attualmente vuoto su GitHub.")
     else:
-        st.info("📂 Il database ospiti risulta attualmente vuoto su GitHub.")
+        st.error("🛑 Impossibile connettersi alla repository di GitHub per prelevare il file sorgente.")
 except Exception as e:
     st.error(f"🛑 Errore nel caricamento del database ospiti. Assicurati che il file database_ospiti.csv su GitHub sia formattato correttamente.")
