@@ -37,13 +37,12 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- 2. LOGO ISTITUZIONALE ---
-LOGO_URL = "https://githubusercontent.com"
+LOGO_URL = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/logo-scritta.gif"
 st.markdown(f'<div class="container-logo"><img src="{LOGO_URL}" class="logo-aziendale" alt="Logo"></div>', unsafe_allow_html=True)
 st.title("A Casa di Amici — Dashboard Direzionale")
 st.markdown("---")
 
-# LINK INTEGRALE E COMPLETO SENZA TAGLI
-CSV_URL = "https://githubusercontent.com"
+CSV_URL = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/database_ospiti.csv"
 
 # --- 3. RETRIEVAL E PARSING ANAGRAFICA COMPLETA ---
 try:
