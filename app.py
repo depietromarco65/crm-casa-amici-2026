@@ -64,101 +64,59 @@ CSV_URL = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/data
 try:
     risposta = requests.get(CSV_URL)
     if risposta.status_code == 200:
-        linee = [linea for linea in risposta.text.splitlines() if linea.strip()]
-        
+        linee = [l for l in risposta.text.splitlines() if l.strip()]
         if len(linee) > 1:
-            lettore_csv = csv.reader(linee)
-            intestazione = next(lettore_csv)  # Salta la riga dei titoli
-            righe_dati = list(lettore_csv)
+            lettore = csv.reader(linee)
+            next(lettore)  # Salta intestazione
+            righe = list(lettore)
             
-            # Pannello di ricerca reattivo in testa
-            ricerca_testuale = st.text_input("✍ Cerca all'istante per nome, e-mail o note interne:", placeholder="Digita per filtrare i record...").strip().lower()
+            ricerca = st.text_input("✍ Cerca per nome, e-mail o note interne:", placeholder="Digita per filtrare i record...").strip().lower()
+            conteggio = 0
             
-            conteggio_visibili = 0
-            
-            # Ciclo analitico completo riga per riga (dall'ultimo inserito al primo storico)
-            for parti in reversed(righe_dati):
-                if len(parti) < 23:
-                    continue
+            for p in reversed(righe):
+                if len(p) < 23: continue
                 
-                # ASSEGNAZIONE DEI 23 ELEMENTI DELLO STORICO
-                id_progressivo = str(parti[0]).strip().replace(".0", "")
-                data_contatto = str(parti[1]).strip()
-                ora_contatto = str(parti[2]).strip()
-                giorni_lead_time = str(parti[3]).strip()
-                cognome = str(parti[4]).strip() if str(parti[4]).strip().lower() != "nd" else ""
-                nome_grezzo = str(parti[5]).strip() if str(parti[5]).strip().lower() != "nd" else "Ospite"
-                nome_ospite = f"{cognome} {nome_grezzo}".strip()
-                arrivo = str(parti[6]).strip()
-                partenza = str(parti[7]).strip()
-                alloggio = str(parti[8]).strip() if str(parti[8]).strip().lower() != "nd" else "Da assegnare"
-                ospiti_totali = str(parti[9]).strip()
-                dettaglio_minori = str(parti[10]).strip()
-                adulti = str(parti[11]).strip()
-                bambini = str(parti[12]).strip()
-                email = str(parti[13]).strip()
-                portale = str(parti[14]).strip()
-                caratteristiche = str(parti[15]).strip()
-                tariffa = str(parti[16]).strip() if str(parti[16]).strip().lower() != "nd" else "0.00"
-                extra = str(parti[17]).strip()
-                tipo_tariffe = str(parti[18]).strip()
-                stato_saldo = str(parti[19]).strip()
-                tassa_soggiorno = str(parti[20]).strip()
-                stato = str(parti[21]).strip() if str(parti[21]).strip().lower() != "nd" else "Lista d'attesa"
-                note_interne = str(parti[22]).strip() if len(parti) > 22 else "Nessuna nota aggiuntiva."
-
-                # Algoritmo filtro di ricerca globale
-                testo_completo_linea = f"{nome_ospite} {portale} {alloggio} {note_interne} {email} {id_progressivo}".lower()
-                if ricerca_testuale and ricerca_testuale not in testo_completo_linea:
-                    continue
-                    
-                conteggio_visibili += 1
-
-                # Mappatura condizionale per l'assegnazione dei colori ai badge pastello
-                st_low = stato.lower()
-                if "conferma" in st_low or "corso" in st_low or "arrivato" in st_low:
-                    classe_colore = "badge-verde"
-                    stato_visivo = "Confermata / In Corso"
-                elif "attesa" in st_low or "sospeso" in st_low:
-                    classe_colore = "badge-giallo"
-                    stato_visivo = "Lista d'attesa"
-                elif "non contattabile" in st_low:
-                    classe_colore = "badge-grigio"
-                    stato_visivo = "Non Contattabile"
-                else:
-                    classe_colore = "badge-rosso"
-                    stato_visivo = "Richiesta Scaduta"
-
-                # Renderizzazione grafica visiva della Card HTML Premium Puglia Light
+                # Estrazione pulita delle variabili posizionali (0-22)
+                id_p, d_c, o_c, l_t, cognome, nome, arr, part, allog = p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]
+                o_tot, min_n, ad, bam, mail, port, char, tariff, ext, t_tar, s_sal, t_sog, stato, note = p[9], p[10], p[11], p[12], p[13], p[14], p[15], p[16], p[17], p[18], p[19], p[20], p[21], p[22]
+                
+                nome_completo = f"{cognome} {nome}".replace("nd ", "").strip() if f"{cognome} {nome}".strip() != "nd nd" else "Ospite"
+                allog_v = allog if allog.lower() != "nd" else "Da assegnare"
+                tariff_v = tariff if tariff.lower() != "nd" else "0.00"
+                
+                if ricerca and ricerca not in f"{nome_completo} {port} {allog_v} {note} {mail} {id_p}".lower(): continue
+                conteggio += 1
+                
+                # Definizione accattivante del badge cromatico mediterraneo
+                st_l = stato.lower()
+                c_badge, v_badge = ("badge-verde", "Confermata / In Corso") if "conferma" in st_l or "corso" in st_l or "arrivato" in st_l else (("badge-giallo", "Lista d'attesa") if "attesa" in st_l or "sospeso" in st_l else (("badge-grigio", "Non Contattabile") if "non contattabile" in st_l else ("badge-rosso", "Richiesta Scaduta")))
+                
                 st.markdown(f"""
                 <div class="card-ospite">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #edf2f7; padding-bottom: 8px;">
-                        <span style="font-size: 18px; font-weight: 800; color: #1a202c !important; tracking-tight: -0.02em;">#{id_progressivo} | {nome_ospite}</span>
-                        <span class="badge {classe_colore}">{stato_visivo}</span>
+                        <span style="font-size: 18px; font-weight: 800; color: #1a202c !important;">#{id_p} | {nome_completo}</span>
+                        <span class="badge {c_badge}">{v_badge}</span>
                     </div>
                     <div class="griglia-info">
-                        <div>📅 <span style="color: #718096 !important;">Soggiorno:</span> <span class="dato-evidenziato">{arrivo} ➔ {partenza}</span></div>
-                        <div>🏠 <span style="color: #718096 !important;">Unità Assegnata:</span> <span class="dato-evidenziato" style="color: #4c51bf !important;">{alloggio}</span></div>
-                        <div>💶 <span style="color: #718096 !important;">Tariffa Soggiorno:</span> <span class="dato-evidenziato" style="color: #2f855a !important;">€ {tariffa}</span></div>
-                        <div>🌐 <span style="color: #718096 !important;">Canale d'Origine:</span> <span class="dato-evidenziato">{portale}</span></div>
+                        <div>📅 <span style="color: #718096 !important;">Soggiorno:</span> <span class="dato-evidenziato">{arr} ➔ {part}</span></div>
+                        <div>🏠 <span style="color: #718096 !important;">Unità:</span> <span class="dato-evidenziato" style="color: #4c51bf !important;">{allog_v}</span></div>
+                        <div>💶 <span style="color: #718096 !important;">Tariffa:</span> <span class="dato-evidenziato" style="color: #2f855a !important;">€ {tariff_v}</span></div>
+                        <div>🌐 <span style="color: #718096 !important;">Canale:</span> <span class="dato-evidenziato">{port}</span></div>
                     </div>
                     <div class="griglia-info" style="margin-top: 8px; border-top: 1px dashed #e2e8f0; padding-top: 8px; font-size: 13px;">
-                        <div>👥 <span style="color: #718096 !important;">Ospiti:</span> {ospiti_totali} ({adulti} Ad. + {bambini} Bamb.) {dettaglio_minori if dettaglio_minori != "nd" else ""}</div>
-                        <div>📧 <span style="color: #718096 !important;">E-mail:</span> {email}</div>
-                        <div>🔍 <span style="color: #718096 !important;">Info Alloggio:</span> {caratteristiche if caratteristiche != "nd" else "Standard"}</div>
-                        <div>⏱ <span style="color: #718096 !important;">Lead Time:</span> {giorni_lead_time} gg</div>
+                        <div>👥 <span style="color: #718096 !important;">Ospiti:</span> {o_tot} ({ad} Ad. + {bam} Bamb.) {min_n if min_n != "nd" else ""}</div>
+                        <div>📧 <span style="color: #718096 !important;">E-mail:</span> {mail}</div>
+                        <div>🔍 <span style="color: #718096 !important;">Info Alloggio:</span> {char if char != "nd" else "Standard"}</div>
+                        <div>⏱ <span style="color: #718096 !important;">Lead Time:</span> {l_t} gg</div>
                     </div>
                     <div style="margin-top: 14px; font-size: 13px; color: #4a5568 !important; background-color: #f7fafc; padding: 10px; border-radius: 6px; border-left: 3px solid #cbd5e0;">
-                        📌 <b>LOGISTICA E NOTE CRM:</b> {note_interne} <span style="float: right; font-size: 11px; color: #a0aec0 !important;">Contatto: {data_contatto} alle ore {ora_contatto}</span>
+                        📌 <b>LOGISTICA E NOTE CRM:</b> {note} <span style="float: right; font-size: 11px; color: #a0aec0 !important;">Contatto: {d_c} alle {o_c}</span>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
                 
-            if conteggio_visibili == 0:
-                st.warning("❌ Nessun record trovato nel database corrispondente ai parametri digitati.")
-        else:
-            st.info("📂 Il database ospiti risulta attualmente vuoto su GitHub.")
-    else:
-        st.error("🛑 Impossibile connettersi alla repository di GitHub per prelevare il file sorgente.")
+            if conteggio == 0: st.warning("❌ Nessun record corrispondente trovato.")
+        else: st.info("📂 Il database ospiti risulta vuoto su GitHub.")
+    else: st.error("🛑 Impossibile connettersi a GitHub per prelevare il CSV.")
 except Exception as e:
-    st.error(f"🛑 Errore nel caricamento del database ospiti: {e}")
+    st.error(f"🛑 Errore nel caricamento del database: {e}")
