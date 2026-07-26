@@ -37,14 +37,15 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- 2. LOGO ISTITUZIONALE ---
-LOGO_URL = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/logo-scritta.gif"
+LOGO_URL = "https://githubusercontent.com"
 st.markdown(f'<div class="container-logo"><img src="{LOGO_URL}" class="logo-aziendale" alt="Logo"></div>', unsafe_allow_html=True)
 st.title("A Casa di Amici — Dashboard Direzionale")
 st.markdown("---")
 
-CSV_URL = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/database_ospiti.csv"
+# LINK INTEGRALE E COMPLETO SENZA TAGLI
+CSV_URL = "https://githubusercontent.com"
 
-# --- 3. RETRIEVAL E PARSING COMPLETO RIGA PER RIGA ---
+# --- 3. RETRIEVAL E PARSING ANAGRAFICA COMPLETA ---
 try:
     risposta = requests.get(CSV_URL)
     if risposta.status_code == 200:
@@ -52,7 +53,7 @@ try:
         
         if len(linee) > 1:
             lettore_csv = csv.reader(linee)
-            intestazione = next(lettore_csv)  # Salta la riga dei titoli
+            intestazione = next(lettore_csv)  # Salta la prima riga dei titoli
             righe_dati = list(lettore_csv)
             
             # Pannello di ricerca reattivo in testa
@@ -60,12 +61,12 @@ try:
             
             conteggio_visibili = 0
             
-            # Scorriamo in senso inverso per vedere le pratiche calde in cima
+            # Ciclo analitico completo riga per riga (dall'ultimo inserito al primo storico)
             for parti in reversed(righe_dati):
                 if len(parti) < 23:
                     continue
                 
-                # MAPPATURA INTEGRALE DEI 23 CAMPI SENZA ALCUNA ESCLUSIONE
+                # ASSEGNAZIONE PUNCIUTA DEI 23 ELEMENTI DELLO STORICO
                 id_progressivo = str(parti[0]).strip().replace(".0", "")
                 data_contatto = str(parti[1]).strip()
                 ora_contatto = str(parti[2]).strip()
@@ -82,23 +83,23 @@ try:
                 bambini = str(parti[12]).strip()
                 email = str(parti[13]).strip()
                 portale = str(parti[14]).strip()
-                note_cane = str(parti[15]).strip()
+                caratteristiche = str(parti[15]).strip()
                 tariffa = str(parti[16]).strip() if str(parti[16]).strip().lower() != "nd" else "0.00"
-                costo_biancheria = str(parti[17]).strip()
+                extra = str(parti[17]).strip()
                 tipo_tariffe = str(parti[18]).strip()
                 stato_saldo = str(parti[19]).strip()
-                mezzo_trasporto = str(parti[20]).strip()
+                tassa_soggiorno = str(parti[20]).strip()
                 stato = str(parti[21]).strip() if str(parti[21]).strip().lower() != "nd" else "Lista d'attesa"
                 note_interne = str(parti[22]).strip() if len(parti) > 22 else "Nessuna nota aggiuntiva."
 
-                # Costruzione testo per filtro di ricerca globale
+                # Algoritmo filtro di ricerca globale
                 testo_completo_linea = f"{nome_ospite} {portale} {alloggio} {note_interne} {email} {id_progressivo}".lower()
                 if ricerca_testuale and ricerca_testuale not in testo_completo_linea:
                     continue
                     
                 conteggio_visibili += 1
 
-                # Mappatura cromatica dello stato per l'assegnazione dei badge fluo
+                # Mappatura condizionale per l'assegnazione dei colori ai badge fluo
                 st_low = stato.lower()
                 if "conferma" in st_low or "corso" in st_low or "arrivato" in st_low:
                     classe_colore = "badge-verde"
@@ -129,7 +130,7 @@ try:
                     <div class="griglia-info" style="margin-top: 8px; border-top: 1px dashed #1e293b; padding-top: 8px; font-size: 13px;">
                         <div>👥 <span style="color: #94a3b8;">Ospiti:</span> {ospiti_totali} ({adulti} Ad. + {bambini} Bamb.) {dettaglio_minori if dettaglio_minori != "nd" else ""}</div>
                         <div>📧 <span style="color: #94a3b8;">E-mail:</span> {email}</div>
-                        <div>🐾 <span style="color: #94a3b8;">Note Cane:</span> {note_cane if note_cane != "nd" else "Nessuno"}</div>
+                        <div>🔍 <span style="color: #94a3b8;">Info Alloggio:</span> {caratteristiche if caratteristiche != "nd" else "Standard"}</div>
                         <div>⏱ <span style="color: #94a3b8;">Lead Time:</span> {giorni_lead_time} gg</div>
                     </div>
                     <div style="margin-top: 14px; font-size: 13px; color: #94a3b8; background-color: rgba(15, 23, 42, 0.4); padding: 10px; border-radius: 6px; border-left: 3px solid #475569;">
@@ -146,3 +147,4 @@ try:
         st.error("🛑 Impossibile connettersi alla repository di GitHub per prelevare il file sorgente.")
 except Exception as e:
     st.error(f"🛑 Errore nel caricamento del database ospiti: {e}")
+
