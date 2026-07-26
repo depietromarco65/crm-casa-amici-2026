@@ -19,21 +19,29 @@ st.set_page_config(
 DATABASE_URL = "https://raw.githubusercontent.com/depietromarco65/crm-casa-amici-2026/main/database_ospiti.csv"
 
 CAMPI_DATABASE = [
-    "numero progressivo",
-    "Data del contatto",
-    "Cognome",
-    "Nome",
-    "Nominativi Ospiti",
-    "data presunta di Arrivo",
-    "data presunta di Partenza",
-    "Numero Ospiti",
-    "adulti",
-    "minori",
+    "N. Progressivo",
+    "Data Contatto",
+    "Ora Contatto",
+    "Giorni Lead Time",
+    "Cognome Capofamiglia",
+    "Nome Capofamiglia",
+    "Data Presunta Arrivo",
+    "Data Presunta Partenza",
+    "Alloggio Assegnato",
+    "Numero Ospiti Totale",
+    "Nominativo Ospiti (Dettaglio + Compleanni + Onomastici)",
+    "Adulti",
+    "Minori",
     "Email",
-    "Portale di provenienza",
-    "Note aggiuntive",
-    "Cane (Razza/Taglia)",
-    "Esito"
+    "Portale di Provenienza",
+    "Razza Taglia e Nome Cane",
+    "Tariffa Totale (€)",
+    "Costo Biancheria (€)",
+    "Tipo Tariffa (Standard/Non Rimb.)",
+    "Stato Saldo",
+    "Mezzo di Trasporto e Orario Arrivo",
+    "Stato Richiesta",
+    "Note Aggiuntive"
 ]
 # =========================
 # BLOCCO 2
@@ -42,20 +50,16 @@ CAMPI_DATABASE = [
 
 def carica_database():
 
-    records = []
-
     try:
 
-        risposta = requests.get(
-            DATABASE_URL,
-            timeout=20
-        )
-
+        risposta = requests.get(DATABASE_URL, timeout=20)
         risposta.raise_for_status()
 
-        testo = io.StringIO(risposta.text)
+        contenuto = io.StringIO(risposta.text)
 
-        reader = csv.DictReader(testo)
+        reader = csv.DictReader(contenuto)
+
+        records = []
 
         for riga in reader:
 
@@ -63,23 +67,22 @@ def carica_database():
 
             for campo in CAMPI_DATABASE:
 
-                record[campo] = riga.get(
-                    campo,
-                    ""
-                ).strip()
+                valore = riga.get(campo, "")
+
+                if valore is None:
+                    valore = ""
+
+                record[campo] = str(valore).strip()
 
             records.append(record)
 
-    except Exception as errore:
+        return records
 
-        st.error(
-            f"Errore lettura database:\n{errore}"
-        )
+    except Exception as e:
 
-    return records
+        st.error(f"Errore lettura database: {e}")
 
-
-righe = carica_database()
+        return []
 # =========================
 # BLOCCO 3
 # INCOLLA SUBITO SOTTO IL BLOCCO 2
