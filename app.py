@@ -9,7 +9,7 @@ st.set_page_config(page_title="CRM - A Casa di Amici", layout="wide", page_icon=
 st.markdown("<style>.card-ospite { background: #131c2e; border: 1px solid #1e293b; padding: 15px; border-radius: 10px; margin-bottom: 10px; }</style>", unsafe_allow_html=True)
 
 st.title("🏨 CRM Board Premium")
-CSV_FILE = "database_ospiti.csv"
+CSV_FILE = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/database_ospiti.csv"
 
 # --- DEFINIZIONE 23 CAMPI ---
 COLONNE_CRM = [
