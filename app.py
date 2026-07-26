@@ -1,14 +1,15 @@
 import streamlit as st
 import requests
+import csv
 
 # --- 1. CONFIGURAZIONE INTERFACCIA PREMIUM (DARK MODE) ---
-st.set_page_config(page_title="CRM BOARD - A Casa di Amici", layout="wide", page_icon="🏨")
+st.set_page_config(page_title="CRM BOARD - A Casa di Amici 2026", layout="wide", page_icon="🏨")
 
 st.markdown("""
 <style>
     .stApp { background-color: #0b1329; color: #f1f5f9; }
-    h1 { color: #ffffff; font-family: 'Inter', sans-serif; font-weight: 800; tracking-tight: -0.05em; text-align: center; margin-top: 10px; }
-    .container-logo { display: flex; justify-content: center; align-items: center; padding: 20px 0; margin-bottom: 5px; }
+    h1 { color: #ffffff; font-family: 'Inter', sans-serif; font-weight: 800; tracking-tight: -0.05em; text-align: center; }
+    .container-logo { display: flex; justify-content: center; align-items: center; padding: 20px 0; }
     .logo-aziendale { max-width: 320px; height: auto; filter: drop-shadow(0px 4px 12px rgba(99, 102, 241, 0.2)); }
     .card-ospite {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
@@ -35,42 +36,38 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. INIEZIONE LINK LOGO ISTITUZIONALE GIF ---
+# --- 2. LOGO ISTITUZIONALE ---
 LOGO_URL = "https://githubusercontent.com"
-st.markdown(f"""
-<div class="container-logo">
-    <img src="{LOGO_URL}" class="logo-aziendale" alt="Logo A Casa di Amici">
-</div>
-""", unsafe_allow_html=True)
-
+st.markdown(f'<div class="container-logo"><img src="{LOGO_URL}" class="logo-aziendale" alt="Logo"></div>', unsafe_allow_html=True)
 st.title("A Casa di Amici — Dashboard Direzionale")
 st.markdown("---")
 
 CSV_URL = "https://githubusercontent.com"
 
-# --- 3. RETRIEVAL STRUTTURATO E PARSING ROBUSTO DELLE LINEE ---
+# --- 3. RETRIEVAL E PARSING AVANZATO CON LIBRERIA CSV ---
 try:
     risposta = requests.get(CSV_URL)
     if risposta.status_code == 200:
         linee = risposta.text.splitlines()
         
         if len(linee) > 1:
-            righe_dati = linee[1:]
+            # Sfruttiamo il reader nativo per gestire in automatico le note tra virgolette ed evitare sfasamenti
+            lettore_csv = csv.reader(linee)
+            intestazione = next(lettore_csv) # Salta la prima riga
             
-            # Pannello di ricerca reattivo in testa allo schermo
-            ricerca_testuale = st.text_input("✍ Cerca all'istante per nome, e-mail o note interne:", placeholder="Digita per filtrare i record...").strip().lower()
+            righe_dati = list(lettore_csv)
+            
+            # Pannello di ricerca reattivo
+            ricerca_testuale = st.text_input("✍ Cerca per nome, e-mail o note interne:", placeholder="Digita per filtrare i record...").strip().lower()
             
             conteggio_visibili = 0
             
-            for riga_grezza in reversed(righe_dati):
-                if not riga_grezza.strip():
-                    continue
-                    
-                # Dividiamo solo sulle prime 22 colonne stabili per blindare le note finali
-                parti = riga_grezza.split(",", 22)
+            # Scorriamo in senso inverso per vedere i lead caldi in cima
+            for parti in reversed(righe_dati):
                 if len(parti) < 22:
                     continue
-                    
+                
+                # Mappatura rigorosa basata sulla geometria reale del file CSV (0-22)
                 id_progressivo = parti[0].strip()
                 data_contatto = parti[1].strip()
                 cognome = parti[4].strip() if parti[4].strip() != "nd" else ""
@@ -82,16 +79,16 @@ try:
                 portale = parti[14].strip()
                 tariffa = parti[16].strip() if parti[16].strip() != "nd" else "0.00"
                 stato = parti[21].strip() if parti[21].strip() != "nd" else "Lista d'attesa"
-                
-                note_interne = parti[22].strip() if len(parti) > 22 else "Nessuna nota aggiuntiva."
-                note_interne = note_interne.strip('"')
+                note_interne = parti[22].strip() if len(parti) > 22 else "Nessuna nota aggiuntiva d'esercizio."
 
+                # Filtro testuale globale intelligente
                 testo_linea_completa = f"{nome_ospite} {parti[13]} {note_interne}".lower()
                 if ricerca_testuale and ricerca_testuale not in testo_linea_completa:
                     continue
                     
                 conteggio_visibili += 1
 
+                # Classificazione cromatica degli stati aziendali
                 st_low = stato.lower()
                 if "conferma" in st_low or "corso" in st_low or "arrivato" in st_low:
                     classe_colore = "badge-verde"
@@ -106,6 +103,7 @@ try:
                     classe_colore = "badge-rosso"
                     stato_visivo = "Richiesta Scaduta"
 
+                # Renderizzazione Card HTML
                 st.markdown(f"""
                 <div class="card-ospite">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #334155; padding-bottom: 8px;">
@@ -131,4 +129,4 @@ try:
     else:
         st.error("🛑 Impossibile connettersi alla repository di GitHub per prelevare il file sorgente.")
 except Exception as e:
-    st.error("🛑 Errore nel caricamento del database ospiti. Verifica il formato delle righe.")
+    st.error(f"🛑 Errore nel caricamento del database ospiti: {e}")
