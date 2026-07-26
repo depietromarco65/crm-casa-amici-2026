@@ -25,6 +25,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# CORREZIONE LINK LOGO: Inserito parametro ?raw=true per superare il blocco media di GitHub
+st.markdown('<div class="container-logo"><img src="https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/logo-scritta.gif" class="logo-aziendale" alt="Logo"></div>', unsafe_allow_html=True)
+st.title("A Casa di Amici — Dashboard Direzionale")
+st.markdown("---")
+
+# --- 2. RECUPERO DATI E SOLIDO PARSING GEOMETRICO A 23 CAMPI ---
+CSV_URL = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/database_ospiti.csv"
+
 
 try:
     risposta = requests.get(CSV_URL)
@@ -85,12 +93,3 @@ try:
     else: st.error("🛑 Impossibile connettersi a GitHub per prelevare il CSV.")
 except Exception as e:
     st.error(f"🛑 Errore nel caricamento del database: {e}")
-
-
-# CORREZIONE LINK LOGO: Inserito parametro ?raw=true per superare il blocco media di GitHub
-st.markdown('<div class="container-logo"><img src="https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/logo-scritta.gif" class="logo-aziendale" alt="Logo"></div>', unsafe_allow_html=True)
-st.title("A Casa di Amici — Dashboard Direzionale")
-st.markdown("---")
-
-# --- 2. RECUPERO DATI E SOLIDO PARSING GEOMETRICO A 23 CAMPI ---
-CSV_URL = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/database_ospiti.csv"
