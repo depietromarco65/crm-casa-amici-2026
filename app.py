@@ -7,6 +7,10 @@ st.set_page_config(page_title="CRM BOARD - A Casa di Amici 2026", layout="wide",
 
 st.markdown("""
 <style>
+    html, body, .stApp, .main, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stHeader"] {
+        background-color: #fcfbf7 !important; background-attachment: fixed !important; min-height: 100% !important; height: auto !important; color: #2d3748 !important;
+    }
+    h1, label, p, span, div { color: #2d3748 !important; }
     .card-ospite { background-color: #ffffff !important; border: 1px solid #e2e8f0 !important; padding: 22px; border-radius: 14px; margin-bottom: 16px; box-shadow: 0 4px 15px -3px rgba(148, 120, 80, 0.08); }
     .badge { padding: 5px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
     .badge-verde { background-color: #e6fffa !important; color: #008767 !important; border: 1px solid #b2f5ea !important; }
@@ -14,9 +18,10 @@ st.markdown("""
     .badge-rosso { background-color: #fed7d7 !important; color: #c53030 !important; border: 1px solid #feb2b2 !important; }
     .badge-grigio { background-color: #edf2f7 !important; color: #4a5568 !important; border: 1px solid #e2e8f0 !important; }
     .griglia-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 10px; font-size: 14px; }
-    .dato-evidenziato { font-weight: 600; }
+    .dato-evidenziato { color: #1a202c !important; font-weight: 600; }
     .container-logo { display: flex; justify-content: center; align-items: center; padding: 15px 0; }
     .logo-aziendale { max-width: 280px; height: auto; }
+    .stTextInput>div>div>input { background-color: #ffffff !important; border: 1px solid #cbd5e0 !important; color: #2d3748 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -27,7 +32,6 @@ st.markdown("---")
 
 # --- 2. RECUPERO DATI E SOLIDO PARSING GEOMETRICO A 23 CAMPI ---
 CSV_URL = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/database_ospiti.csv"
-
 
 try:
     risposta = requests.get(CSV_URL)
@@ -45,32 +49,32 @@ try:
                 if len(p) < 23: 
                     continue
                 
-                # Assegnazione esplicita per indice per evitare sfasamenti (0-22)
-                id_p = p[0]
-                d_c = p[1]
-                o_c = p[2]
-                l_t = p[3]
-                cognome = p[4]
-                nome = p[5]
-                arr = p[6]
-                part = p[7]
-                allog = p[8]
-                o_tot = p[9]
-                min_n = p[10]
-                ad = p[11]
-                bam = p[12]
-                mail = p[13]
-                port = p[14]
-                char = p[15]
-                tariff = p[16]
-                ext = p[17]
-                t_tar = p[18]
-                s_sal = p[19]
-                t_sog = p[20]
-                stato = p[21]
-                note = p[22]
+                # CORREZIONE INDICI: Mappatura millimetrica posizionale (0-22)
+                id_p = p[0].strip()
+                d_c = p[1].strip()
+                o_c = p[2].strip()
+                l_t = p[3].strip()
+                cognome = p[4].strip() if p[4].strip().lower() != "nd" else ""
+                nome = p[5].strip() if p[5].strip().lower() != "nd" else ""
+                arr = p[6].strip()
+                part = p[7].strip()
+                allog = p[8].strip()
+                o_tot = p[9].strip()
+                min_n = p[10].strip()
+                ad = p[11].strip()
+                bam = p[12].strip()
+                mail = p[13].strip()
+                port = p[14].strip()
+                char = p[15].strip()
+                tariff = p[16].strip()
+                ext = p[17].strip()
+                t_tar = p[18].strip()
+                s_sal = p[19].strip()
+                t_sog = p[20].strip()
+                stato = p[21].strip()
+                note = p[22].strip()
                 
-                nome_completo = f"{cognome} {nome}".replace("nd ", "").strip() if f"{cognome} {nome}".strip() != "nd nd" else "Ospite"
+                nome_completo = f"{cognome} {nome}".strip() if f"{cognome} {nome}".strip() != "" else "Ospite"
                 allog_v = allog if allog.lower() != "nd" else "Da assegnare"
                 tariff_v = tariff if tariff.lower() != "nd" else "0.00"
                 
