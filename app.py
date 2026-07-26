@@ -11,7 +11,7 @@ st.caption("CEO Management System — Marco De Pietro")
 # Funzione per caricare il database in sicurezza
 def carica_database():
     try:
-        df = pd.read_csv("database_ospiti.csv")
+        df = pd.read_csv("https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/database_ospiti.csv")
         df.columns = df.columns.str.strip()
         return df
     except FileNotFoundError:
@@ -144,4 +144,3 @@ with tab4:
             df_nuovo = pd.concat([df, pd.DataFrame([nuova_riga])], ignore_index=True)
             df_nuovo.to_csv("database_ospiti.csv", index=False)
             st.success(f"Ospite registrato con successo con ID progressivo n. {nuovo_id}! Riavvia l'app per aggiornare le tabelle.")
-
