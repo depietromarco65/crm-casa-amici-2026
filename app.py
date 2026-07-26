@@ -1,24 +1,27 @@
-# =========================
-# BLOCCO 1
-# SOSTITUISCI LE PRIME RIGHE DEL FILE
-# =========================
-
 import streamlit as st
-import csv
-import io
+import pandas as pd
 import requests
-
-from datetime import datetime
+import base64
+from io import StringIO
+from datetime import datetime, date
 
 st.set_page_config(
     page_title="CRM - A Casa di Amici",
     page_icon="🏡",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
+OWNER = "depietromarco65"
+REPOSITORY = "crm-casa-amici-2026"
+BRANCH = "main"
 
-DATABASE_URL = "https://raw.githubusercontent.com/depietromarco65/crm-casa-amici-2026/main/database_ospiti.csv"
+CSV_FILE = "database_ospiti.csv"
 
-CAMPI_DATABASE = [
+RAW_URL = (
+    f"https://raw.githubusercontent.com/"
+    f"{OWNER}/{REPOSITORY}/{BRANCH}/{CSV_FILE}"
+)
+COLONNE = [
     "N. Progressivo",
     "Data Contatto",
     "Ora Contatto",
@@ -43,62 +46,73 @@ CAMPI_DATABASE = [
     "Stato Richiesta",
     "Note Aggiuntive"
 ]
-# =========================
-# BLOCCO 2
-# INCOLLA SUBITO SOTTO IL BLOCCO 1
-# =========================
+@st.cache_data(ttl=30)
 
 def carica_database():
 
     try:
 
-        risposta = requests.get(DATABASE_URL, timeout=20)
+        risposta = requests.get(
+            RAW_URL,
+            timeout=20
+        )
+
         risposta.raise_for_status()
 
-        contenuto = io.StringIO(risposta.text)
+        df = pd.read_csv(
+            StringIO(risposta.text),
+            dtype=str,
+            keep_default_na=False
+        )
 
-        reader = csv.DictReader(contenuto)
+        df.columns = df.columns.str.strip()
 
-        records = []
+        for colonna in COLONNE:
 
-        for riga in reader:
+            if colonna not in df.columns:
 
-            record = {}
+                df[colonna] = ""
 
-            for campo in CAMPI_DATABASE:
+        df = df[COLONNE]
 
-                valore = riga.get(campo, "")
+        return df
 
-                if valore is None:
-                    valore = ""
+    except Exception as errore:
 
-                record[campo] = str(valore).strip()
+        st.error(errore)
 
-            records.append(record)
+        return pd.DataFrame(columns=COLONNE)
 
-        return records
 
-    except Exception as e:
+df = carica_database()
+def euro(valore):
 
-        st.error(f"Errore lettura database: {e}")
+    try:
 
-        return []
-# =========================
-# BLOCCO 3
-# INCOLLA SUBITO SOTTO IL BLOCCO 2
-# =========================
+        return float(
+            str(valore)
+            .replace("€", "")
+            .replace(".", "")
+            .replace(",", ".")
+            .strip()
+        )
 
-def lead_time(data_contatto, data_arrivo):
+    except:
+
+        return 0.0
+
+
+def giorni_lead(contatto, arrivo):
 
     try:
 
         d1 = datetime.strptime(
-            data_contatto,
+            contatto,
             "%d/%m/%Y"
         )
 
         d2 = datetime.strptime(
-            data_arrivo,
+            arrivo,
             "%d/%m/%Y"
         )
 
@@ -106,4 +120,354 @@ def lead_time(data_contatto, data_arrivo):
 
     except:
 
-        return None
+        return ""
+if not df.empty:
+
+    if "Giorni Lead Time" in df.columns:
+
+        df["Giorni Lead Time"] = df.apply(
+
+            lambda r: giorni_lead(
+                r["Data Contatto"],
+                r["Data Presunta Arrivo"]
+            ),
+
+            axis=1
+
+        )
+st.title("🏡 CRM A Casa di Amici")
+
+st.caption(
+    "Gestione Ospiti • Marketing • Statistiche • Dashboard CEO"
+)
+if df.empty:
+
+    st.warning("Il database è vuoto.")
+
+    st.stop()
+
+
+totale_contatti = len(df)
+
+prenotazioni_confermate = len(
+    df[
+        df["Stato Richiesta"]
+        .str.contains(
+            "confer",
+            case=False,
+            na=False
+        )
+    ]
+)
+
+lista_attesa = len(
+    df[
+        df["Stato Richiesta"]
+        .str.contains(
+            "attesa",
+            case=False,
+            na=False
+        )
+    ]
+)
+
+non_disponibili = len(
+    df[
+        df["Stato Richiesta"]
+        .str.contains(
+            "non",
+            case=False,
+            na=False
+        )
+    ]
+)
+
+clienti_pet = len(
+    df[
+        df["Razza Taglia e Nome Cane"]
+        .str.strip()
+        != ""
+    ]
+)
+
+fatturato = (
+    df["Tariffa Totale (€)"]
+    .apply(euro)
+    .sum()
+)
+
+biancheria = (
+    df["Costo Biancheria (€)"]
+    .apply(euro)
+    .sum()
+)
+
+lead = pd.to_numeric(
+    df["Giorni Lead Time"],
+    errors="coerce"
+)
+
+lead_medio = round(
+    lead.mean(),
+    1
+)
+st.divider()
+
+st.subheader("📊 Dashboard CEO")
+
+c1, c2, c3, c4 = st.columns(4)
+
+c1.metric(
+    "Contatti",
+    totale_contatti
+)
+
+c2.metric(
+    "Confermate",
+    prenotazioni_confermate
+)
+
+c3.metric(
+    "Lista Attesa",
+    lista_attesa
+)
+
+c4.metric(
+    "Clienti Pet",
+    clienti_pet
+)
+
+c5, c6, c7 = st.columns(3)
+
+c5.metric(
+    "Lead Time Medio",
+    f"{lead_medio} giorni"
+)
+
+c6.metric(
+    "Fatturato",
+    f"€ {fatturato:,.2f}"
+)
+
+c7.metric(
+    "Biancheria",
+    f"€ {biancheria:,.2f}"
+)
+st.divider()
+
+pagina = st.sidebar.radio(
+
+    "MENU",
+
+    [
+
+        "Dashboard",
+
+        "Archivio",
+
+        "Nuovo Contatto",
+
+        "Marketing",
+
+        "Statistiche"
+
+    ]
+
+)
+if pagina == "Dashboard":
+
+    st.subheader("Ultimi contatti")
+
+    st.dataframe(
+
+        df.sort_values(
+
+            by="N. Progressivo",
+
+            ascending=False
+
+        ),
+
+        use_container_width=True,
+
+        hide_index=True
+
+    )
+if pagina == "Archivio":
+
+    st.subheader("📋 Archivio Clienti")
+
+    filtro_cognome = st.text_input(
+        "Cerca Cognome"
+    ).strip().lower()
+
+    filtro_nome = st.text_input(
+        "Cerca Nome"
+    ).strip().lower()
+
+    filtro_portale = st.selectbox(
+        "Portale",
+        ["Tutti"] + sorted(
+            df["Portale di Provenienza"]
+            .fillna("")
+            .unique()
+            .tolist()
+        )
+    )
+
+    archivio = df.copy()
+    if filtro_cognome:
+
+        archivio = archivio[
+            archivio["Cognome Capofamiglia"]
+            .str.lower()
+            .str.contains(
+                filtro_cognome,
+                na=False
+            )
+        ]
+
+    if filtro_nome:
+
+        archivio = archivio[
+            archivio["Nome Capofamiglia"]
+            .str.lower()
+            .str.contains(
+                filtro_nome,
+                na=False
+            )
+        ]
+
+    if filtro_portale != "Tutti":
+
+        archivio = archivio[
+            archivio["Portale di Provenienza"]
+            == filtro_portale
+        ]
+    st.dataframe(
+
+        archivio,
+
+        use_container_width=True,
+
+        hide_index=True
+
+    )
+    st.divider()
+
+    elenco = (
+        archivio["Cognome Capofamiglia"]
+        + " "
+        + archivio["Nome Capofamiglia"]
+    ).tolist()
+
+    if elenco:
+
+        cliente = st.selectbox(
+
+            "Scheda Cliente",
+
+            elenco
+
+        )
+
+        indice = elenco.index(cliente)
+
+        record = archivio.iloc[indice]
+
+        c1, c2 = st.columns(2)
+
+        with c1:
+
+            st.write("### Dati")
+
+            st.write(
+                "**Cognome:**",
+                record["Cognome Capofamiglia"]
+            )
+
+            st.write(
+                "**Nome:**",
+                record["Nome Capofamiglia"]
+            )
+
+            st.write(
+                "**Email:**",
+                record["Email"]
+            )
+
+            st.write(
+                "**Telefono/Trasporto:**",
+                record["Mezzo di Trasporto e Orario Arrivo"]
+            )
+
+            st.write(
+                "**Portale:**",
+                record["Portale di Provenienza"]
+            )
+
+        with c2:
+
+            st.write("### Prenotazione")
+
+            st.write(
+                "**Arrivo:**",
+                record["Data Presunta Arrivo"]
+            )
+
+            st.write(
+                "**Partenza:**",
+                record["Data Presunta Partenza"]
+            )
+
+            st.write(
+                "**Alloggio:**",
+                record["Alloggio Assegnato"]
+            )
+
+            st.write(
+                "**Tariffa:**",
+                record["Tariffa Totale (€)"]
+            )
+
+            st.write(
+                "**Saldo:**",
+                record["Stato Saldo"]
+            )
+
+            st.write(
+                "**Stato:**",
+                record["Stato Richiesta"]
+            )
+
+        st.divider()
+
+        st.write("### Note")
+
+        st.text_area(
+
+            "",
+
+            record["Note Aggiuntive"],
+
+            height=150,
+
+            disabled=True
+
+        )
+    csv = archivio.to_csv(
+        index=False
+    ).encode("utf-8")
+
+    st.download_button(
+
+        "⬇️ Esporta Archivio",
+
+        csv,
+
+        "archivio_clienti.csv",
+
+        "text/csv"
+
+    )
+
