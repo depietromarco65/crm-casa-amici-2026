@@ -2,17 +2,12 @@ import streamlit as st
 import requests
 import csv
 
-# --- 1. CONFIGURAZIONE PAGINA, COLORI PUGLIA E SCUDO SCORRIMENTO INFINITO ---
+# --- 1. SETTAGGIO E INIEZIONE CSS NATI-NATIVO ---
 st.set_page_config(page_title="CRM BOARD - A Casa di Amici 2026", layout="wide", page_icon="🏨")
+
 st.markdown("""
 <style>
-    html, body, .stApp, .main, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"], [data-testid="stHeader"] {
-        background-color: #fcfbf7 !important; background-attachment: fixed !important; min-height: 100% !important; height: auto !important; color: #2d3748 !important;
-    }
-    h1, label, p, span, div { color: #2d3748 !important; }
-    h1 { font-family: 'Inter', sans-serif; font-weight: 800; text-align: center; margin-top: 5px; }
-    .container-logo { display: flex; justify-content: center; align-items: center; padding: 15px 0; }
-    .logo-aziendale { max-width: 280px; height: auto; filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.05)); }
+    /* Stile delle Card e dei Badge Pastello Mediterranei */
     .card-ospite { background-color: #ffffff !important; border: 1px solid #e2e8f0 !important; padding: 22px; border-radius: 14px; margin-bottom: 16px; box-shadow: 0 4px 15px -3px rgba(148, 120, 80, 0.08); }
     .badge { padding: 5px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
     .badge-verde { background-color: #e6fffa !important; color: #008767 !important; border: 1px solid #b2f5ea !important; }
@@ -21,13 +16,14 @@ st.markdown("""
     .badge-grigio { background-color: #edf2f7 !important; color: #4a5568 !important; border: 1px solid #e2e8f0 !important; }
     .griglia-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 10px; font-size: 14px; }
     .dato-evidenziato { color: #1a202c !important; font-weight: 600; }
-    .stTextInput>div>div>input { background-color: #ffffff !important; border: 1px solid #cbd5e0 !important; color: #2d3748 !important; }
+    .container-logo { display: flex; justify-content: center; align-items: center; padding: 15px 0; }
+    .logo-aziendale { max-width: 280px; height: auto; }
 </style>
 """, unsafe_allow_html=True)
 
-# CORREZIONE LINK LOGO: Inserito parametro ?raw=true per superare il blocco media di GitHub
+# Logo e Titolo
 st.markdown('<div class="container-logo"><img src="https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/logo-scritta.gif" class="logo-aziendale" alt="Logo"></div>', unsafe_allow_html=True)
-st.title("A Casa di Amici — Dashboard Direzionale")
+st.markdown("<h1 style='text-align: center;'>A Casa di Amici — Dashboard Direzionale</h1>", unsafe_allow_html=True)
 st.markdown("---")
 
 # --- 2. RECUPERO DATI E SOLIDO PARSING GEOMETRICO A 23 CAMPI ---
@@ -92,4 +88,3 @@ try:
     else: st.error("🛑 Impossibile connettersi a GitHub per prelevare il CSV.")
 except Exception as e:
     st.error(f"🛑 Errore nel caricamento del database: {e}")
-
