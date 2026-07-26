@@ -15,7 +15,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.title("🏨 CRM Board Premium")
-CSV_URL = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/database_ospiti.csv"
+CSV_URL = "https://githubusercontent.com"
 
 # --- LOGICA E VISUALIZZAZIONE ---
 try:
@@ -39,3 +39,4 @@ try:
             """, unsafe_allow_html=True)
 except Exception as e:
     st.error(f"Errore caricamento dati: {e}")
+
