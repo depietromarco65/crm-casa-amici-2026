@@ -1,3 +1,5 @@
+import streamlit as st
+@st.cache_data(show_spinner=False)
 import csv
 import io
 import requests
