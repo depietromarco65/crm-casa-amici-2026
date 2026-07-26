@@ -39,7 +39,7 @@ st.markdown("""
 st.title("🏨 A Casa di Amici — Dashboard Direzionale")
 st.markdown("---")
 
-CSV_URL = "https://githubusercontent.com"
+CSV_URL = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/database_ospiti.csv"
 
 # --- 2. LETTURA SICURA BASATA SU INDICI POSIZIONALI IMMUNI DA ERRORI ---
 try:
