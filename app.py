@@ -33,7 +33,6 @@ st.markdown("---")
 # --- 2. RECUPERO DATI E SOLIDO PARSING GEOMETRICO A 23 CAMPI ---
 CSV_URL = "https://github.com/depietromarco65/crm-casa-amici-2026/blob/main/database_ospiti.csv"
 
-
 try:
     risposta = requests.get(CSV_URL)
     if risposta.status_code == 200:
@@ -93,3 +92,4 @@ try:
     else: st.error("🛑 Impossibile connettersi a GitHub per prelevare il CSV.")
 except Exception as e:
     st.error(f"🛑 Errore nel caricamento del database: {e}")
+
