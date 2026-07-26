@@ -1,8 +1,7 @@
 import streamlit as st
 import pandas as pd
-import os
 
-# --- 1. CONFIGURAZIONE ARCHITETTURA E INTERFACCIA IMMERSIVA ---
+# --- 1. CONFIGURAZIONE ARCHITETTURA E INTERFACCIA IMMERSIVA (DARK MODE) ---
 st.set_page_config(page_title="CRM BOARD - A Casa di Amici", layout="wide", page_icon="🏨")
 
 # Iniezione di fogli di stile CSS per la Dark Mode Premium e i Badge Neon
@@ -42,74 +41,69 @@ st.markdown("---")
 
 CSV_URL = "https://githubusercontent.com"
 
-# --- 2. LETTURA SICURA E ADATTAMENTO DINAMICO DEI CAMPI ---
+# --- 2. LETTURA SICURA BASATA SU INDICI POSIZIONALI IMMUNI DA ERRORI ---
 try:
-    # Scarica il file saltando le righe corrotte ed evitando i blocchi del motore C
+    # Scarica il file saltando le righe corrotte ed ignorando l'intestazione per massima stabilità
     df = pd.read_csv(CSV_URL, on_bad_lines="skip", engine="python")
     
     if not df.empty:
-        # Pulizia preventiva degli spazi nascosti nell'intestazione di GitHub
-        df.columns = df.columns.str.strip()
+        # Barra di ricerca interattiva frontend
+        ricerca_testuale = st.text_input("✍ Cerca all'istante per nome, e-mail o note interne:", placeholder="Digita per filtrare i record...").strip().lower()
         
-        # Creazione del pannello dei filtri ad alto contrasto
-        c_f1, c_f2 = st.columns([2, 1])
-        with c_f1:
-            ricerca_testuale = st.text_input("✍ Cerca all'istante per nome, e-mail o note interne:", placeholder="Digita per filtrare i record...").strip().lower()
-        with c_f2:
-            filtro_portale = st.selectbox("🌐 Isola per Portale:", ["Tutti i Canali"] + list(df.iloc[:, 14].dropna().unique()))
-
-        # Applicazione logica dei filtri sul DataFrame in memoria
+        # Applicazione logica del filtro di ricerca globale sul DataFrame
         df_filtrato = df.copy()
-        if filtro_portale != "Tutti i Canali":
-            df_filtrato = df_filtrato[df_filtrato.iloc[:, 14] == filtro_portale]
-            
         if ricerca_testuale:
             maschera = df_filtrato.apply(lambda row: row.astype(str).str.lower().str.contains(ricerca_testuale).any(), axis=1)
             df_filtrato = df_filtrato[maschera]
 
         # --- 3. RENDERIZZAZIONE DEL COMPONENTE GRAFICO PREMIUM ---
         if not df_filtrato.empty:
-            st.caption(f"Visualizzazione di {len(df_filtrato)} pratiche commerciali filtrate.")
+            st.caption(f"Visualizzazione di {len(df_filtrato)} pratiche commerciali nel database.")
             
             # Scorriamo il database al contrario per mostrare i lead più freschi in cima allo schermo
             for idx in reversed(df_filtrato.index):
                 riga = df_filtrato.loc[idx]
                 
-                # Estrazione posizionale sicura indicizzata sull'array reale a 23 colonne
-                id_progressivo = str(riga.iloc[0]).replace(".0", "")
-                data_contatto = str(riga.iloc[1])
-                cognome = str(riga.iloc[4]) if str(riga.iloc[4]) != "nd" else ""
-                nome_ospite = f"{cognome} {str(riga.iloc[5])}".strip()
-                arrivo = str(riga.iloc[6])
-                partenza = str(riga.iloc[7])
-                alloggio = str(riga.iloc[8]) if str(riga.iloc[8]) != "nd" else "Da assegnare"
-                portale = str(riga.iloc[14])
-                tariffa = str(riga.iloc[16]) if str(riga.iloc[16]) != "nd" else "0.00"
-                stato = str(riga.iloc[21]).strip()
-                note_interne = str(riga.iloc[22]) if len(str(riga.iloc[22])) > 2 else "Nessuna nota aggiuntiva d'esercizio."
+                # Sfruttiamo il metodo .iloc con l'indice numerico fisso per blindare l'estrazione dai 23 campi
+                id_progressivo = str(riga.iloc[0]).replace(".0", "").strip()
+                data_contatto = str(riga.iloc[1]).strip()
+                cognome = str(riga.iloc[4]).strip() if str(riga.iloc[4]) != "nd" else ""
+                nome_grezzo = str(riga.iloc[5]).strip() if str(riga.iloc[5]) != "nd" else "Ospite"
+                nome_ospite = f"{cognome} {nome_grezzo}".strip()
+                arrivo = str(riga.iloc[6]).strip()
+                partenza = str(riga.iloc[7]).strip()
+                alloggio = str(riga.iloc[8]).strip() if str(riga.iloc[8]) != "nd" else "Da assegnare"
+                portale = str(riga.iloc[14]).strip()
+                tariffa = str(riga.iloc[16]).strip() if str(riga.iloc[16]) != "nd" else "0.00"
+                stato = str(riga.iloc[21]).strip() if str(riga.iloc[21]) != "nd" else "Lista d'attesa"
+                note_interne = str(riga.iloc[22]).strip() if len(str(riga.iloc[22])) > 2 else "Nessuna nota aggiuntiva d'esercizio."
 
                 # Mappatura cromatica dello stato per l'assegnazione dei badge fluo
                 st_low = stato.lower()
                 if "conferma" in st_low or "corso" in st_low:
                     classe_colore = "badge-verde"
+                    stato_visivo = "Confermata / In Corso"
                 elif "attesa" in st_low or "sospeso" in st_low:
                     classe_colore = "badge-giallo"
+                    stato_visivo = "Lista d'attesa"
                 elif "non contattabile" in st_low:
                     classe_colore = "badge-grigio"
+                    stato_visivo = "Non Contattabile"
                 else:
                     classe_colore = "badge-rosso"
+                    stato_visivo = "Richiesta Scaduta"
 
-                # Stampa a schermo della Card HTML personalizzata
+                # Renderizzazione della Card HTML ad alto impatto visivo
                 st.markdown(f"""
                 <div class="card-ospite">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #334155; padding-bottom: 8px;">
                         <span style="font-size: 18px; font-weight: 800; color: #ffffff; tracking-tight: -0.02em;">#{id_progressivo} | {nome_ospite}</span>
-                        <span class="badge {classe_colore}">{stato}</span>
+                        <span class="badge {classe_colore}">{stato_visivo}</span>
                     </div>
                     <div class="griglia-info">
                         <div>📅 <span style="color: #94a3b8;">Soggiorno:</span> <span class="dato-evidenziato">{arrivo} ➔ {partenza}</span></div>
                         <div>🏠 <span style="color: #94a3b8;">Unità Assegnata:</span> <span class="dato-evidenziato" style="color: #6366f1;">{alloggio}</span></div>
-                        <div>💶 <span style="color: #94a3b8;">Tariffa Alloggio:</span> <span class="dato-evidenziato" style="color: #10b981;">€ {tariffa}</span></div>
+                        <div>💶 <span style="color: #94a3b8;">Tariffa Soggiorno:</span> <span class="dato-evidenziato" style="color: #10b981;">€ {tariffa}</span></div>
                         <div>🌐 <span style="color: #94a3b8;">Canale d'Origine:</span> <span class="dato-evidenziato">{portale}</span></div>
                     </div>
                     <div style="margin-top: 14px; font-size: 13px; color: #94a3b8; background-color: rgba(15, 23, 42, 0.4); padding: 10px; border-radius: 6px; border-left: 3px solid #475569;">
@@ -118,7 +112,7 @@ try:
                 </div>
                 """, unsafe_allow_html=True)
         else:
-            st.warning("❌ Nessun record trovato nel database corrispondente ai filtri impostati.")
+            st.warning("❌ Nessun record trovato nel database corrispondente ai parametri digitati.")
     else:
         st.info("📂 Il database ospiti risulta attualmente vuoto su GitHub.")
 except Exception as e:
