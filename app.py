@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import csv
 import urllib.parse
+import base64
 
 # --- 1. CONFIGURAZIONE INTERFACCIA COMPATTA E FLUIDA ---
 st.set_page_config(page_title="CRM BOARD - A Casa di Amici 2026", layout="wide", page_icon="🏨")
@@ -10,27 +11,44 @@ st.markdown("""
 <style>
     .block-container { padding-top: 1rem !important; padding-bottom: 1rem !important; max-width: 100% !important; }
     .metric-box { background-color: #ffffff; border: 1px solid #cbd5e0; padding: 12px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-    .card-ospite { background-color: #ffffff !important; border: 1px solid #cbd5e0 !important; padding: 16px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(148, 120, 80, 0.04); width: 100% !important; display: block !important; }
+    .card-ospite { background-color: #ffffff !important; border: 1px solid #cbd5e0 !important; padding: 16px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(148, 120, 80, 0.04); }
     .badge { padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
     .badge-verde { background-color: #e6fffa !important; color: #008767 !important; border: 1px solid #b2f5ea !important; }
     .badge-giallo { background-color: #fefcbf !important; color: #b7791f !important; border: 1px solid #faf089 !important; }
     .badge-rosso { background-color: #fed7d7 !important; color: #c53030 !important; border: 1px solid #feb2b2 !important; }
-    .badge-grigio { background-color: #edf2f7 !important; color: #4a5568 !important; border: 1px solid #e2e8f0 !important; }
     .linea-dato { display: inline-block; margin-right: 18px; font-size: 14px; white-space: nowrap !important; }
     .dato-evidenziato { color: #1a202c !important; font-weight: 600; }
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-<div style="text-align: center; margin-bottom: 0px; padding-bottom: 0px;">
-    <img src="https://githubusercontent.com" style="max-width: 240px; height: auto; margin-bottom: 5px;" alt="Logo">
-    <h1 style="margin: 0; padding: 0; color: #1a202c; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 26px;">A Casa di Amici — Dashboard Direzionale</h1>
-</div>
-""", unsafe_allow_html=True)
-st.markdown("---")
+# Coordinate Repository per salvataggio automatico
+REPO = "depietromarco65/crm-casa-amici-2026"
+PATH = "database_ospiti.csv"
+URL_RAW = f"https://githubusercontent.com{REPO}/main/{PATH}"
+API_URL = f"https://github.com{REPO}/contents/{PATH}"
 
-CSV_URL = "https://githubusercontent.com"
+# Funzione per inviare il file CSV corretto direttamente su GitHub
+def salva_csv_su_github(nuovo_contenuto_testo):
+    if "GITHUB_TOKEN" not in st.secrets:
+        st.error("🛑 Errore: Token GitHub mancante nei Secrets di Streamlit.")
+        return False
+    token = st.secrets["GITHUB_TOKEN"]
+    headers = {"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"}
+    
+    # Recuperiamo il codice "sha" del vecchio file per poterlo sovrascrivere
+    res = requests.get(API_URL, headers=headers)
+    if res.status_code != 200: return False
+    sha = res.json()["sha"]
+    
+    payload = {
+        "message": "Aggiornamento e rettifica record database ospiti tramite CRM Web",
+        "content": base64.b64encode(nuovo_contenuto_testo.encode("utf-8")).decode("utf-8"),
+        "sha": sha
+    }
+    commit_res = requests.put(API_URL, json=payload, headers=headers)
+    return commit_res.status_code == 200
 
+# Controllo e pulizia automatica dei refusi e-mail
 def correggi_email(email_grezza):
     em = email_grezza.strip().lower()
     if not em or em == "nd": return "nd"
@@ -38,27 +56,21 @@ def correggi_email(email_grezza):
     for k, v in sub.items():
         if em.endswith(k): em = em.replace(k, v)
     return em
-
-def genera_messaggi_programmati(nome, alloggio, data_arr):
-    al = alloggio if alloggio.lower() != "nd" else "vostro alloggio"
-    w = f"Gentile {nome},\n\nSiamo felici di confermare il tuo soggiorno nel {al} dal {data_arr}. Prenotazione sulla parola: zero caparre, saldi alla reception! Ricorda di proteggere il viaggio con Care4UHotel ed evita la nostra blacklist No-Show. Se arrivi in treno/aereo/bus, la biancheria è gratis!"
-    c = f"Ciao {nome}! Ti aspettiamo oggi a Torre Pali. Il {al} è pronto. Ci trovi alla reception per il check-in e il saldo al bancone. Buon viaggio!"
-    o = f"Grazie {nome}! Speriamo che il soggiorno nel {al} sia stato splendido. Per la prossima volta potrai prenotare direttamente sul nostro sito usando il tuo codice sconto dedicato!"
-    return w, c, o
 try:
-    risposta = requests.get(CSV_URL)
+    risposta = requests.get(URL_RAW)
     if risposta.status_code == 200:
         linee = [l for l in risposta.text.splitlines() if l.strip()]
         if len(linee) > 1:
             lettore = csv.reader(linee)
-            next(lettore)
+            intestazione = next(lettore)
             righe = list(lettore)
             
+            # 1. CALCOLO METRICHE GENERALI
             tot_fatturato, pratiche_attive = 0.0, 0
             for p in righe:
                 if len(p) < 23: continue
-                st_p = p[21].strip().lower()
-                if "conferma" in st_p or "corso" in st_p or "arrivato" in st_p:
+                st_p = p[22].strip().lower()
+                if any(x in st_p for x in ["conferma", "corso", "arrivato"]):
                     pratiche_attive += 1
                     try: tot_fatturato += float(p[16].strip().replace(",", "."))
                     except ValueError: pass
@@ -68,68 +80,88 @@ try:
             with c_m2: st.markdown(f'<div class="metric-box"><span style="font-size:13px; color:#718096; font-weight:600;">📈 PRATICHE ATTIVE</span><br><span style="font-size:22px; font-weight:800; color:#4c51bf;">{pratiche_attive} CONTATTI DIRETTI</span></div>', unsafe_allow_html=True)
             
             st.markdown("<br>", unsafe_allow_html=True)
-            ricerca = st.text_input("✍ Cerca per nome, e-mail o note interne:", placeholder="Digita per filtrare i record...").strip().lower()
             
+            # 2. PANNELLO INSERIMENTO RAPIDO / CORREZIONE RIGHE
+            st.subheader("🛠️ Pannello Editor di Modifica e Correzione Righe")
+            id_selezionato = st.selectbox("Seleziona l'ID del record da correggere o modificare:", [r[0] for r in reversed(righe)])
+            
+            # Recuperiamo l'indice esatto della riga selezionata per popolare i campi
+            idx_riga = next(i for i, r in enumerate(righe) if r[0] == id_selezionato)
+            riga_da_modificare = righe[idx_riga]
+            
+            # Espandiamo solo i campi chiave per evitare sfasamenti, applicando la correzione email
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                nuovo_cognome = st.text_input("Cognome Ospite", value=riga_da_modificare[4])
+                nuovo_alloggio = st.text_input("Alloggio Assegnato", value=riga_da_modificare[8])
+            with col2:
+                nuovo_nome = st.text_input("Nome Ospite", value=riga_da_modificare[5])
+                email_corrente = correggi_email(riga_da_modificare[13])
+                nuova_email = st.text_input("Indirizzo E-mail (Auto-corretto)", value=email_corrente)
+            with col3:
+                nuovo_stato = st.selectbox("Stato Pratica", ["Lista d'attesa", "In corso", "Confermata", "Richiesta Scaduta", "Non Contattabile"], index=["lista d'attesa", "in corso", "confermata", "richiesta scaduta", "non contattabile"].index(riga_da_modificare[21].lower()) if riga_da_modificare[21].lower() in ["lista d'attesa", "in corso", "confermata", "richiesta scaduta", "non contattabile"] else 0)
+                nuova_tariffa = st.text_input("Tariffa Alloggio (€)", value=riga_da_modificare[16])
+
+            nuove_note = st.text_area("Note Interne e Logistica CRM", value=riga_da_modificare[22])
+            
+            if st.button("💾 Applica Correzioni e Salva nel Database di GitHub"):
+                # Aggiorniamo i campi della riga selezionata mantenendo inalterati gli altri indici tecnici
+                righe[idx_riga][4] = nuovo_cognome
+                righe[idx_riga][5] = nuovo_nome
+                righe[idx_riga][8] = nuovo_alloggio
+                righe[idx_riga][13] = nuova_email
+                righe[idx_riga][16] = nuova_tariffa
+                righe[idx_riga][21] = nuovo_stato
+                righe[idx_riga][22] = nuove_note
+                
+                # Ricostruiamo la stringa CSV completa da trasmettere alle API
+                output_stringa = ",".join(intestazione) + "\n"
+                for r in righe:
+                    output_stringa += ",".join([f'"{x}"' if ',' in str(x) else str(x) for x in r]) + "\n"
+                
+                if salva_csv_su_github(output_stringa):
+                    st.success(f"🟢 Record #{id_selezionato} aggiornato con successo! I dati appariranno aggiornati tra pochi secondi.")
+                    st.rerun()
+                else:
+                    st.error("🛑 Errore durante il salvataggio su GitHub. Verifica i Secrets ed il Token.")
+            
+            st.markdown("---")
+            st.subheader("📋 Elenco Cronologico dei Lead e delle Liste d'attesa")
+            
+            # 3. VISUALIZZAZIONE COMPATTA DELLE CARD FLUIDE
             for p in reversed(righe):
                 if len(p) < 23: continue
                 id_p, d_c, o_c, l_t, cognome, nome, arr, part, allog = p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]
-                o_tot, min_n, ad, bam, mail_grezza, port, char, tariff, ext, t_tar, s_sal, t_sog, stato, note = p[9], p[10], p[11], p[12], p[13], p[14], p[15], p[16], p[17], p[18], p[19], p[20], p[21], p[22]
+                o_tot, ad, mail_grezza, port, tariff, stato, note = p[9], p[11], p[13], p[14], p[16], p[21], p[22]
                 
                 mail = correggi_email(mail_grezza)
                 nome_completo = f"{cognome} {nome}".replace("nd ", "").strip() if f"{cognome} {nome}".strip() != "nd nd" else "Ospite"
                 allog_v = allog if allog.lower() != "nd" else "Da assegnare"
                 tariff_v = tariff if tariff.lower() != "nd" else "0.00"
                 
-                tel_v = "nd"
-                if "tel:" in note.lower():
-                    try: tel_v = note.lower().split("tel:")[1].strip().split(" ")[0].strip()
-                    except: pass
-                
-                if ricerca and ricerca not in f"{nome_completo} {port} {allog_v} {note} {mail} {id_p}".lower(): continue
-                
                 st_l = stato.lower()
-                c_badge, v_badge = ("badge-verde", "Confermata / In Corso") if "conferma" in st_l or "corso" in st_l or "arrivato" in st_l else (("badge-giallo", "Lista d'attesa") if "attesa" in st_l or "sospeso" in st_l else (("badge-grigio", "Non Contattabile") if "non contattabile" in st_l else ("badge-rosso", "Richiesta Scaduta")))
+                c_badge = "badge-verde" if any(x in st_l for x in ["conferma", "corso", "arrivato"]) else ("badge-giallo" if "attesa" in st_l else "badge-rosso")
                 
                 st.markdown(f"""
                 <div class="card-ospite">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid #edf2f7; padding-bottom: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid #edf2f7; padding-bottom: 4px;">
                         <span style="font-size: 16px; font-weight: 800;">#{id_p} | {nome_completo}</span>
-                        <span class="badge {c_badge}">{v_badge}</span>
+                        <span class="badge {c_badge}">{stato}</span>
                     </div>
-                    <div style="margin-bottom: 6px;">
+                    <div style="margin-bottom: 4px;">
                         <span class="linea-dato">📅 Soggiorno: <span class="dato-evidenziato">{arr} ➔ {part}</span></span>
                         <span class="linea-dato">🏠 Unità: <span class="dato-evidenziato" style="color:#4c51bf;">{allog_v}</span></span>
                         <span class="linea-dato">💶 Tariffa: <span class="dato-evidenziato" style="color:#2f855a;">€ {tariff_v}</span></span>
                         <span class="linea-dato">🌐 Canale: <span class="dato-evidenziato">{port}</span></span>
                     </div>
-                    <div style="font-size: 13px; color: #718096; margin-bottom: 8px;">
-                        👥 Ospiti: {o_tot} ({ad} Ad. + {bam} Bamb.) | 📧 E-mail: {mail} | ⏱ Lead Time: {l_t} gg
+                    <div style="font-size: 13px; color: #718096; margin-bottom: 6px;">
+                        👥 Ospiti: {o_tot} (Ad: {ad}) | 📧 E-mail: {mail} | ⏱ Lead Time: {l_t} gg
                     </div>
                     <div style="font-size: 13px; color: #4a5568; background-color: #f7fafc; padding: 8px; border-radius: 6px; border-left: 3px solid #cbd5e0;">
-                        📌 <b>NOTE:</b> {note} <span style="float: right; font-size: 11px; color: #a0aec0;">Ricevuto: {d_c} alle {o_c}</span>
+                        📌 <b>NOTE INTERNE:</b> {note} <span style="float: right; font-size: 11px; color: #a0aec0;">Ricevuto: {d_c} alle {o_c}</span>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-                
-                if "badge-verde" in c_badge:
-                    m_welcome, m_checkin, m_checkout = genera_messaggi_programmati(nome_completo, allog_v, arr)
-                    with st.expander(f"✉️ Sistema Messaggi Omnicanale per #{id_p}"):
-                        canale = st.radio("Invia tramite:", ["E-mail ufficiale", "WhatsApp Direct"], key=f"chan_{id_p}", horizontal=True)
-                        if canale == "E-mail ufficiale":
-                            st.text_area("🎉 1. Benvenuto", value=m_welcome, height=70, key=f"w_{id_p}")
-                            st.text_area("🏠 2. Check-in", value=m_checkin, height=60, key=f"c_{id_p}")
-                            st.text_area("⭐ 3. Grazie", value=m_checkout, height=60, key=f"o_{id_p}")
-                        else:
-                            tel_clean = "".join([c for c in tel_v if c.isdigit()])
-                            if tel_clean and not tel_clean.startswith("39") and len(tel_clean) == 10: tel_clean = "39" + tel_clean
-                            w_enc = urllib.parse.quote(m_welcome)
-                            c_enc = urllib.parse.quote(m_checkin)
-                            o_enc = urllib.parse.quote(m_checkout)
-                            if tel_clean:
-                                st.markdown(f'<a href="https://wa.me{tel_clean}?text={w_enc}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:600; cursor:pointer; margin-bottom:5px;">🎉 Invia Benvenuto su WA</button></a>', unsafe_allow_html=True)
-                                st.markdown(f'<a href="https://wa.me{tel_clean}?text={c_enc}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:600; cursor:pointer; margin-bottom:5px;">🏠 Invia Check-in su WA</button></a>', unsafe_allow_html=True)
-                                st.markdown(f'<a href="https://wa.me{tel_clean}?text={o_enc}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:600; cursor:pointer;">⭐ Invia Grazie su WA</button></a>', unsafe_allow_html=True)
-                            else: st.warning("⚠️ Inserire il telefono nelle note (es. tel: 3491234567) per sbloccare WhatsApp.")
         else: st.info("📂 Database vuoto su GitHub.")
     else: st.error("🛑 Errore di connessione a GitHub.")
-except Exception as e: st.error(f"🛑 Errore: {e}")
+except Exception as e: st.error(f"🛑 Errore generico: {e}")
