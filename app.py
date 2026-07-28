@@ -1,473 +1,135 @@
 import streamlit as st
-import pandas as pd
 import requests
-import base64
-from io import StringIO
-from datetime import datetime, date
-
-st.set_page_config(
-    page_title="CRM - A Casa di Amici",
-    page_icon="🏡",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-OWNER = "depietromarco65"
-REPOSITORY = "crm-casa-amici-2026"
-BRANCH = "main"
-
-CSV_FILE = "database_ospiti.csv"
-
-RAW_URL = (
-    f"https://raw.githubusercontent.com/"
-    f"{OWNER}/{REPOSITORY}/{BRANCH}/{CSV_FILE}"
-)
-COLONNE = [
-    "N. Progressivo",
-    "Data Contatto",
-    "Ora Contatto",
-    "Giorni Lead Time",
-    "Cognome Capofamiglia",
-    "Nome Capofamiglia",
-    "Data Presunta Arrivo",
-    "Data Presunta Partenza",
-    "Alloggio Assegnato",
-    "Numero Ospiti Totale",
-    "Nominativo Ospiti (Dettaglio + Compleanni + Onomastici)",
-    "Adulti",
-    "Minori",
-    "Email",
-    "Portale di Provenienza",
-    "Razza Taglia e Nome Cane",
-    "Tariffa Totale (€)",
-    "Costo Biancheria (€)",
-    "Tipo Tariffa (Standard/Non Rimb.)",
-    "Stato Saldo",
-    "Mezzo di Trasporto e Orario Arrivo",
-    "Stato Richiesta",
-    "Note Aggiuntive"
-]
-@st.cache_data(ttl=30)
-
-def carica_database():
-
-    try:
-
-        risposta = requests.get(
-            RAW_URL,
-            timeout=20
-        )
-
-        risposta.raise_for_status()
-
-        df = pd.read_csv(
-            StringIO(risposta.text),
-            dtype=str,
-            keep_default_na=False
-        )
-
-        df.columns = df.columns.str.strip()
-
-        for colonna in COLONNE:
-
-            if colonna not in df.columns:
-
-                df[colonna] = ""
-
-        df = df[COLONNE]
-
-        return df
-
-    except Exception as errore:
-
-        st.error(errore)
-
-        return pd.DataFrame(columns=COLONNE)
-
-
-df = carica_database()
-def euro(valore):
-
-    try:
-
-        return float(
-            str(valore)
-            .replace("€", "")
-            .replace(".", "")
-            .replace(",", ".")
-            .strip()
-        )
-
-    except:
-
-        return 0.0
-
-
-def giorni_lead(contatto, arrivo):
-
-    try:
-
-        d1 = datetime.strptime(
-            contatto,
-            "%d/%m/%Y"
-        )
-
-        d2 = datetime.strptime(
-            arrivo,
-            "%d/%m/%Y"
-        )
-
-        return (d2-d1).days
-
-    except:
-
-        return ""
-if not df.empty:
-
-    if "Giorni Lead Time" in df.columns:
-
-        df["Giorni Lead Time"] = df.apply(
-
-            lambda r: giorni_lead(
-                r["Data Contatto"],
-                r["Data Presunta Arrivo"]
-            ),
-
-            axis=1
-
-        )
-st.title("🏡 CRM A Casa di Amici")
-
-st.caption(
-    "Gestione Ospiti • Marketing • Statistiche • Dashboard CEO"
-)
-if df.empty:
-
-    st.warning("Il database è vuoto.")
-
-    st.stop()
-
-
-totale_contatti = len(df)
-
-prenotazioni_confermate = len(
-    df[
-        df["Stato Richiesta"]
-        .str.contains(
-            "confer",
-            case=False,
-            na=False
-        )
-    ]
-)
-
-lista_attesa = len(
-    df[
-        df["Stato Richiesta"]
-        .str.contains(
-            "attesa",
-            case=False,
-            na=False
-        )
-    ]
-)
-
-non_disponibili = len(
-    df[
-        df["Stato Richiesta"]
-        .str.contains(
-            "non",
-            case=False,
-            na=False
-        )
-    ]
-)
-
-clienti_pet = len(
-    df[
-        df["Razza Taglia e Nome Cane"]
-        .str.strip()
-        != ""
-    ]
-)
-
-fatturato = (
-    df["Tariffa Totale (€)"]
-    .apply(euro)
-    .sum()
-)
-
-biancheria = (
-    df["Costo Biancheria (€)"]
-    .apply(euro)
-    .sum()
-)
-
-lead = pd.to_numeric(
-    df["Giorni Lead Time"],
-    errors="coerce"
-)
-
-lead_medio = round(
-    lead.mean(),
-    1
-)
-st.divider()
-
-st.subheader("📊 Dashboard CEO")
-
-c1, c2, c3, c4 = st.columns(4)
-
-c1.metric(
-    "Contatti",
-    totale_contatti
-)
-
-c2.metric(
-    "Confermate",
-    prenotazioni_confermate
-)
-
-c3.metric(
-    "Lista Attesa",
-    lista_attesa
-)
-
-c4.metric(
-    "Clienti Pet",
-    clienti_pet
-)
-
-c5, c6, c7 = st.columns(3)
-
-c5.metric(
-    "Lead Time Medio",
-    f"{lead_medio} giorni"
-)
-
-c6.metric(
-    "Fatturato",
-    f"€ {fatturato:,.2f}"
-)
-
-c7.metric(
-    "Biancheria",
-    f"€ {biancheria:,.2f}"
-)
-st.divider()
-
-pagina = st.sidebar.radio(
-
-    "MENU",
-
-    [
-
-        "Dashboard",
-
-        "Archivio",
-
-        "Nuovo Contatto",
-
-        "Marketing",
-
-        "Statistiche"
-
-    ]
-
-)
-if pagina == "Dashboard":
-
-    st.subheader("Ultimi contatti")
-
-    st.dataframe(
-
-        df.sort_values(
-
-            by="N. Progressivo",
-
-            ascending=False
-
-        ),
-
-        use_container_width=True,
-
-        hide_index=True
-
-    )
-if pagina == "Archivio":
-
-    st.subheader("📋 Archivio Clienti")
-
-    filtro_cognome = st.text_input(
-        "Cerca Cognome"
-    ).strip().lower()
-
-    filtro_nome = st.text_input(
-        "Cerca Nome"
-    ).strip().lower()
-
-    filtro_portale = st.selectbox(
-        "Portale",
-        ["Tutti"] + sorted(
-            df["Portale di Provenienza"]
-            .fillna("")
-            .unique()
-            .tolist()
-        )
-    )
-
-    archivio = df.copy()
-    if filtro_cognome:
-
-        archivio = archivio[
-            archivio["Cognome Capofamiglia"]
-            .str.lower()
-            .str.contains(
-                filtro_cognome,
-                na=False
-            )
-        ]
-
-    if filtro_nome:
-
-        archivio = archivio[
-            archivio["Nome Capofamiglia"]
-            .str.lower()
-            .str.contains(
-                filtro_nome,
-                na=False
-            )
-        ]
-
-    if filtro_portale != "Tutti":
-
-        archivio = archivio[
-            archivio["Portale di Provenienza"]
-            == filtro_portale
-        ]
-    st.dataframe(
-
-        archivio,
-
-        use_container_width=True,
-
-        hide_index=True
-
-    )
-    st.divider()
-
-    elenco = (
-        archivio["Cognome Capofamiglia"]
-        + " "
-        + archivio["Nome Capofamiglia"]
-    ).tolist()
-
-    if elenco:
-
-        cliente = st.selectbox(
-
-            "Scheda Cliente",
-
-            elenco
-
-        )
-
-        indice = elenco.index(cliente)
-
-        record = archivio.iloc[indice]
-
-        c1, c2 = st.columns(2)
-
-        with c1:
-
-            st.write("### Dati")
-
-            st.write(
-                "**Cognome:**",
-                record["Cognome Capofamiglia"]
-            )
-
-            st.write(
-                "**Nome:**",
-                record["Nome Capofamiglia"]
-            )
-
-            st.write(
-                "**Email:**",
-                record["Email"]
-            )
-
-            st.write(
-                "**Telefono/Trasporto:**",
-                record["Mezzo di Trasporto e Orario Arrivo"]
-            )
-
-            st.write(
-                "**Portale:**",
-                record["Portale di Provenienza"]
-            )
-
-        with c2:
-
-            st.write("### Prenotazione")
-
-            st.write(
-                "**Arrivo:**",
-                record["Data Presunta Arrivo"]
-            )
-
-            st.write(
-                "**Partenza:**",
-                record["Data Presunta Partenza"]
-            )
-
-            st.write(
-                "**Alloggio:**",
-                record["Alloggio Assegnato"]
-            )
-
-            st.write(
-                "**Tariffa:**",
-                record["Tariffa Totale (€)"]
-            )
-
-            st.write(
-                "**Saldo:**",
-                record["Stato Saldo"]
-            )
-
-            st.write(
-                "**Stato:**",
-                record["Stato Richiesta"]
-            )
-
-        st.divider()
-
-        st.write("### Note")
-
-        st.text_area(
-
-            "",
-
-            record["Note Aggiuntive"],
-
-            height=150,
-
-            disabled=True
-
-        )
-    csv = archivio.to_csv(
-        index=False
-    ).encode("utf-8")
-
-    st.download_button(
-
-        "⬇️ Esporta Archivio",
-
-        csv,
-
-        "archivio_clienti.csv",
-
-        "text/csv"
-
-    )
-
+import csv
+import urllib.parse
+
+# --- 1. CONFIGURAZIONE INTERFACCIA COMPATTA E FLUIDA ---
+st.set_page_config(page_title="CRM BOARD - A Casa di Amici 2026", layout="wide", page_icon="🏨")
+
+st.markdown("""
+<style>
+    .block-container { padding-top: 1rem !important; padding-bottom: 1rem !important; max-width: 100% !important; }
+    .metric-box { background-color: #ffffff; border: 1px solid #cbd5e0; padding: 12px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .card-ospite { background-color: #ffffff !important; border: 1px solid #cbd5e0 !important; padding: 16px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(148, 120, 80, 0.04); width: 100% !important; display: block !important; }
+    .badge { padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
+    .badge-verde { background-color: #e6fffa !important; color: #008767 !important; border: 1px solid #b2f5ea !important; }
+    .badge-giallo { background-color: #fefcbf !important; color: #b7791f !important; border: 1px solid #faf089 !important; }
+    .badge-rosso { background-color: #fed7d7 !important; color: #c53030 !important; border: 1px solid #feb2b2 !important; }
+    .badge-grigio { background-color: #edf2f7 !important; color: #4a5568 !important; border: 1px solid #e2e8f0 !important; }
+    .linea-dato { display: inline-block; margin-right: 18px; font-size: 14px; white-space: nowrap !important; }
+    .dato-evidenziato { color: #1a202c !important; font-weight: 600; }
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div style="text-align: center; margin-bottom: 0px; padding-bottom: 0px;">
+    <img src="https://githubusercontent.com" style="max-width: 240px; height: auto; margin-bottom: 5px;" alt="Logo">
+    <h1 style="margin: 0; padding: 0; color: #1a202c; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 26px;">A Casa di Amici — Dashboard Direzionale</h1>
+</div>
+""", unsafe_allow_html=True)
+st.markdown("---")
+
+CSV_URL = "https://githubusercontent.com"
+
+def correggi_email(email_grezza):
+    em = email_grezza.strip().lower()
+    if not em or em == "nd": return "nd"
+    sub = {"@gmal.com": "@gmail.com", "@gmaill.com": "@gmail.com", "@libero.it": "@libero.it", "@alice.it": "@alice.it", "@hotmal.com": "@hotmail.com"}
+    for k, v in sub.items():
+        if em.endswith(k): em = em.replace(k, v)
+    return em
+
+def genera_messaggi_programmati(nome, alloggio, data_arr):
+    al = alloggio if alloggio.lower() != "nd" else "vostro alloggio"
+    w = f"Gentile {nome},\n\nSiamo felici di confermare il tuo soggiorno nel {al} dal {data_arr}. Prenotazione sulla parola: zero caparre, saldi alla reception! Ricorda di proteggere il viaggio con Care4UHotel ed evita la nostra blacklist No-Show. Se arrivi in treno/aereo/bus, la biancheria è gratis!"
+    c = f"Ciao {nome}! Ti aspettiamo oggi a Torre Pali. Il {al} è pronto. Ci trovi alla reception per il check-in e il saldo al bancone. Buon viaggio!"
+    o = f"Grazie {nome}! Speriamo che il soggiorno nel {al} sia stato splendido. Per la prossima volta potrai prenotare direttamente sul nostro sito usando il tuo codice sconto dedicato!"
+    return w, c, o
+try:
+    risposta = requests.get(CSV_URL)
+    if risposta.status_code == 200:
+        linee = [l for l in risposta.text.splitlines() if l.strip()]
+        if len(linee) > 1:
+            lettore = csv.reader(linee)
+            next(lettore)
+            righe = list(lettore)
+            
+            tot_fatturato, pratiche_attive = 0.0, 0
+            for p in righe:
+                if len(p) < 23: continue
+                st_p = p[21].strip().lower()
+                if "conferma" in st_p or "corso" in st_p or "arrivato" in st_p:
+                    pratiche_attive += 1
+                    try: tot_fatturato += float(p[16].strip().replace(",", "."))
+                    except ValueError: pass
+            
+            c_m1, c_m2 = st.columns(2)
+            with c_m1: st.markdown(f'<div class="metric-box"><span style="font-size:13px; color:#718096; font-weight:600;">💰 FATTURATO CONSOLIDATO</span><br><span style="font-size:22px; font-weight:800; color:#2f855a;">€ {tot_fatturato:,.2f}</span></div>', unsafe_allow_html=True)
+            with c_m2: st.markdown(f'<div class="metric-box"><span style="font-size:13px; color:#718096; font-weight:600;">📈 PRATICHE ATTIVE</span><br><span style="font-size:22px; font-weight:800; color:#4c51bf;">{pratiche_attive} CONTATTI DIRETTI</span></div>', unsafe_allow_html=True)
+            
+            st.markdown("<br>", unsafe_allow_html=True)
+            ricerca = st.text_input("✍ Cerca per nome, e-mail o note interne:", placeholder="Digita per filtrare i record...").strip().lower()
+            
+            for p in reversed(righe):
+                if len(p) < 23: continue
+                id_p, d_c, o_c, l_t, cognome, nome, arr, part, allog = p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]
+                o_tot, min_n, ad, bam, mail_grezza, port, char, tariff, ext, t_tar, s_sal, t_sog, stato, note = p[9], p[10], p[11], p[12], p[13], p[14], p[15], p[16], p[17], p[18], p[19], p[20], p[21], p[22]
+                
+                mail = correggi_email(mail_grezza)
+                nome_completo = f"{cognome} {nome}".replace("nd ", "").strip() if f"{cognome} {nome}".strip() != "nd nd" else "Ospite"
+                allog_v = allog if allog.lower() != "nd" else "Da assegnare"
+                tariff_v = tariff if tariff.lower() != "nd" else "0.00"
+                
+                tel_v = "nd"
+                if "tel:" in note.lower():
+                    try: tel_v = note.lower().split("tel:")[1].strip().split(" ")[0].strip()
+                    except: pass
+                
+                if ricerca and ricerca not in f"{nome_completo} {port} {allog_v} {note} {mail} {id_p}".lower(): continue
+                
+                st_l = stato.lower()
+                c_badge, v_badge = ("badge-verde", "Confermata / In Corso") if "conferma" in st_l or "corso" in st_l or "arrivato" in st_l else (("badge-giallo", "Lista d'attesa") if "attesa" in st_l or "sospeso" in st_l else (("badge-grigio", "Non Contattabile") if "non contattabile" in st_l else ("badge-rosso", "Richiesta Scaduta")))
+                
+                st.markdown(f"""
+                <div class="card-ospite">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid #edf2f7; padding-bottom: 6px;">
+                        <span style="font-size: 16px; font-weight: 800;">#{id_p} | {nome_completo}</span>
+                        <span class="badge {c_badge}">{v_badge}</span>
+                    </div>
+                    <div style="margin-bottom: 6px;">
+                        <span class="linea-dato">📅 Soggiorno: <span class="dato-evidenziato">{arr} ➔ {part}</span></span>
+                        <span class="linea-dato">🏠 Unità: <span class="dato-evidenziato" style="color:#4c51bf;">{allog_v}</span></span>
+                        <span class="linea-dato">💶 Tariffa: <span class="dato-evidenziato" style="color:#2f855a;">€ {tariff_v}</span></span>
+                        <span class="linea-dato">🌐 Canale: <span class="dato-evidenziato">{port}</span></span>
+                    </div>
+                    <div style="font-size: 13px; color: #718096; margin-bottom: 8px;">
+                        👥 Ospiti: {o_tot} ({ad} Ad. + {bam} Bamb.) | 📧 E-mail: {mail} | ⏱ Lead Time: {l_t} gg
+                    </div>
+                    <div style="font-size: 13px; color: #4a5568; background-color: #f7fafc; padding: 8px; border-radius: 6px; border-left: 3px solid #cbd5e0;">
+                        📌 <b>NOTE:</b> {note} <span style="float: right; font-size: 11px; color: #a0aec0;">Ricevuto: {d_c} alle {o_c}</span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                if "badge-verde" in c_badge:
+                    m_welcome, m_checkin, m_checkout = genera_messaggi_programmati(nome_completo, allog_v, arr)
+                    with st.expander(f"✉️ Sistema Messaggi Omnicanale per #{id_p}"):
+                        canale = st.radio("Invia tramite:", ["E-mail ufficiale", "WhatsApp Direct"], key=f"chan_{id_p}", horizontal=True)
+                        if canale == "E-mail ufficiale":
+                            st.text_area("🎉 1. Benvenuto", value=m_welcome, height=70, key=f"w_{id_p}")
+                            st.text_area("🏠 2. Check-in", value=m_checkin, height=60, key=f"c_{id_p}")
+                            st.text_area("⭐ 3. Grazie", value=m_checkout, height=60, key=f"o_{id_p}")
+                        else:
+                            tel_clean = "".join([c for c in tel_v if c.isdigit()])
+                            if tel_clean and not tel_clean.startswith("39") and len(tel_clean) == 10: tel_clean = "39" + tel_clean
+                            w_enc = urllib.parse.quote(m_welcome)
+                            c_enc = urllib.parse.quote(m_checkin)
+                            o_enc = urllib.parse.quote(m_checkout)
+                            if tel_clean:
+                                st.markdown(f'<a href="https://wa.me{tel_clean}?text={w_enc}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:600; cursor:pointer; margin-bottom:5px;">🎉 Invia Benvenuto su WA</button></a>', unsafe_allow_html=True)
+                                st.markdown(f'<a href="https://wa.me{tel_clean}?text={c_enc}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:600; cursor:pointer; margin-bottom:5px;">🏠 Invia Check-in su WA</button></a>', unsafe_allow_html=True)
+                                st.markdown(f'<a href="https://wa.me{tel_clean}?text={o_enc}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:600; cursor:pointer;">⭐ Invia Grazie su WA</button></a>', unsafe_allow_html=True)
+                            else: st.warning("⚠️ Inserire il telefono nelle note (es. tel: 3491234567) per sbloccare WhatsApp.")
+        else: st.info("📂 Database vuoto su GitHub.")
+    else: st.error("🛑 Errore di connessione a GitHub.")
+except Exception as e: st.error(f"🛑 Errore: {e}")
