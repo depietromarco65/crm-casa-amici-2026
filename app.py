@@ -569,4 +569,3 @@ if len(risultati) > 0:
         else:
 
             st.error("❌ Errore durante il salvataggio su GitHub.")
-            
