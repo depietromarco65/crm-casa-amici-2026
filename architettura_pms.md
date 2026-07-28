@@ -297,3 +297,15 @@ L'obiettivo è realizzare un PMS professionale in grado di crescere negli anni i
 L'architettura dovrà permettere l'aggiunta di nuove strutture, nuovi moduli e nuove integrazioni senza modificare le fondamenta del sistema.
 
 Il software dovrà adattarsi alle esigenze dell'utente, mantenendo nel tempo semplicità, stabilità e facilità di manutenzione.
+# Principi non negoziabili
+
+1. Il database è l'unica fonte dei dati.
+2. Nessuna informazione configurabile deve essere scritta nel codice.
+3. Ogni funzione deve essere modulare e riutilizzabile.
+4. Il PMS deve funzionare con una o con cento strutture senza modifiche.
+5. Ogni integrazione esterna deve essere isolata in un proprio connettore.
+6. La semplicità viene prima della quantità di funzioni.
+7. Ogni nuova funzionalità deve risolvere un'esigenza reale.
+8. Ogni modifica deve preservare la compatibilità con le versioni precedenti del database, salvo casi eccezionali gestiti tramite migrazioni.
+9. La sicurezza dei dati degli ospiti e il rispetto della normativa sulla privacy devono essere considerati in ogni scelta progettuale.
+10. Prima di implementare una nuova funzione, verificare se può essere ottenuta estendendo un componente esistente invece di crearne uno nuovo.
